@@ -1,4 +1,4 @@
 2017 - CA - A-669 (NCSL) ==> Only mentions licensing, but I found Vehicle Code - VEH DIVISION 16.6. Autonomous Vehicles
-[38750 - 38755]  ( Division 16.6 added by Stats. 2012, Ch. 570, Sec. 2. ) and found insurance requirements (38750)
+[38750 - 38755]  ( Division 16.6 added by Stats. 2012, Ch. 570, Sec. 2. ) and found insurance requirements (38750d)
 
 https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=16.6.&title=&part=&chapter=&article=
