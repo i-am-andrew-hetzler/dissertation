@@ -9,6 +9,9 @@ that level of government regulates. The use case folders contain the statutes (i
 
 
 ## Federal Compliance
+The eCFR is an authoritative but unofficial statute. The researcher reviewed the eCFRs but downloaded the officail (govinfo.gov)
+sources for analysis (per the recommendation of eCFR).
+
 ### FMVSS Certification
 49 CFR 567 outlines the requirements for vehicles to certify with the _Federal Motor Vehicle Safety Standards_.
 

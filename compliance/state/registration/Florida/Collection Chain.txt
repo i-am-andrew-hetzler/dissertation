@@ -1,0 +1,7 @@
+2019 - FL H-311 (NCSL) ==> FL H-311 Section 9 (1)  ==> 320.02/320.06
+
+application:
+http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0300-0399/0320/Sections/0320.02.html
+
+certificate:
+http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&Search_String=&URL=0300-0399/0320/Sections/0320.06.html
