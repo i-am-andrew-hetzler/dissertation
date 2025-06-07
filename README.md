@@ -3,13 +3,17 @@
 
 ## Repository Layout
 ### Compliance folder
-The compliance folder contains the statutes, legal analysis, and compliance requirements for each use case.
+The compliance folder contains the statutes, compliance analysis, and compliance requirements for each use case.
 The compliance folder has two child folders: federal and state. Inside each child folder are folders for each use case
 that level of government regulates. The use case folders contain the statutes (in PDF format under the legislation folder).
 
+There are two files for the compliance analysis: _Federal Compliance Analysis_ and _State Compliance Analysis_. The federal analysis
+document contains the analysis for FMVSS certification and recalls. The state analysis contains analysis for licensing, 
+insurance, and registration.
+
 
 ## Federal Compliance
-The eCFR is an authoritative but unofficial statute. The researcher reviewed the eCFRs but downloaded the officail (govinfo.gov)
+The eCFR is an authoritative but unofficial statute. The researcher reviewed the eCFRs but downloaded the official (govinfo.gov)
 sources for analysis (per the recommendation of eCFR).
 
 ### FMVSS Certification
