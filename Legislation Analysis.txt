@@ -1,4 +1,11 @@
 Analysis began June 4, 2025.
 Initial compliance analysis done July 12, 2025.
 Sending emails to experts for review began July 13, 2025.
+Expert 1:
+    - I sent an email July 13, 2025 seeking their opinion.
+Expert 2:
+    - I sent an email July 13, 2025 seeking their opinion.
+Expert 3:
+    - I sent an email July 13, 2025 seeking their opinion.
+    - They replied back on July 13, 2025.
 
