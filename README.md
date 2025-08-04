@@ -2,6 +2,13 @@
 
 
 ## Repository Layout
+
+### Architecture folder
+The architecture folder contains three child folders: diagrams, code, and schemas. The diagrams folder contains all the UML use 
+case, C4 container, and C4 component diagrams. The code folder contains all the chaincode, gateway code, and performance 
+test code for all the use cases. The schemas folder contains all the formal JSON definitions for each use
+case's schema.
+
 ### Compliance folder
 The compliance folder contains the statutes, compliance analysis, and compliance requirements for each use case.
 The compliance folder has two child folders: federal and state. Inside each child folder are folders for each use case
@@ -9,26 +16,19 @@ that level of government regulates. The use case folders contain the statutes (i
 
 There are two files for the compliance analysis: _Federal Compliance Analysis_ and _State Compliance Analysis_. The federal analysis
 document contains the analysis for FMVSS certification and recalls. The state analysis contains analysis for licensing, 
-insurance, and registration.
+insurance, and registration. Note you will need Microsoft Excel to open these files.
 
+There is a file named _Comprehensive Requirements_ that contains the technical and compliance requirements for each use case.
+Note you will need Microsoft Word to open this file.
 
-## Federal Compliance
-The eCFR is an authoritative but unofficial statute. The researcher reviewed the eCFRs but downloaded the official (govinfo.gov)
-sources for analysis (per the recommendation of eCFR).
+#### Federal Compliance
+The eCFR is an authoritative but unofficial statute. The researcher reviewed the eCFRs but downloaded the official
+sources from the Government Publishing Office for analysis (per the recommendation of eCFR).
 
-### FMVSS Certification
-49 CFR 567 outlines the requirements for vehicles to certify with the _Federal Motor Vehicle Safety Standards_.
+#### State
+The researcher collected and analyzed official sources for the state statutes. The sources varied between states.
 
-Collected 5/25/25 and 5/26/25.
-
-### Recalls
-49 CFR 573 outlines the requirements for recall notifications, defect or noncompliance responsibilities, and other requirements for recall-related activities. 
-
-Collected 5/26/25.
-
-## State
-### Insurance
-
-### Licensing
-
-### Registration
+### Root Level
+Receipts were written for each phase of the study. There are three receipts: (a) architecture analysis, (b) legislation analysis,
+and (c) legislation collection. Each receipt contains the start and end dates for that activity. In the case of the _legislation analysis_, 
+notes were kept for each expert exchange.
