@@ -4,8 +4,9 @@
 ## Repository Layout
 
 ### Architecture folder
-The architecture folder contains two child folders: diagrams and schemas. The diagrams folder contains all the UML use 
-case, C4 container, and C4 component diagrams. The schemas folder contains all the formal JSON definitions for each use
+The architecture folder contains three child folders: diagrams, code, and schemas. The diagrams folder contains all the UML use 
+case, C4 container, and C4 component diagrams. The code folder contains all the chaincode, gateway code, and performance 
+test code for all the use cases. The schemas folder contains all the formal JSON definitions for each use
 case's schema.
 
 ### Compliance folder
