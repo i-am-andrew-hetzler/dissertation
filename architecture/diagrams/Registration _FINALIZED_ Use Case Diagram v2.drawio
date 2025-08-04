@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
   <diagram name="Page-1" id="Pvj7HV_yoJMiKK6ifGiB">
-    <mxGraphModel dx="1538" dy="1010" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1554" dy="1060" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -25,7 +25,7 @@
         <mxCell id="x1LalUHzO9Q1xuAXoDIW-21" value="Owner" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="480" y="240" width="50" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="2hJcKqMQulO6grJV8tb7-1" value="Register Vehicle" style="ellipse;html=1;whiteSpace=wrap;" parent="1" vertex="1">
+        <mxCell id="2hJcKqMQulO6grJV8tb7-1" value="Issue Registration" style="ellipse;html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="220" y="90" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="2hJcKqMQulO6grJV8tb7-2" value="Renew Registration" style="ellipse;html=1;whiteSpace=wrap;" parent="1" vertex="1">
