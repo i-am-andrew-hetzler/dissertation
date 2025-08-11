@@ -29,6 +29,10 @@
         "version": {
           "description": "The version of the firmware.",
           "type": "string"
+        },
+        "year": {
+          "description": "The year of the vehicle.",
+          "type": "string"
         }
       },
       "required": [
@@ -42,7 +46,7 @@
     },
     "schemaVersion": {
       "description": "The version number of the schema",
-      "type": "integer"
+      "type": "string"
     }
   },
   "required": [
