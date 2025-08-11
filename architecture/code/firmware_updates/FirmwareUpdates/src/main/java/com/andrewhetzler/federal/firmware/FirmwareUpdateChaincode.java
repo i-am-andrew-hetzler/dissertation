@@ -6,8 +6,10 @@ import com.andrewhetzler.federal.firmware.model.Validation;
 import com.andrewhetzler.federal.firmware.model.validations.HashIsNotNullOrEmpty;
 import com.andrewhetzler.federal.firmware.model.validations.MakeIsNotNullOrEmpty;
 import com.andrewhetzler.federal.firmware.model.validations.ModelIsNotNullOrEmpty;
+import com.andrewhetzler.federal.firmware.model.validations.SchemaVersionIsNotNullOrEmpty;
 import com.andrewhetzler.federal.firmware.model.validations.UrlIsNotNullOrEmpty;
 import com.andrewhetzler.federal.firmware.model.validations.VersionIsNotNullOrEmpty;
+import com.andrewhetzler.federal.firmware.model.validations.YearIsNotNullOrEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.Context;
@@ -51,6 +53,8 @@ public class FirmwareUpdateChaincode {
             validations.add(new ModelIsNotNullOrEmpty());
             validations.add(new UrlIsNotNullOrEmpty());
             validations.add(new VersionIsNotNullOrEmpty());
+            validations.add(new SchemaVersionIsNotNullOrEmpty());
+            validations.add(new YearIsNotNullOrEmpty());
         }
     }
 
