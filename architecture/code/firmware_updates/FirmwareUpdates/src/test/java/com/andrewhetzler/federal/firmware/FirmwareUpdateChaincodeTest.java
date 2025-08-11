@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -40,9 +39,9 @@ class FirmwareUpdateChaincodeTest {
                     "MC20",
                     "www.update.com",
                     "1.1.3",
-                    2025
+                    "2025"
             ),
-            1
+            "1"
     );
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -65,7 +64,7 @@ class FirmwareUpdateChaincodeTest {
                             mockedContext,
                             "Maserati",
                             "MC20",
-                            2025
+                            "2025"
                     );
                 }
         );
@@ -85,7 +84,7 @@ class FirmwareUpdateChaincodeTest {
                 mockedContext,
                 "Maserati",
                 "MC20",
-                2025
+                "2025"
         );
 
         assertThat(result).isEqualTo(firmwareUpdate);
@@ -104,8 +103,8 @@ class FirmwareUpdateChaincodeTest {
                             "MC20",
                             "www.example.com",
                             "1.1",
-                            2025,
-                            1
+                            "2025",
+                            "1"
                     );
                 }
         );
@@ -114,7 +113,8 @@ class FirmwareUpdateChaincodeTest {
     }
 
     @Test
-    void createFirmwareShouldSave() throws JsonProcessingException {
+    void createFirmwareShouldSave() throws
+                                    JsonProcessingException {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
 
         final FirmwareUpdate result = subject.createFirmwareUpdate(
@@ -126,9 +126,12 @@ class FirmwareUpdateChaincodeTest {
                 firmwareUpdate.getUrl(),
                 firmwareUpdate.getVersion(),
                 firmwareUpdate.getYear(),
-                1
+                "1"
         );
 
-        assertEquals(firmwareUpdate, result);
+        assertEquals(
+                firmwareUpdate,
+                result
+        );
     }
 }

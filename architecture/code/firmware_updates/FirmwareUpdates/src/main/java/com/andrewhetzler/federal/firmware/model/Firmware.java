@@ -18,7 +18,7 @@ public class Firmware {
     private final String model;
     private final String url;
     private final String version;
-    private final int year;
+    private final String year;
 
     public Firmware(
             @JsonProperty("hash") final String hash,
@@ -27,7 +27,7 @@ public class Firmware {
             @JsonProperty("model") final String model,
             @JsonProperty("url") final String url,
             @JsonProperty("version") final String version,
-            @JsonProperty("year") final int year
+            @JsonProperty("year") final String year
     ) {
         this.hash = hash;
         this.make = make;
@@ -62,7 +62,7 @@ public class Firmware {
         return version;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
@@ -72,7 +72,7 @@ public class Firmware {
             return false;
         }
         Firmware firmware = (Firmware) o;
-        return year == firmware.year && Objects.equals(
+        return Objects.equals(
                 hash,
                 firmware.hash
         ) && Objects.equals(
@@ -90,6 +90,9 @@ public class Firmware {
         ) && Objects.equals(
                 version,
                 firmware.version
+        ) && Objects.equals(
+                year,
+                firmware.year
         );
     }
 

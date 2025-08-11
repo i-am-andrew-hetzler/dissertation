@@ -20,11 +20,11 @@ import static com.andrewhetzler.federal.firmware.FirmwareUpdateError.INVALID_REQ
 @DataType
 public class FirmwareUpdate {
     private final Firmware firmware;
-    private final int schemaVersion;
+    private final String schemaVersion;
 
     public FirmwareUpdate(
             @JsonProperty("firmware") Firmware firmware,
-            @JsonProperty("schemaVersion") int schemaVersion
+            @JsonProperty("schemaVersion") String schemaVersion
     ) {
         this.firmware = firmware;
         this.schemaVersion = schemaVersion;
@@ -34,7 +34,7 @@ public class FirmwareUpdate {
         return firmware;
     }
 
-    public int getSchemaVersion() {
+    public String getSchemaVersion() {
         return schemaVersion;
     }
 
@@ -56,9 +56,12 @@ public class FirmwareUpdate {
             return false;
         }
         FirmwareUpdate that = (FirmwareUpdate) o;
-        return schemaVersion == that.schemaVersion && Objects.equals(
+        return Objects.equals(
                 firmware,
                 that.firmware
+        ) && Objects.equals(
+                schemaVersion,
+                that.schemaVersion
         );
     }
 
@@ -109,7 +112,7 @@ public class FirmwareUpdate {
     }
 
     @JsonIgnore
-    public int getYear() {
+    public String getYear() {
         return firmware.getYear();
     }
 }

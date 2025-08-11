@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Author:       Andrew Hetzler
  * Date Created: 8/11/25
  **/
-class VersionIsNotNullOrEmptyTest {
-    public final VersionIsNotNullOrEmpty subject = new VersionIsNotNullOrEmpty();
+class SchemaVersionIsNotNullOrEmptyTest {
+    public final SchemaVersionIsNotNullOrEmpty subject = new SchemaVersionIsNotNullOrEmpty();
 
     @Test
-    void shouldReturnTrueBecauseVersionIsNotNullOrEmpty() {
+    void shouldReturnTrueBecauseSchemaVersionIsNotNullorEmpty() {
         final boolean result = subject.validate(new FirmwareUpdate(
                 new Firmware(
                         null,
@@ -23,7 +23,7 @@ class VersionIsNotNullOrEmptyTest {
                         null,
                         null,
                         null,
-                        "1.0",
+                        null,
                         null
                 ),
                 "1"
@@ -33,7 +33,7 @@ class VersionIsNotNullOrEmptyTest {
     }
 
     @Test
-    void shouldReturnFalseBecauseVersionIsNull() {
+    void shouldReturnFalseBecauseSchemaVersionIsNull() {
         final boolean result = subject.validate(new FirmwareUpdate(
                 new Firmware(
                         null,
@@ -44,14 +44,14 @@ class VersionIsNotNullOrEmptyTest {
                         null,
                         null
                 ),
-                "1"
+                null
         ));
 
         assertFalse(result);
     }
 
     @Test
-    void shouldReturnFalseBecauseVersionIsEmpty() {
+    void shouldReturnFalseBecauseSchemaVersionIsEmpty() {
         final boolean result = subject.validate(new FirmwareUpdate(
                 new Firmware(
                         null,
@@ -59,10 +59,10 @@ class VersionIsNotNullOrEmptyTest {
                         null,
                         null,
                         null,
-                        "",
+                        null,
                         null
                 ),
-                "1"
+                ""
         ));
 
         assertFalse(result);

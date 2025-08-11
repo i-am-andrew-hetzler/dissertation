@@ -62,7 +62,7 @@ test {
 mainClassName = 'org.hyperledger.fabric.contract.ContractRouter'
 
 shadowJar {
-    archiveBaseName = 'firmware-updates-chaincode'
+    archiveBaseName = 'fmvss-certification-chaincode'
     archiveVersion = '1.0.0'
     archiveClassifier = ''
     mergeServiceFiles()

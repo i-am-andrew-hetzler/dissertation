@@ -24,9 +24,9 @@ class UrlIsNotNullOrEmptyTest {
                         null,
                         "url here",
                         null,
-                        -1
+                        null
                 ),
-                1
+                "1"
         ));
 
         assertTrue(result);
@@ -42,9 +42,9 @@ class UrlIsNotNullOrEmptyTest {
                         null,
                         null,
                         null,
-                        -1
+                        null
                 ),
-                1
+                "1"
         ));
 
         assertFalse(result);
@@ -60,9 +60,9 @@ class UrlIsNotNullOrEmptyTest {
                         null,
                         "",
                         null,
-                        -1
+                        null
                 ),
-                1
+                "1"
         ));
 
         assertFalse(result);

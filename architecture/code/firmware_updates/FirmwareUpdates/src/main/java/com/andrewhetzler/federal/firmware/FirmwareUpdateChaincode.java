@@ -59,11 +59,11 @@ public class FirmwareUpdateChaincode {
             final Context context,
             final String make,
             final String model,
-            final int year
+            final String year
     ) throws
       IOException {
         final byte[] firmwareUpdateTransaction = context.getStub().getState(String.format(
-                "%s-%s-%d",
+                "%s-%s-%s",
                 make.toLowerCase(),
                 model.toLowerCase(),
                 year
@@ -72,7 +72,7 @@ public class FirmwareUpdateChaincode {
         if (firmwareUpdateTransaction == null || firmwareUpdateTransaction.length == 0) {
             throw new ChaincodeException(
                     String.format(
-                            "Update does not exist for %s %s %d",
+                            "Update does not exist for %s %s %s",
                             make,
                             model,
                             year
@@ -96,8 +96,8 @@ public class FirmwareUpdateChaincode {
             final String model,
             final String url,
             final String version,
-            final int year,
-            final int schemaVersion
+            final String year,
+            final String schemaVersion
     ) throws
       JsonProcessingException {
         final FirmwareUpdate firmwareUpdate = new FirmwareUpdate(
@@ -117,7 +117,7 @@ public class FirmwareUpdateChaincode {
 
         context.getStub().putState(
                 String.format(
-                        "Update does not exist for %s %s %d",
+                        "Update does not exist for %s %s %s",
                         make,
                         model,
                         year
