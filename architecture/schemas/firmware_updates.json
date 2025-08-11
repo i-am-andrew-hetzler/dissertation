@@ -1,0 +1,52 @@
+{
+  "title": "Firmware",
+  "type": "object",
+  "properties": {
+    "firmware": {
+      "description": "Contains information about the firmware artifact.",
+      "type": "object",
+      "properties": {
+        "hash": {
+          "description": "The SHA-256 hash of the firmware artifact.",
+          "type": "string"
+        },
+        "make": {
+          "description": "The make of the vehicle.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "An object to hold additional information about the firmware.",
+          "type": "object"
+        },
+        "model": {
+          "description": "The model of the vehicle.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL where the firmware may be downloaded.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the firmware.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hash",
+        "make",
+        "model",
+        "url",
+        "version",
+        "year"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "firmware",
+    "schemaVersion"
+  ]
+}
