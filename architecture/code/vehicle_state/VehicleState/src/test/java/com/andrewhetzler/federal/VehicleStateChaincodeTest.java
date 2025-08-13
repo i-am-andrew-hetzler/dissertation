@@ -50,6 +50,7 @@ class VehicleStateChaincodeTest {
     private static final String TEST_COLLECTION = "test_vehicle_state_collection";
     private static final String RECORD_INITIAL_STATE_MSPS = "PurdueFinalAssemblerMSP";
     private static final String UPDATE_STATE_MSP = "PurdueDealerTechnicianMSP";
+    private static final String OVERRIDE_STATE_MSP = "PurdueDealerTechnicianMSP";
 
     @BeforeEach
     public void setup() {
@@ -577,5 +578,116 @@ class VehicleStateChaincodeTest {
         )).thenReturn(objectMapper.writeValueAsBytes(expectedVehicleState));
 
         subject.updateState(mockedContext);
+    }
+
+    @Test
+    void overrideStateShouldThrowExceptionBecauseRequestorIsNotAuthorized() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("NotAuthorizedMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.overrideState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void overrideStateShouldThrowExceptionBecauseRequestDoesNotHaveTransientMap() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(OVERRIDE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.overrideState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void overrideStateShouldThrowExceptionBecauseRequestDoesNotHaveVehicleStateProperties() {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(OVERRIDE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.overrideState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void overrideStateShouldThrowExceptionBecauseStateDoesNotExist() throws
+                                                                   JsonProcessingException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(OVERRIDE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.overrideState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No state found for vehicle test."));
+    }
+
+    @Test
+    void overrideStatePurdueDealerTechnicianShouldSave() throws
+                                                       IOException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(
+                        new VehicleState(
+                                "1",
+                                new Vehicle(
+                                        "updated-hash",
+                                        "test"
+                                )
+                        )
+                )
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(OVERRIDE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(objectMapper.writeValueAsBytes(expectedVehicleState));
+
+        subject.overrideState(mockedContext);
     }
 }

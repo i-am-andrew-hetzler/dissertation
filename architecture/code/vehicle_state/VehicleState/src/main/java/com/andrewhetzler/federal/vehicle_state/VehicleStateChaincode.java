@@ -12,6 +12,7 @@ import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.andrewhetzler.federal.vehicle_state.VehicleStateError.ERROR_SAVING;
@@ -50,6 +51,10 @@ public class VehicleStateChaincode {
     public static final String AUTHORIZED_UPDATE_STATE_MSP_IDS = System.getenv().getOrDefault(
             "vehicle_state_authorized_update_state_msp_ids",
             "PurdueDealerTechnicianMSP;PurdueVehicleOwnerMSP"
+    );
+    public static final String AUTHORIZED_OVERRIDE_STATE_MSP_IDS = System.getenv().getOrDefault(
+            "vehicle_state_authorized_override_state_msp_ids",
+            "PurdueDealerTechnicianMSP"
     );
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
@@ -198,6 +203,51 @@ public class VehicleStateChaincode {
          }
 
          saveState(context, request);
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void overrideState(final Context context) throws
+                                                   IOException {
+        if (!isAuthorized(AUTHORIZED_OVERRIDE_STATE_MSP_IDS, context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (context.getStub().getTransient() == null) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        Map<String, byte[]> transientMap = context.getStub().getTransient();
+
+        if (!transientMap.containsKey(VEHICLE_STATE_PROPERTIES)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final VehicleState request = objectMapper.readValue(
+                transientMap.get(VEHICLE_STATE_PROPERTIES),
+                VehicleState.class
+        );
+        final VehicleState state = getState(context, request.getVehicleIdentificationNumber());
+
+        if (state == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No state found for vehicle %s.",
+                            request.getVehicleIdentificationNumber()
+                    ),
+                    STATE_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        saveState(context, request);
     }
 
     private boolean isNullOrBlank(final String value) {
