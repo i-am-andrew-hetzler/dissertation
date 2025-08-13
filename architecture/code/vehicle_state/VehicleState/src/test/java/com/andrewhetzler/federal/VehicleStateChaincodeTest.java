@@ -5,6 +5,7 @@ import com.andrewhetzler.federal.vehicle_state.VehicleState;
 import com.andrewhetzler.federal.vehicle_state.VehicleStateChaincode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
@@ -20,7 +21,6 @@ import static com.andrewhetzler.federal.vehicle_state.VehicleStateChaincode.VEHI
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,6 +36,8 @@ class VehicleStateChaincodeTest {
     private Context mockedContext;
     @Mock
     private ChaincodeStub mockedChaincodeStub;
+    @Mock
+    private ClientIdentity mockedClientIdentity;
     private VehicleStateChaincode subject;
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final VehicleState expectedVehicleState = new VehicleState(
@@ -46,6 +48,8 @@ class VehicleStateChaincodeTest {
             )
     );
     private static final String TEST_COLLECTION = "test_vehicle_state_collection";
+    private static final String RECORD_INITIAL_STATE_MSPS = "PurdueFinalAssemblerMSP";
+    private static final String UPDATE_STATE_MSP = "PurdueDealerTechnicianMSP";
 
     @BeforeEach
     public void setup() {
@@ -213,8 +217,26 @@ class VehicleStateChaincodeTest {
     }
 
     @Test
+    void recordInitialStateShouldThrowExceptionBecauseRequestorIsNotAuthorized() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("NotAuthorizedMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.recordInitialState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
     void recordInitialStateShouldThrowExceptionBecauseRequestDoesNotHaveTransientMap() {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(RECORD_INITIAL_STATE_MSPS);
         when(mockedChaincodeStub.getTransient()).thenReturn(null);
 
         final Exception exception = assertThrows(
@@ -232,6 +254,8 @@ class VehicleStateChaincodeTest {
         final Map<String, byte[]> transientMap = new HashMap<>();
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(RECORD_INITIAL_STATE_MSPS);
         when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
 
         final Exception exception = assertThrows(
@@ -255,6 +279,8 @@ class VehicleStateChaincodeTest {
         );
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(RECORD_INITIAL_STATE_MSPS);
         when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
         when(mockedChaincodeStub.getPrivateData(
                 TEST_COLLECTION,
@@ -282,25 +308,274 @@ class VehicleStateChaincodeTest {
         );
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(RECORD_INITIAL_STATE_MSPS);
         when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
         when(mockedChaincodeStub.getPrivateData(
                 TEST_COLLECTION,
                 "TEST"
         )).thenReturn(null);
-        doThrow().when()
-//        doNothing().when(mockedChaincodeStub.putPrivateData(
-//                VEHICLE_STATE_PROPERTIES,
-//                "TEST",
-//                objectMapper.writeValueAsBytes(expectedVehicleState)
-//        )).thenThrow(new Exception("Error"));
-
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
+                    doThrow(ChaincodeException.class).when(mockedChaincodeStub).putPrivateData(
+                            TEST_COLLECTION,
+                            "TEST",
+                            objectMapper.writeValueAsBytes(expectedVehicleState)
+                    );
+
                     subject.recordInitialState(mockedContext);
                 }
         );
 
-        assertTrue(exception.getMessage().contains("State already exists for vehicle test."));
+        assertTrue(exception.getMessage().contains("There was an error saving the state for vehicle test."));
+    }
+
+    @Test
+    void recordInitialStateShouldSave() throws
+                                        IOException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("PurdueFinalAssemblerMSP");
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(null);
+
+        subject.recordInitialState(mockedContext);
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                TEST_COLLECTION,
+                "TEST",
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseRequestorIsNotAuthorized() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("NotAuthorizedMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseRequestDoesNotHaveTransientMap() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseRequestDoesNotHaveVehicleStateProperties() {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseRequestDoesNotHaveCalculatedHashProperty() throws
+                                                                                          JsonProcessingException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseStateDoesNotExist() throws
+                                                                   JsonProcessingException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+        transientMap.put(
+                "calculated_hash",
+                "hash-here".getBytes()
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No state found for vehicle test."));
+    }
+
+    @Test
+    void updateStateShouldThrowExceptionBecauseStateDoesNotMatch() throws
+                                                                   JsonProcessingException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(expectedVehicleState)
+        );
+        transientMap.put(
+                "calculated_hash",
+                "hash-here".getBytes()
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(objectMapper.writeValueAsBytes(new VehicleState(
+                "1",
+                new Vehicle(
+                        "not-the-correct-hash",
+                        "test"
+                )
+        )));
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.updateState(mockedContext);
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("The calculated state does not match the expected state for vehicle test."));
+    }
+
+    @Test
+    void updateStatePurdueDealerTechnicianShouldSave() throws
+                                                       IOException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(
+                        new VehicleState(
+                                "1",
+                                new Vehicle(
+                                        "updated-hash",
+                                        "test"
+                                )
+                        )
+                )
+        );
+        transientMap.put(
+                "calculated_hash",
+                expectedVehicleState.getVehicleHash().getBytes()
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(UPDATE_STATE_MSP);
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(objectMapper.writeValueAsBytes(expectedVehicleState));
+
+        subject.updateState(mockedContext);
+    }
+
+    @Test
+    void updateStatePurdueVehicleOwnerShouldSave() throws
+                                                       IOException {
+        final Map<String, byte[]> transientMap = new HashMap<>();
+
+        transientMap.put(
+                VEHICLE_STATE_PROPERTIES,
+                objectMapper.writeValueAsBytes(
+                        new VehicleState(
+                                "1",
+                                new Vehicle(
+                                        "updated-hash",
+                                        "test"
+                                )
+                        )
+                )
+        );
+        transientMap.put(
+                "calculated_hash",
+                expectedVehicleState.getVehicleHash().getBytes()
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("PurdueVehicleOwnerMSP");
+        when(mockedChaincodeStub.getTransient()).thenReturn(transientMap);
+        when(mockedChaincodeStub.getPrivateData(
+                TEST_COLLECTION,
+                "TEST"
+        )).thenReturn(objectMapper.writeValueAsBytes(expectedVehicleState));
+
+        subject.updateState(mockedContext);
     }
 }
