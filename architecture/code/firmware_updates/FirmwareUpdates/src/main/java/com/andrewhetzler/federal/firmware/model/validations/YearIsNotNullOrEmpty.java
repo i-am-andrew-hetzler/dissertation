@@ -10,6 +10,6 @@ import com.andrewhetzler.federal.firmware.model.Validation;
 public class YearIsNotNullOrEmpty implements Validation {
     @Override
     public boolean validate(FirmwareUpdate firmwareUpdate) {
-        return firmwareUpdate.getYear() != null &&  !firmwareUpdate.getYear().isBlank();
+        return firmwareUpdate.getYear() != null && !firmwareUpdate.getYear().isBlank();
     }
 }

@@ -1,14 +1,20 @@
 package com.andrewhetzler.federal.fmvss.model;
 
+import com.andrewhetzler.federal.fmvss.model.alteredVehicle.AlteredVehicle;
+import com.andrewhetzler.federal.fmvss.model.importedVehicle.ImportedVehicle;
+import com.andrewhetzler.federal.fmvss.model.motorVehicle.MotorVehicle;
+import com.andrewhetzler.federal.fmvss.model.multistageVehicle.FinalVehicle;
+import com.andrewhetzler.federal.fmvss.model.multistageVehicle.IncompleteVehicle;
+import com.andrewhetzler.federal.fmvss.model.multistageVehicle.IntermediateVehicle;
+import com.andrewhetzler.federal.fmvss.model.multistageVehicle.MultistageVehicle;
+import com.andrewhetzler.federal.fmvss.model.replicaVehicle.ReplicaVehicle;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hyperledger.fabric.contract.annotation.DataType;
-import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.util.List;
 import java.util.Objects;
-
-import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.INVALID_REQUEST;
 
 /**
  * Author:       Andrew Hetzler
@@ -22,7 +28,7 @@ public class FmvssCertification {
     private final MotorVehicle motorVehicle;
     private final MultistageVehicle multistageVehicle;
     private final ReplicaVehicle replicaVehicle;
-    private final int schemaVersion;
+    private final String schemaVersion;
 
     public FmvssCertification(
             @JsonProperty("alteredVehicle") AlteredVehicle alteredVehicle,
@@ -30,7 +36,7 @@ public class FmvssCertification {
             @JsonProperty("motorVehicle") MotorVehicle motorVehicle,
             @JsonProperty("multistageVehicle") MultistageVehicle multistageVehicle,
             @JsonProperty("replcaVehicle") ReplicaVehicle replicaVehicle,
-            @JsonProperty("schemaVersion") int schemaVersion
+            @JsonProperty("schemaVersion") String schemaVersion
     ) {
         this.alteredVehicle = alteredVehicle;
         this.importedVehicle = importedVehicle;
@@ -56,24 +62,27 @@ public class FmvssCertification {
         return multistageVehicle;
     }
 
+    @JsonIgnore
+    public IncompleteVehicle getIncompleteVehicle() {
+        return multistageVehicle.getIncompleteVehicle();
+    }
+
+    @JsonIgnore
+    public List<IntermediateVehicle> getIntermediateVehicles() {
+        return multistageVehicle.getIntermediateVehicles();
+    }
+
+    @JsonIgnore
+    public FinalVehicle getFinalVehicle() {
+        return multistageVehicle.getFinalVehicle();
+    }
+
     public ReplicaVehicle getReplicaVehicle() {
         return replicaVehicle;
     }
 
-    public int getSchemaVersion() {
+    public String getSchemaVersion() {
         return schemaVersion;
-    }
-
-    public void validate(List<Validation> validations) throws
-                                                       ChaincodeException {
-        final boolean result = validations.parallelStream().allMatch(validation -> validation.validate(this));
-
-        if (!result) {
-            throw new ChaincodeException(
-                    "Invalid request.",
-                    INVALID_REQUEST.toString()
-            );
-        }
     }
 
     @Override
@@ -82,7 +91,7 @@ public class FmvssCertification {
             return false;
         }
         FmvssCertification that = (FmvssCertification) o;
-        return schemaVersion == that.schemaVersion && Objects.equals(
+        return Objects.equals(
                 alteredVehicle,
                 that.alteredVehicle
         ) && Objects.equals(
@@ -97,6 +106,9 @@ public class FmvssCertification {
         ) && Objects.equals(
                 replicaVehicle,
                 that.replicaVehicle
+        ) && Objects.equals(
+                schemaVersion,
+                that.schemaVersion
         );
     }
 

@@ -1,0 +1,381 @@
+{
+  "title": "FMVSS Certification",
+  "type": "object",
+  "properties": {
+    "alteredVehicle": {
+      "description": "Contains certification information for altered vehicles.",
+      "type": "object",
+      "properties": {
+        "conformityStatement": {
+          "$ref": "#/defs/conformityStatement"
+        },
+        "grossAxleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossAxleWeightRating"
+          }
+        },
+        "grossVehicleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossVehicleWeightRating"
+          }
+        },
+        "type": {
+          "$ref": "#/defs/type"
+        }
+      },
+      "required": [
+        "conformityStatement"
+      ]
+    },
+    "importedVehicle": {
+      "description": "Contains certification information for imported vehicles.",
+      "type": "object",
+      "properties": {
+        "conformityStatement": {
+          "$ref": "#/defs/conformityStatement"
+        },
+        "importerName": {
+          "description": "The name of the importer.",
+          "type": "string"
+        },
+        "modelYear": {
+          "description": "The model year of the vehicle.",
+          "type": "string"
+        },
+        "vehicleIdentificationNumberCompliance": {
+          "description": "The VIN or a statement describing the manufacturer's substitute for the VIN.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "conformityStatement",
+        "importerName",
+        "modelYear",
+        "vehicleIdentificationNumberCompliance"
+      ]
+    },
+    "motorVehicle": {
+      "description": "Contains certification information for motor vehicles.",
+      "type": "object",
+      "properties": {
+        "conformityStatement": {
+          "$ref": "#/defs/conformityStatement"
+        },
+        "documentationTables": {
+          "type": "array",
+          "items": {
+            "description": "A description of tables that accompany the vehicle.",
+            "type": "string"
+          }
+        },
+        "grossAxleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossAxleWeightRating"
+          }
+        },
+        "grossVehicleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossVehicleWeightRating"
+          }
+        },
+        "manufactured": {
+          "$ref": "#/defs/manufactured"
+        },
+        "manufacturerName": {
+          "$ref": "#/defs/manufacturerName"
+        },
+        "registeredImporter": {
+          "description": "The name of the registered importer.",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/defs/type"
+        },
+        "vehicleIdentificationNumber": {
+          "$ref": "#/defs/vehicleIdentificationNumber"
+        }
+      },
+      "required": [
+        "conformityStatement",
+        "grossAxleWeightRatings",
+        "grossVehicleWeightRatings",
+        "manufactured",
+        "manufacturerName",
+        "type",
+        "vehicleIdentificationNumber"
+      ]
+    },
+    "multiStageVehicle": {
+      "description": "Contains certification information for multi-stage vehicles.",
+      "type": "object",
+      "properties": {
+        "finalVehicle": {
+          "description": "Contains certification information for final-stage vehicles.",
+          "type": "object",
+          "properties": {
+            "conformityStatement": {
+              "$ref": "#/defs/conformityStatement"
+            },
+            "grossAxleWeightRatings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/defs/grossAxleWeightRating"
+              }
+            },
+            "grossVehicleWeightRatings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/defs/grossVehicleWeightRating"
+              }
+            },
+            "manufactured": {
+              "$ref": "#/defs/manufactured"
+            },
+            "manufacturerName": {
+              "$ref": "#/defs/manufacturerName"
+            },
+            "type": {
+              "$ref": "#/defs/type"
+            },
+            "vehicleIdentificationNumber": {
+              "$ref": "#/defs/vehicleIdentificationNumber"
+            }
+          },
+          "required": [
+            "conformityStatement",
+            "grossAxleWeightRatings",
+            "grossVehicleWeightRatings",
+            "manufactured",
+            "manufacturerName",
+            "type",
+            "vehicleIdentificationNumber"
+          ]
+        },
+        "incompleteVehicles": {
+          "type": "array",
+          "items": {
+            "description": "Contains certification information for incomplete vehicles.",
+            "type": "object",
+            "properties": {
+              "grossAxleWeightRatings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/grossAxleWeightRating"
+                }
+              },
+              "grossVehicleWeightRatings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/grossVehicleWeightRating"
+                }
+              },
+              "manufactured": {
+                "$ref": "#/defs/manufactured"
+              },
+              "manufacturerName": {
+                "$ref": "#/defs/manufacturerName"
+              },
+              "vehicleIdentificationNumber": {
+                "$ref": "#/defs/vehicleIdentificationNumber"
+              }
+            },
+            "required": [
+              "grossAxleWeightRatings",
+              "grossVehicleWeightRatings",
+              "manufactured",
+              "manufacturerName",
+              "vehicleIdentificationNumber"
+            ]
+          }
+        },
+        "intermediateVehicles": {
+          "type": "array",
+          "items": {
+            "description": "Contains certification information for intermediate vehicles.",
+            "type": "object",
+            "properties": {
+              "grossAxleWeightRatings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/grossAxleWeightRating"
+                }
+              },
+              "grossVehicleWeightRatings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/grossVehicleWeightRating"
+                }
+              },
+              "manufactured": {
+                "$ref": "#/defs/manufactured"
+              },
+              "manufacturerName": {
+                "$ref": "#/defs/manufacturerName"
+              },
+              "vehicleIdentificationNumber": {
+                "$ref": "#/defs/vehicleIdentificationNumber"
+              }
+            },
+            "required": [
+              "manufactured",
+              "manufacturerName",
+              "vehicleIdentificationNumber"
+            ]
+          }
+        }
+      },
+      "required": [
+        "finalVehicle",
+        "incompleteVehicles"
+      ]
+    },
+    "replicaVehicle": {
+      "description": "Contains certification information for replica vehicles.",
+      "type": "object",
+      "properties": {
+        "exemptionStatement": {
+          "description": "A statement stating the replica is exempt from FMVSS conformance.",
+          "type": "string"
+        },
+        "grossAxleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossAxleWeightRating"
+          }
+        },
+        "grossVehicleWeightRatings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/defs/grossVehicleWeightRating"
+          }
+        },
+        "manufactured": {
+          "$ref": "#/defs/manufactured"
+        },
+        "manufacturerName": {
+          "$ref": "#/defs/manufacturerName"
+        },
+        "replicaStatement": {
+          "description": "A statement that the vehicle is a replica of a specific motor vehicle.",
+          "type": "string"
+        },
+        "vehicleIdentificationNumber": {
+          "$ref": "#/defs/vehicleIdentificationNumber"
+        }
+      },
+      "required": [
+        "exemptionStatement",
+        "grossAxleWeightRatings",
+        "grossVehicleWeightRatings",
+        "manufactured",
+        "manufacturerName",
+        "replicaStatement",
+        "vehicleIdentificationNumber"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion"
+  ],
+  "$defs": {
+    "conformityStatement": {
+      "description": "A statement that the vehicle conforms to the FMVSS.",
+      "type": "string"
+    },
+    "grossAxleWeightRating": {
+      "description": "The gross axle weight rating of the vehicle.",
+      "type": "object",
+      "properties": {
+        "front": {
+          "description": "The weight rating for the front axle.",
+          "type": "string"
+        },
+        "intermediate": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "description": "The order of the axle.",
+                "type": "string"
+              },
+              "weight": {
+                "description": "The weight rating for this intermediate axle.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "order",
+              "weight"
+            ]
+          }
+        },
+        "order": {
+          "description": "The order of the axle weight rating.",
+          "type": "string"
+        },
+        "rear": {
+          "description": "The weight rating for the rear axle.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "front",
+        "order",
+        "rear"
+      ]
+    },
+    "grossVehicleWeightRating": {
+      "description": "The gross vehicle weight rating of the vehicle.",
+      "type": "object",
+      "properties": {
+        "order": {
+          "description": "The order of the weight rating.",
+          "type": "string"
+        },
+        "value": {
+          "description": "The weight rating for the vehicle.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "order",
+        "value"
+      ]
+    },
+    "manufactured": {
+      "description": "The manufacturing date for the vehicle.",
+      "type": "object",
+      "properties": {
+        "month": {
+          "description": "The month the vehicle was manufactured.",
+          "type": "string"
+        },
+        "year": {
+          "description": "The year the vehicle was manufactured.",
+          "type": "string"
+        }
+      }
+    },
+    "manufacturerName": {
+      "description": "The name of the manufacturer.",
+      "type": "string"
+    },
+    "type": {
+      "description": "The vehicle classification.",
+      "type": "string"
+    },
+    "vehicleIdentificationNumber": {
+      "description": "The VIN for the vehicle.",
+      "type": "string"
+    }
+  }
+}

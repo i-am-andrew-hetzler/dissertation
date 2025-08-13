@@ -11,18 +11,18 @@ import java.util.Objects;
  **/
 @JsonPropertyOrder(alphabetic = true)
 public class GrossVehicleWeightRating {
-    private final int order;
+    private final String order;
     private final String value;
 
     public GrossVehicleWeightRating(
-            @JsonProperty("order") int order,
+            @JsonProperty("order") String order,
             @JsonProperty("value") String value
     ) {
         this.order = order;
         this.value = value;
     }
 
-    public int getOrder() {
+    public String getOrder() {
         return order;
     }
 
@@ -36,7 +36,10 @@ public class GrossVehicleWeightRating {
             return false;
         }
         GrossVehicleWeightRating that = (GrossVehicleWeightRating) o;
-        return order == that.order && Objects.equals(
+        return Objects.equals(
+                order,
+                that.order
+        ) && Objects.equals(
                 value,
                 that.value
         );

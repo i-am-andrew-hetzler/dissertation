@@ -1,5 +1,8 @@
-package com.andrewhetzler.federal.fmvss.model;
+package com.andrewhetzler.federal.fmvss.model.multistageVehicle;
 
+import com.andrewhetzler.federal.fmvss.model.GrossAxleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.GrossVehicleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.Manufactured;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -11,14 +14,14 @@ import java.util.Objects;
  * Date Created: 8/11/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-public class IncompleteVehicle {
+public class IntermediateVehicle {
     private final List<GrossAxleWeightRating> grossAxleWeightRatings;
     private final List<GrossVehicleWeightRating> grossVehicleWeightRatings;
     private final Manufactured manufactured;
     private final String manufacturerName;
     private final String vehicleIdentificationNumber;
 
-    public IncompleteVehicle(
+    public IntermediateVehicle(
             @JsonProperty("grossAxleWeightRatings") List<GrossAxleWeightRating> grossAxleWeightRatings,
             @JsonProperty("grossVehicleWeightRatings") List<GrossVehicleWeightRating> grossVehicleWeightRatings,
             @JsonProperty("manufactured") Manufactured manufactured,
@@ -57,7 +60,7 @@ public class IncompleteVehicle {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        IncompleteVehicle that = (IncompleteVehicle) o;
+        IntermediateVehicle that = (IntermediateVehicle) o;
         return Objects.equals(
                 grossAxleWeightRatings,
                 that.grossAxleWeightRatings
@@ -85,5 +88,16 @@ public class IncompleteVehicle {
                 manufacturerName,
                 vehicleIdentificationNumber
         );
+    }
+
+    @Override
+    public String toString() {
+        return "IntermediateVehicle{" +
+                "grossAxleWeightRatings=" + grossAxleWeightRatings +
+                ", grossVehicleWeightRatings=" + grossVehicleWeightRatings +
+                ", manufactured=" + manufactured +
+                ", manufacturerName='" + manufacturerName + '\'' +
+                ", vehicleIdentificationNumber='" + vehicleIdentificationNumber + '\'' +
+                '}';
     }
 }

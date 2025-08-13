@@ -1,4 +1,4 @@
-package com.andrewhetzler.federal.fmvss.model;
+package com.andrewhetzler.federal.fmvss.model.importedVehicle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,13 +13,13 @@ import java.util.Objects;
 public class ImportedVehicle {
     private final String conformityStatement;
     private final String importerName;
-    private final int modelYear;
+    private final String modelYear;
     private final String vehicleIdentificationNumberCompliance;
 
     public ImportedVehicle(
             @JsonProperty("conformityStatement") String conformityStatement,
             @JsonProperty("importerName") String importerName,
-            @JsonProperty("modelYear") int modelYear,
+            @JsonProperty("modelYear") String modelYear,
             @JsonProperty("vehicleIdentificationNumberCompliance") String vehicleIdentificationNumberCompliance
     ) {
         this.conformityStatement = conformityStatement;
@@ -36,7 +36,7 @@ public class ImportedVehicle {
         return importerName;
     }
 
-    public int getModelYear() {
+    public String getModelYear() {
         return modelYear;
     }
 
@@ -50,12 +50,15 @@ public class ImportedVehicle {
             return false;
         }
         ImportedVehicle that = (ImportedVehicle) o;
-        return modelYear == that.modelYear && Objects.equals(
+        return Objects.equals(
                 conformityStatement,
                 that.conformityStatement
         ) && Objects.equals(
                 importerName,
                 that.importerName
+        ) && Objects.equals(
+                modelYear,
+                that.modelYear
         ) && Objects.equals(
                 vehicleIdentificationNumberCompliance,
                 that.vehicleIdentificationNumberCompliance

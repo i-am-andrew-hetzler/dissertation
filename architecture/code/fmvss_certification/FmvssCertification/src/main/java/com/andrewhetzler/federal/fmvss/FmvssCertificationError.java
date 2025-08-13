@@ -6,5 +6,6 @@ package com.andrewhetzler.federal.fmvss;
  **/
 public enum FmvssCertificationError {
     CERTIFICATION_DOES_NOT_EXIST,
+    DESERIALIZATION_ERROR,
     INVALID_REQUEST
 }

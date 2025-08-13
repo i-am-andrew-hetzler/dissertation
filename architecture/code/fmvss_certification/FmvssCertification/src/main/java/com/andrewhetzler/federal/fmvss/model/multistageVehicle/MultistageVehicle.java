@@ -1,8 +1,9 @@
-package com.andrewhetzler.federal.fmvss.model;
+package com.andrewhetzler.federal.fmvss.model.multistageVehicle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +36,7 @@ public class MultistageVehicle {
     }
 
     public List<IntermediateVehicle> getIntermediateVehicles() {
-        return intermediateVehicles;
+        return intermediateVehicles != null ? intermediateVehicles : new ArrayList<>();
     }
 
     @Override

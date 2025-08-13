@@ -1,5 +1,6 @@
 package com.andrewhetzler.federal.fmvss.model;
 
+import com.andrewhetzler.federal.fmvss.model.sorter.IntermediateAxleWeightRatingSorter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -14,13 +15,14 @@ import java.util.Objects;
 public class GrossAxleWeightRating {
     private final String front;
     private final List<IntermediateAxleWeightRating> intermediate;
-    private final int order;
+    private final String order;
     private final String rear;
+    private static final IntermediateAxleWeightRatingSorter INTERMEDIATE_AXLE_WEIGHT_RATING_SORTER = new IntermediateAxleWeightRatingSorter();
 
     public GrossAxleWeightRating(
             @JsonProperty("front") String front,
             @JsonProperty("intermediate") List<IntermediateAxleWeightRating> intermediate,
-            @JsonProperty("order") int order,
+            @JsonProperty("order") String order,
             @JsonProperty("rear") String rear
     ) {
         this.front = front;
@@ -34,10 +36,14 @@ public class GrossAxleWeightRating {
     }
 
     public List<IntermediateAxleWeightRating> getIntermediate() {
+        if (intermediate != null && !intermediate.isEmpty()) {
+            intermediate.sort(INTERMEDIATE_AXLE_WEIGHT_RATING_SORTER);
+        }
+
         return intermediate;
     }
 
-    public int getOrder() {
+    public String getOrder() {
         return order;
     }
 
@@ -51,12 +57,15 @@ public class GrossAxleWeightRating {
             return false;
         }
         GrossAxleWeightRating that = (GrossAxleWeightRating) o;
-        return order == that.order && Objects.equals(
+        return Objects.equals(
                 front,
                 that.front
         ) && Objects.equals(
                 intermediate,
                 that.intermediate
+        ) && Objects.equals(
+                order,
+                that.order
         ) && Objects.equals(
                 rear,
                 that.rear

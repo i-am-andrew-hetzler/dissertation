@@ -1,5 +1,9 @@
-package com.andrewhetzler.federal.fmvss.model;
+package com.andrewhetzler.federal.fmvss.model.alteredVehicle;
 
+import com.andrewhetzler.federal.fmvss.model.GrossAxleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.GrossVehicleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.sorter.GrossAxleWeightRatingSorter;
+import com.andrewhetzler.federal.fmvss.model.sorter.GrossVehicleWeightRatingSorter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -11,31 +15,24 @@ import java.util.Objects;
  * Date Created: 8/11/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-public class FinalVehicle {
+public class AlteredVehicle {
     private final String conformityStatement;
     private final List<GrossAxleWeightRating> grossAxleWeightRatings;
     private final List<GrossVehicleWeightRating> grossVehicleWeightRatings;
-    private final Manufactured manufactured;
-    private final String manufacturerName;
     private final String type;
-    private final String vehicleIdentificationNumber;
+    private static final GrossAxleWeightRatingSorter GROSS_AXLE_WEIGHT_RATING_SORTER = new GrossAxleWeightRatingSorter();
+    private static final GrossVehicleWeightRatingSorter GROSS_VEHICLE_WEIGHT_RATING_SORTER = new GrossVehicleWeightRatingSorter();
 
-    public FinalVehicle(
-            @JsonProperty("conformiyStatement") String conformityStatement,
+    public AlteredVehicle(
+            @JsonProperty("conformityStatement") String conformityStatement,
             @JsonProperty("grossAxleWeightRatings") List<GrossAxleWeightRating> grossAxleWeightRatings,
             @JsonProperty("grossVehicleWeightRatings") List<GrossVehicleWeightRating> grossVehicleWeightRatings,
-            @JsonProperty("manufactured") Manufactured manufactured,
-            @JsonProperty("manufacturerName") String manufacturerName,
-            @JsonProperty("type") String type,
-            @JsonProperty("vehicleIdentificationNumber") String vehicleIdentificationNumber
+            @JsonProperty("type") String type
     ) {
         this.conformityStatement = conformityStatement;
         this.grossAxleWeightRatings = grossAxleWeightRatings;
         this.grossVehicleWeightRatings = grossVehicleWeightRatings;
-        this.manufactured = manufactured;
-        this.manufacturerName = manufacturerName;
         this.type = type;
-        this.vehicleIdentificationNumber = vehicleIdentificationNumber;
     }
 
     public String getConformityStatement() {
@@ -43,27 +40,22 @@ public class FinalVehicle {
     }
 
     public List<GrossAxleWeightRating> getGrossAxleWeightRatings() {
+        if (grossAxleWeightRatings != null && !grossAxleWeightRatings.isEmpty()) {
+            grossAxleWeightRatings.sort(GROSS_AXLE_WEIGHT_RATING_SORTER);
+        }
+
         return grossAxleWeightRatings;
     }
 
     public List<GrossVehicleWeightRating> getGrossVehicleWeightRatings() {
+        if (grossVehicleWeightRatings != null && !grossVehicleWeightRatings.isEmpty()) {
+            grossVehicleWeightRatings.sort(GROSS_VEHICLE_WEIGHT_RATING_SORTER);
+        }
         return grossVehicleWeightRatings;
-    }
-
-    public Manufactured getManufactured() {
-        return manufactured;
-    }
-
-    public String getManufacturerName() {
-        return manufacturerName;
     }
 
     public String getType() {
         return type;
-    }
-
-    public String getVehicleIdentificationNumber() {
-        return vehicleIdentificationNumber;
     }
 
     @Override
@@ -71,7 +63,7 @@ public class FinalVehicle {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FinalVehicle that = (FinalVehicle) o;
+        AlteredVehicle that = (AlteredVehicle) o;
         return Objects.equals(
                 conformityStatement,
                 that.conformityStatement
@@ -82,17 +74,8 @@ public class FinalVehicle {
                 grossVehicleWeightRatings,
                 that.grossVehicleWeightRatings
         ) && Objects.equals(
-                manufactured,
-                that.manufactured
-        ) && Objects.equals(
-                manufacturerName,
-                that.manufacturerName
-        ) && Objects.equals(
                 type,
                 that.type
-        ) && Objects.equals(
-                vehicleIdentificationNumber,
-                that.vehicleIdentificationNumber
         );
     }
 
@@ -102,23 +85,17 @@ public class FinalVehicle {
                 conformityStatement,
                 grossAxleWeightRatings,
                 grossVehicleWeightRatings,
-                manufactured,
-                manufacturerName,
-                type,
-                vehicleIdentificationNumber
+                type
         );
     }
 
     @Override
     public String toString() {
-        return "FinalVehicle{" +
+        return "AlteredVehicle{" +
                 "conformityStatement='" + conformityStatement + '\'' +
                 ", grossAxleWeightRatings=" + grossAxleWeightRatings +
                 ", grossVehicleWeightRatings=" + grossVehicleWeightRatings +
-                ", manufactured=" + manufactured +
-                ", manufacturerName='" + manufacturerName + '\'' +
                 ", type='" + type + '\'' +
-                ", vehicleIdentificationNumber='" + vehicleIdentificationNumber + '\'' +
                 '}';
     }
 }

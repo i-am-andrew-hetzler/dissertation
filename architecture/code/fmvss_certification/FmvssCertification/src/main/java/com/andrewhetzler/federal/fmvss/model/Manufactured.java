@@ -12,11 +12,11 @@ import java.util.Objects;
 @JsonPropertyOrder(alphabetic = true)
 public class Manufactured {
     private final String month;
-    private final int year;
+    private final String year;
 
     public Manufactured(
             @JsonProperty("month") String month,
-            @JsonProperty("year") int year
+            @JsonProperty("year") String year
     ) {
         this.month = month;
         this.year = year;
@@ -26,7 +26,7 @@ public class Manufactured {
         return month;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
@@ -36,9 +36,12 @@ public class Manufactured {
             return false;
         }
         Manufactured that = (Manufactured) o;
-        return year == that.year && Objects.equals(
+        return Objects.equals(
                 month,
                 that.month
+        ) && Objects.equals(
+                year,
+                that.year
         );
     }
 

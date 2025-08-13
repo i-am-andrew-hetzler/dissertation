@@ -1,5 +1,8 @@
-package com.andrewhetzler.federal.fmvss.model;
+package com.andrewhetzler.federal.fmvss.model.multistageVehicle;
 
+import com.andrewhetzler.federal.fmvss.model.GrossAxleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.GrossVehicleWeightRating;
+import com.andrewhetzler.federal.fmvss.model.Manufactured;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -11,35 +14,35 @@ import java.util.Objects;
  * Date Created: 8/11/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-public class ReplicaVehicle {
-    private final String exemptionStatement;
+public class FinalVehicle {
+    private final String conformityStatement;
     private final List<GrossAxleWeightRating> grossAxleWeightRatings;
     private final List<GrossVehicleWeightRating> grossVehicleWeightRatings;
     private final Manufactured manufactured;
     private final String manufacturerName;
-    private final String replicaStatement;
+    private final String type;
     private final String vehicleIdentificationNumber;
 
-    public ReplicaVehicle(
-            @JsonProperty("exemptionStatement") String exemptionStatement,
+    public FinalVehicle(
+            @JsonProperty("conformiyStatement") String conformityStatement,
             @JsonProperty("grossAxleWeightRatings") List<GrossAxleWeightRating> grossAxleWeightRatings,
-            @JsonProperty("grossVehicleWeightRatings")List<GrossVehicleWeightRating> grossVehicleWeightRatings,
+            @JsonProperty("grossVehicleWeightRatings") List<GrossVehicleWeightRating> grossVehicleWeightRatings,
             @JsonProperty("manufactured") Manufactured manufactured,
             @JsonProperty("manufacturerName") String manufacturerName,
-            @JsonProperty("replicaStatement") String replicaStatement,
+            @JsonProperty("type") String type,
             @JsonProperty("vehicleIdentificationNumber") String vehicleIdentificationNumber
     ) {
-        this.exemptionStatement = exemptionStatement;
+        this.conformityStatement = conformityStatement;
         this.grossAxleWeightRatings = grossAxleWeightRatings;
         this.grossVehicleWeightRatings = grossVehicleWeightRatings;
         this.manufactured = manufactured;
         this.manufacturerName = manufacturerName;
-        this.replicaStatement = replicaStatement;
+        this.type = type;
         this.vehicleIdentificationNumber = vehicleIdentificationNumber;
     }
 
-    public String getExemptionStatement() {
-        return exemptionStatement;
+    public String getConformityStatement() {
+        return conformityStatement;
     }
 
     public List<GrossAxleWeightRating> getGrossAxleWeightRatings() {
@@ -58,8 +61,8 @@ public class ReplicaVehicle {
         return manufacturerName;
     }
 
-    public String getReplicaStatement() {
-        return replicaStatement;
+    public String getType() {
+        return type;
     }
 
     public String getVehicleIdentificationNumber() {
@@ -71,10 +74,10 @@ public class ReplicaVehicle {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ReplicaVehicle that = (ReplicaVehicle) o;
+        FinalVehicle that = (FinalVehicle) o;
         return Objects.equals(
-                exemptionStatement,
-                that.exemptionStatement
+                conformityStatement,
+                that.conformityStatement
         ) && Objects.equals(
                 grossAxleWeightRatings,
                 that.grossAxleWeightRatings
@@ -88,8 +91,8 @@ public class ReplicaVehicle {
                 manufacturerName,
                 that.manufacturerName
         ) && Objects.equals(
-                replicaStatement,
-                that.replicaStatement
+                type,
+                that.type
         ) && Objects.equals(
                 vehicleIdentificationNumber,
                 that.vehicleIdentificationNumber
@@ -99,25 +102,25 @@ public class ReplicaVehicle {
     @Override
     public int hashCode() {
         return Objects.hash(
-                exemptionStatement,
+                conformityStatement,
                 grossAxleWeightRatings,
                 grossVehicleWeightRatings,
                 manufactured,
                 manufacturerName,
-                replicaStatement,
+                type,
                 vehicleIdentificationNumber
         );
     }
 
     @Override
     public String toString() {
-        return "ReplicaVehicle{" +
-                "exemptionStatement='" + exemptionStatement + '\'' +
+        return "FinalVehicle{" +
+                "conformityStatement='" + conformityStatement + '\'' +
                 ", grossAxleWeightRatings=" + grossAxleWeightRatings +
                 ", grossVehicleWeightRatings=" + grossVehicleWeightRatings +
                 ", manufactured=" + manufactured +
                 ", manufacturerName='" + manufacturerName + '\'' +
-                ", replicaStatement='" + replicaStatement + '\'' +
+                ", type='" + type + '\'' +
                 ", vehicleIdentificationNumber='" + vehicleIdentificationNumber + '\'' +
                 '}';
     }
