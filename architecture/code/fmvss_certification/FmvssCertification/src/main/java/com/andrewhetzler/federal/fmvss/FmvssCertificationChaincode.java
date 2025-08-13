@@ -36,7 +36,7 @@ import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.INVALID_RE
  * Date Created: 8/11/25
  **/
 @Contract(
-        name = "FmvssCertification",
+        name = "fmvssCertification",
         info = @Info(
                 title = "FMVSS Certification",
                 description = "The chaincode that powers the FMVSS certification use case.",
