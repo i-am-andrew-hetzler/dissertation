@@ -1,6 +1,8 @@
 package com.andrewhetzler.federal.recall_notifications;
 
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.Recall;
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.Vehicle;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.VehicleRecalls;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 
 import static com.andrewhetzler.federal.recall_notifications.RecallNotificationError.INVALID_REQUEST;
 import static com.andrewhetzler.federal.recall_notifications.RecallNotificationError.NO_RECALLS_EXIST_FOR_VEHICLE;
+import static com.andrewhetzler.federal.recall_notifications.RecallNotificationError.VEHICLE_RECALL_NOT_FOUND;
 
 /**
  * Author:       Andrew Hetzler
@@ -147,9 +150,63 @@ public class RecallNotificationsChaincode {
                             campaignNumber,
                             vin
                     ),
-                    NO_RECALLS_EXIST_FOR_VEHICLE.toString()
+                    VEHICLE_RECALL_NOT_FOUND.toString()
             );
         }
+
+        return recall;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public PublicRecall saveVehicleRecall(
+            final Context context,
+            final String campaignNumber,
+            final String date,
+            final String description,
+            final String remedyProgramDescription,
+            final String remedyStatus,
+            final String schemaVersion,
+            final String make,
+            final String model,
+            final String vin
+    ) throws
+      IOException {
+        if (isNullOrBlank(campaignNumber) || isNullOrBlank(date) || isNullOrBlank(description) ||
+                isNullOrBlank(remedyProgramDescription) || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) ||
+                isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(vin)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PublicRecall recall = new PublicRecall(
+                new Recall(
+                        campaignNumber,
+                        date,
+                        description,
+                        remedyProgramDescription,
+                        remedyStatus
+                ),
+                schemaVersion,
+                new Vehicle(
+                        vin,
+                        make,
+                        model
+                )
+        );
+
+        save(
+                context,
+                recall
+        );
+        saveRecallListForVehicle(
+                context,
+                campaignNumber,
+                make,
+                model,
+                vin
+        );
 
         return recall;
     }

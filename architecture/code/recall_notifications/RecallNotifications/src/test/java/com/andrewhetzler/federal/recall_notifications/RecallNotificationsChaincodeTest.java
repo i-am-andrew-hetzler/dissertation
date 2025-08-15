@@ -18,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -639,6 +640,481 @@ class RecallNotificationsChaincodeTest {
                 mockedChaincodeStub,
                 times(1)
         ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC");
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseCampaignNumberIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            null,
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseCampaignNumberIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseDateIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            null,
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseDateIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseDescriptionIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            null,
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseDescriptionIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseRemedyProgramDescriptionIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            null,
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseRemedyProgramDescriptionIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseRemedyStatusIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            null,
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseRemedyStatusIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            null,
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseMakeIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            null,
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseMakeIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionModelIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            null,
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseModelIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseVinIsMissing() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseVinIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "1",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseErrorCallingSaveRecall() throws
+                                                                              IOException {
+        final PublicRecall expected = new PublicRecall(
+                new Recall(
+                        "recall ABC",
+                        "October 17, 2025",
+                        "Windshield is bad",
+                        "See a dealer",
+                        "NOT_COMPLETED"
+                ),
+                "1",
+                new Vehicle(
+                        "123",
+                        "Purdue Motor Company",
+                        "Boilermaker"
+                )
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(null);
+
+        final PublicRecall result = subject.saveVehicleRecall(
+                mockedContext,
+                "recall ABC",
+                "October 17, 2025",
+                "Windshield is bad",
+                "See a dealer",
+                "NOT_COMPLETED",
+                "1",
+                "Purdue Motor Company",
+                "Boilermaker",
+                "123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putState(
+                "PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC",
+                objectMapper.writeValueAsBytes(expected)
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123");
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putState(
+                "PURDUE MOTOR COMPANY-BOILERMAKER-123",
+                objectMapper.writeValueAsBytes(
+                        new VehicleRecalls(List.of("recall ABC"))
+                )
+        );
         assertEquals(
                 expected,
                 result
