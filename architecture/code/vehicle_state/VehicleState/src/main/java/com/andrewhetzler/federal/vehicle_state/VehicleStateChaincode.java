@@ -12,7 +12,6 @@ import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static com.andrewhetzler.federal.vehicle_state.VehicleStateError.ERROR_SAVING;
@@ -95,7 +94,10 @@ public class VehicleStateChaincode {
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void recordInitialState(final Context context) throws
                                                           IOException {
-        if (!isAuthorized(AUTHORIZED_RECORD_INITIAL_STATE_MSP_IDS, context.getClientIdentity())) {
+        if (!isAuthorized(
+                AUTHORIZED_RECORD_INITIAL_STATE_MSP_IDS,
+                context.getClientIdentity()
+        )) {
             throw new ChaincodeException(
                     "Unauthorized request.",
                     UNAUTHORIZED_REQUEST.toString()
@@ -146,7 +148,10 @@ public class VehicleStateChaincode {
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void updateState(final Context context) throws
                                                    IOException {
-        if (!isAuthorized(AUTHORIZED_UPDATE_STATE_MSP_IDS, context.getClientIdentity())) {
+        if (!isAuthorized(
+                AUTHORIZED_UPDATE_STATE_MSP_IDS,
+                context.getClientIdentity()
+        )) {
             throw new ChaincodeException(
                     "Unauthorized request.",
                     UNAUTHORIZED_REQUEST.toString()
@@ -180,35 +185,44 @@ public class VehicleStateChaincode {
                 transientMap.get(VEHICLE_STATE_PROPERTIES),
                 VehicleState.class
         );
-        final VehicleState state = getState(context, request.getVehicleIdentificationNumber());
+        final VehicleState state = getState(
+                context,
+                request.getVehicleIdentificationNumber()
+        );
 
-         if (state == null) {
-             throw new ChaincodeException(
-                     String.format(
-                             "No state found for vehicle %s.",
-                             request.getVehicleIdentificationNumber()
-                     ),
-                     STATE_DOES_NOT_EXIST.toString()
-             );
-         }
+        if (state == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No state found for vehicle %s.",
+                            request.getVehicleIdentificationNumber()
+                    ),
+                    STATE_DOES_NOT_EXIST.toString()
+            );
+        }
 
-         if (!new String(transientMap.get("calculated_hash")).equalsIgnoreCase(state.getVehicleHash())) {
-             throw new ChaincodeException(
-                     String.format(
-                             "The calculated state does not match the expected state for vehicle %s.",
-                             request.getVehicleIdentificationNumber()
-                     ),
-                     STATE_DOES_NOT_MATCH.toString()
-             );
-         }
+        if (!new String(transientMap.get("calculated_hash")).equalsIgnoreCase(state.getVehicleHash())) {
+            throw new ChaincodeException(
+                    String.format(
+                            "The calculated state does not match the expected state for vehicle %s.",
+                            request.getVehicleIdentificationNumber()
+                    ),
+                    STATE_DOES_NOT_MATCH.toString()
+            );
+        }
 
-         saveState(context, request);
+        saveState(
+                context,
+                request
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void overrideState(final Context context) throws
-                                                   IOException {
-        if (!isAuthorized(AUTHORIZED_OVERRIDE_STATE_MSP_IDS, context.getClientIdentity())) {
+                                                     IOException {
+        if (!isAuthorized(
+                AUTHORIZED_OVERRIDE_STATE_MSP_IDS,
+                context.getClientIdentity()
+        )) {
             throw new ChaincodeException(
                     "Unauthorized request.",
                     UNAUTHORIZED_REQUEST.toString()
@@ -235,7 +249,10 @@ public class VehicleStateChaincode {
                 transientMap.get(VEHICLE_STATE_PROPERTIES),
                 VehicleState.class
         );
-        final VehicleState state = getState(context, request.getVehicleIdentificationNumber());
+        final VehicleState state = getState(
+                context,
+                request.getVehicleIdentificationNumber()
+        );
 
         if (state == null) {
             throw new ChaincodeException(
@@ -247,7 +264,10 @@ public class VehicleStateChaincode {
             );
         }
 
-        saveState(context, request);
+        saveState(
+                context,
+                request
+        );
     }
 
     private boolean isNullOrBlank(final String value) {

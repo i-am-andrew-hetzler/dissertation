@@ -390,7 +390,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyAlteredVehicleShouldThrowExceptionBecauseNoCertificationExists() throws
-                                                                                    JsonProcessingException {
+                                                                                 JsonProcessingException {
         final byte[] expected = objectMapper.writeValueAsBytes(new FmvssCertification(
                 null,
                 null,
@@ -423,7 +423,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyAlteredVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveConformityStatement() throws
-                                                                                                       JsonProcessingException {
+                                                                                                    JsonProcessingException {
         final byte[] expected = objectMapper.writeValueAsBytes(new FmvssCertification(
                 new AlteredVehicle(
                         null,
@@ -461,7 +461,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyAlteredVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveValidGAWR() throws
-                                                                                             JsonProcessingException {
+                                                                                          JsonProcessingException {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState(anyString())).thenReturn(objectMapper.writeValueAsBytes(expectedAlteredVehicle));
 
@@ -490,7 +490,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyAlteredVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveValidGVWR() throws
-                                                                                             JsonProcessingException {
+                                                                                          JsonProcessingException {
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState(anyString())).thenReturn(objectMapper.writeValueAsBytes(expectedAlteredVehicle));
@@ -518,7 +518,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyAlteredVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSchemaVersion() throws
-                                                                                                 JsonProcessingException {
+                                                                                              JsonProcessingException {
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("TEST")).thenReturn(objectMapper.writeValueAsBytes(expectedAlteredVehicle));
@@ -803,7 +803,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveVin() throws
-                                                                                            JsonProcessingException {
+                                                                                  JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -835,7 +835,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveConformityStatement() throws
-                                                                                                            JsonProcessingException {
+                                                                                                  JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -867,7 +867,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSchemaVersion() throws
-                                                                                                      JsonProcessingException {
+                                                                                            JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -899,7 +899,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheSchemaVersionIsNotANumber() throws
-                                                                                                JsonProcessingException {
+                                                                                      JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -931,7 +931,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedMonth() throws
-                                                                                                          JsonProcessingException {
+                                                                                                JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -963,7 +963,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedYear() throws
-                                                                                                         JsonProcessingException {
+                                                                                               JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -995,7 +995,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheManufacturedYearIsNotANumber() throws
-                                                                                                   JsonProcessingException {
+                                                                                         JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1027,7 +1027,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSerializedGawr() throws
-                                                                                                       JsonProcessingException {
+                                                                                             JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1058,7 +1058,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheSerializedGawrIsNotValid() throws
-                                                                                               JsonProcessingException {
+                                                                                     JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1096,7 +1096,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSerializedGvwr() throws
-                                                                                                       JsonProcessingException {
+                                                                                             JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1127,7 +1127,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheSerializedGvwrIsInvalid() throws
-                                                                                              JsonProcessingException {
+                                                                                    JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1165,7 +1165,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerName() throws
-                                                                                                         JsonProcessingException {
+                                                                                               JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1197,7 +1197,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyMotorVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveType() throws
-                                                                                             JsonProcessingException {
+                                                                                   JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1287,7 +1287,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveVin() throws
-                                                                                                 JsonProcessingException {
+                                                                                       JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1315,7 +1315,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSchemaVersion() throws
-                                                                                                           JsonProcessingException {
+                                                                                                 JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1343,7 +1343,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheSchemaVersionIsNotANumber() throws
-                                                                                                     JsonProcessingException {
+                                                                                           JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1371,7 +1371,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGawr() throws
-                                                                                                  JsonProcessingException {
+                                                                                        JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1398,7 +1398,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheGawrIsInvalid() throws
-                                                                                         JsonProcessingException {
+                                                                               JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1434,7 +1434,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGvwr() throws
-                                                                                                  JsonProcessingException {
+                                                                                        JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1461,7 +1461,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheGvwrIsInvalid() throws
-                                                                                         JsonProcessingException {
+                                                                               JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1495,7 +1495,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedMonth() throws
-                                                                                                               JsonProcessingException {
+                                                                                                     JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1523,7 +1523,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedYear() throws
-                                                                                                              JsonProcessingException {
+                                                                                                    JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1551,7 +1551,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheManufacturedYearIsNotANumber() throws
-                                                                                                        JsonProcessingException {
+                                                                                              JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1579,7 +1579,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIncompleteVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerName() throws
-                                                                                                              JsonProcessingException {
+                                                                                                    JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1666,7 +1666,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveVin() throws
-                                                                                                   JsonProcessingException {
+                                                                                         JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1694,7 +1694,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSchemaVersion() throws
-                                                                                                             JsonProcessingException {
+                                                                                                   JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1722,7 +1722,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheSchemaVersionIsNotANumber() throws
-                                                                                                       JsonProcessingException {
+                                                                                             JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1750,7 +1750,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGawr() throws
-                                                                                                     JsonProcessingException {
+                                                                                           JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1777,7 +1777,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheGawrIsInvalid() throws
-                                                                                           JsonProcessingException {
+                                                                                 JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -1813,7 +1813,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGvwr() throws
-                                                                                                    JsonProcessingException {
+                                                                                          JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1840,7 +1840,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheGvwrIsInvalid() throws
-                                                                                           JsonProcessingException {
+                                                                                 JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -1874,7 +1874,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedMonth() throws
-                                                                                                                 JsonProcessingException {
+                                                                                                       JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1902,7 +1902,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedYear() throws
-                                                                                                                JsonProcessingException {
+                                                                                                      JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1930,7 +1930,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediateVehicleShouldThrowExceptionBecauseTheManufacturedYearIsNotANumber() throws
-                                                                                                          JsonProcessingException {
+                                                                                                JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1958,7 +1958,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerName() throws
-                                                                                                              JsonProcessingException {
+                                                                                                    JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -1986,7 +1986,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyIntermediaVehicleShouldThrowExceptionBecauseNoIncompleteVehicleCertificationExists() throws
-                                                                                                               JsonProcessingException {
+                                                                                                     JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2205,7 +2205,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveVin() throws
-                                                                                                   JsonProcessingException {
+                                                                                  JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2235,7 +2235,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveConformityStatement() throws
-                                                                                            JsonProcessingException {
+                                                                                                  JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2295,7 +2295,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheSchemaVersionIsNotANumber() throws
-                                                                                                      JsonProcessingException {
+                                                                                      JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2325,7 +2325,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGawr() throws
-                                                                                                      JsonProcessingException {
+                                                                                   JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -2354,7 +2354,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheGawrIsInvalid() throws
-                                                                                             JsonProcessingException {
+                                                                          JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -2392,7 +2392,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGvwr() throws
-                                                                                             JsonProcessingException {
+                                                                                   JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -2421,7 +2421,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheGvwrIsInvalid() throws
-                                                                                             JsonProcessingException {
+                                                                          JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -2457,7 +2457,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerMonth() throws
-                                                                                             JsonProcessingException {
+                                                                                                JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2487,7 +2487,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerYear() throws
-                                                                                             JsonProcessingException {
+                                                                                               JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2517,7 +2517,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheManufacturerYearIsNotANumber() throws
-                                                                                             JsonProcessingException {
+                                                                                         JsonProcessingException {
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -2546,7 +2546,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerName() throws
-                                                                                             JsonProcessingException {
+                                                                                               JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2576,7 +2576,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveType() throws
-                                                                                             JsonProcessingException {
+                                                                                   JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2606,7 +2606,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldThrowExceptionBecauseNoIncompleteVehicleCertificationExists() throws
-                                                                                                     JsonProcessingException {
+                                                                                                JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2637,7 +2637,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyFinalVehicleShouldSave() throws
-                                                                                          IOException {
+                                         IOException {
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
         final IncompleteVehicle incompleteVehicle = new IncompleteVehicle(
@@ -2735,7 +2735,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveExemptionStatement() throws
-                                                                                                             JsonProcessingException {
+                                                                                                   JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2765,7 +2765,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveSchemaVersion() throws
-                                                                                                        JsonProcessingException {
+                                                                                              JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2795,7 +2795,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheSchemaVersionIsNotANumber() throws
-                                                                                                  JsonProcessingException {
+                                                                                        JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2825,7 +2825,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveVin() throws
-                                                                                              JsonProcessingException {
+                                                                                    JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2855,7 +2855,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedMonth() throws
-                                                                                                            JsonProcessingException {
+                                                                                                  JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2885,7 +2885,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturedYear() throws
-                                                                                                           JsonProcessingException {
+                                                                                                 JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2915,7 +2915,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheManufacturedYearIsNotANumber() throws
-                                                                                                     JsonProcessingException {
+                                                                                           JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -2945,7 +2945,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGawr() throws
-                                                                                               JsonProcessingException {
+                                                                                     JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -2974,7 +2974,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveValidGawr() throws
-                                                                                                    JsonProcessingException {
+                                                                                          JsonProcessingException {
 
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
 
@@ -3010,7 +3010,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveGvwr() throws
-                                                                                               JsonProcessingException {
+                                                                                     JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -3039,7 +3039,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveValidGvwr() throws
-                                                                                                    JsonProcessingException {
+                                                                                          JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
 
@@ -3075,7 +3075,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveManufacturerName() throws
-                                                                                                           JsonProcessingException {
+                                                                                                 JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);
@@ -3105,7 +3105,7 @@ class FmvssCertificationChaincodeTest {
 
     @Test
     void certifyReplicaVehicleShouldThrowExceptionBecauseTheRequestDoesNotHaveReplicaStatement() throws
-                                                                                                           JsonProcessingException {
+                                                                                                 JsonProcessingException {
 
         final String serializedGawr = objectMapper.writeValueAsString(grossAxleWeightRatings);
         final String serializedGvwr = objectMapper.writeValueAsString(grossVehicleWeightRatings);

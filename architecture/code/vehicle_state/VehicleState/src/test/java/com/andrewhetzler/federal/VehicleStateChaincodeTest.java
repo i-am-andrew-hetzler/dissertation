@@ -548,7 +548,7 @@ class VehicleStateChaincodeTest {
 
     @Test
     void updateStatePurdueVehicleOwnerShouldSave() throws
-                                                       IOException {
+                                                   IOException {
         final Map<String, byte[]> transientMap = new HashMap<>();
 
         transientMap.put(
@@ -634,7 +634,7 @@ class VehicleStateChaincodeTest {
 
     @Test
     void overrideStateShouldThrowExceptionBecauseStateDoesNotExist() throws
-                                                                   JsonProcessingException {
+                                                                     JsonProcessingException {
         final Map<String, byte[]> transientMap = new HashMap<>();
 
         transientMap.put(
@@ -663,7 +663,7 @@ class VehicleStateChaincodeTest {
 
     @Test
     void overrideStatePurdueDealerTechnicianShouldSave() throws
-                                                       IOException {
+                                                         IOException {
         final Map<String, byte[]> transientMap = new HashMap<>();
 
         transientMap.put(
