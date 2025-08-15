@@ -1,0 +1,71 @@
+{
+  "title": "Recall - Public Recall",
+  "type": "object",
+  "properties": {
+    "recall": {
+      "description": "Contains data about the recall.",
+      "type": "object",
+      "properties": {
+        "campaignNumber": {
+          "description": "The campaign number for the recall.",
+          "type": "string"
+        },
+        "date": {
+          "description": "The date the recall was filed with the NHTSA.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the defect or noncompliance issue.",
+          "type": "string"
+        },
+        "remedyProgramDescription": {
+          "description": "A description of the remedy program for the recall.",
+          "type": "string"
+        },
+        "remedyStatus": {
+          "description": "The current status of the vehicle’s remedy.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "campaignNumber",
+        "date",
+        "description",
+        "remedyProgramDescription",
+        "remedyStatus"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    },
+    "vehicle": {
+      "description": "Contains data about the vehicle impacted by the recall.",
+      "type": "object",
+      "properties": {
+        "identificationNumber": {
+          "description": "The VIN of the vehicle impacted by the recall.",
+          "type": "string"
+        },
+        "make": {
+          "description": "The make of the vehicle affected by the recall.",
+          "type": "string"
+        },
+        "model": {
+          "description": "The model of the vehicle impacted by the recall.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identificationNumber",
+        "make",
+        "model"
+      ]
+    }
+  },
+  "required": [
+    "recall",
+    "schemaVersion",
+    "vehicle"
+  ]
+}

@@ -1,5 +1,6 @@
 package com.andrewhetzler.federal.recall_notifications.model.public_recall;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hyperledger.fabric.contract.annotation.DataType;
@@ -38,6 +39,26 @@ public class PublicRecall {
 
     public Vehicle getVehicle() {
         return vehicle;
+    }
+
+    @JsonIgnore
+    public String getVehicleMake() {
+        return vehicle.getMake();
+    }
+
+    @JsonIgnore
+    public String getVehicleModel() {
+        return vehicle.getModel();
+    }
+
+    @JsonIgnore
+    public String getVehicleIdentificationNumber() {
+        return vehicle.getIdentificationNumber();
+    }
+
+    @JsonIgnore
+    public String getRecallCampaignNumber() {
+        return recall.getCampaignNumber();
     }
 
     @Override

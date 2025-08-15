@@ -1,5 +1,6 @@
 package com.andrewhetzler.federal.recall_notifications;
 
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.VehicleRecalls;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +42,7 @@ public class RecallNotificationsChaincode {
     2. A specific recall (the one that owners can report remedy status updates)
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public VehicleRecalls getRecallsForVehicle(
+    public VehicleRecalls getRecallListForVehicle(
             final Context context,
             final String make,
             final String model,
@@ -104,9 +105,53 @@ public class RecallNotificationsChaincode {
 
         recallsForVehicle.addRecallT(campaignNumber);
 
-        save(context, make, model, vin, recallsForVehicle);
+        save(
+                context,
+                make,
+                model,
+                vin,
+                recallsForVehicle
+        );
 
         return recallsForVehicle;
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public PublicRecall getVehicleRecall(
+            final Context context,
+            final String campaignNumber,
+            final String make,
+            final String model,
+            final String vin
+    ) throws
+      IOException {
+        if (isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(campaignNumber) || isNullOrBlank(vin)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PublicRecall recall = getRecall(
+                context,
+                campaignNumber,
+                make,
+                model,
+                vin
+        );
+
+        if (recall == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "The recall # %s could not be found for vehicle %s.",
+                            campaignNumber,
+                            vin
+                    ),
+                    NO_RECALLS_EXIST_FOR_VEHICLE.toString()
+            );
+        }
+
+        return recall;
     }
 
     private boolean isNullOrBlank(final String value) {
@@ -151,6 +196,47 @@ public class RecallNotificationsChaincode {
                         vin.toUpperCase()
                 ),
                 objectMapper.writeValueAsBytes(recalls)
+        );
+    }
+
+    private PublicRecall getRecall(
+            final Context context,
+            final String campaignNumber,
+            final String make,
+            final String model,
+            final String vin
+    ) throws
+      IOException {
+        final byte[] recall = context.getStub().getState(
+                String.format(
+                        "%s-%s-%s-%s",
+                        make.toUpperCase(),
+                        model.toUpperCase(),
+                        vin.toUpperCase(),
+                        campaignNumber.toUpperCase()
+                )
+        );
+
+        return recall != null ? objectMapper.readValue(
+                recall,
+                PublicRecall.class
+        ) : null;
+    }
+
+    private void save(
+            final Context context,
+            final PublicRecall recall
+    ) throws
+      JsonProcessingException {
+        context.getStub().putState(
+                String.format(
+                        "%s-%s-%s-%s",
+                        recall.getVehicleMake().toUpperCase(),
+                        recall.getVehicleModel().toUpperCase(),
+                        recall.getVehicleIdentificationNumber().toUpperCase(),
+                        recall.getRecallCampaignNumber().toUpperCase()
+                ),
+                objectMapper.writeValueAsBytes(recall)
         );
     }
 }

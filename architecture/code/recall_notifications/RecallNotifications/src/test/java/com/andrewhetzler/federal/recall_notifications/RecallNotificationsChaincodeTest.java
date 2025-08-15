@@ -1,5 +1,8 @@
 package com.andrewhetzler.federal.recall_notifications;
 
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.Recall;
+import com.andrewhetzler.federal.recall_notifications.model.public_recall.Vehicle;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.VehicleRecalls;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.Context;
@@ -40,11 +43,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseRequestIsMissingMake() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseRequestIsMissingMake() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             null,
                             "Boilermaker",
@@ -57,11 +60,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseMakeIsBlank() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseMakeIsBlank() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "",
                             "Boilermaker",
@@ -74,11 +77,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseRequestIsMissingModel() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseRequestIsMissingModel() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "Purdue Motor Company",
                             null,
@@ -91,11 +94,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseModelIsBlank() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseModelIsBlank() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "Purdue Motor Company",
                             "",
@@ -108,11 +111,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseRequestIsMissingVin() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseRequestIsMissingVin() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "Purdue Motor Company",
                             "Boilermaker",
@@ -125,11 +128,11 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseVinIsBlank() {
+    void getRecallListForVehicleShouldThrowExceptionBecauseVinIsBlank() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "Purdue Motor Company",
                             "Boilermaker",
@@ -142,14 +145,14 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldThrowExceptionBecauseNoRecallsExistForVehicle() {
+    void getRecallsForVehicleShouldThrowExceptionBecauseNoRecallListExistForVehicle() {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(null);
 
         final Exception exception = assertThrows(
                 ChaincodeException.class,
                 () -> {
-                    subject.getRecallsForVehicle(
+                    subject.getRecallListForVehicle(
                             mockedContext,
                             "Purdue Motor Company",
                             "Boilermaker",
@@ -166,8 +169,8 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void getRecallsForVehicleShouldReturnRecalls() throws
-                                                   IOException {
+    void getRecallsForVehicleShouldReturnRecallList() throws
+                                                      IOException {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(
                 objectMapper.writeValueAsBytes(
@@ -180,7 +183,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final VehicleRecalls result = subject.getRecallsForVehicle(
+        final VehicleRecalls result = subject.getRecallListForVehicle(
                 mockedContext,
                 "Purdue Motor Company",
                 "Boilermaker",
@@ -383,7 +386,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveRecallListForVehicleShouldSaveWhenThereAreMultipleRecalls() throws
-                                                             IOException {
+                                                                         IOException {
         final VehicleRecalls expected = new VehicleRecalls(
                 List.of(
                         "recall ABC",
@@ -428,6 +431,217 @@ class RecallNotificationsChaincodeTest {
         assertEquals(
                 expected.getRecalls().get(1),
                 "recall DEF"
+        );
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseRequestIsMissingCampaignNumber() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            null,
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseCampaignNumberIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseRequestIsMissingMake() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            null,
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseMakeIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseRequestIsMissingModel() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "Purdue Motor Company",
+                            null,
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseModelIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "Purdue Motor Company",
+                            "",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseRequestIsMissingVin() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseVinIsBlank() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void getVehicleRecallShouldThrowExceptionBecauseCampaignNumberDoesNotExistForVehicle() {
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC")).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.getVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC");
+        assertTrue(exception.getMessage().contains("The recall # recall ABC could not be found for vehicle 123."));
+    }
+
+    @Test
+    void getVehicleRecallShouldReturnRecall() throws
+                                              IOException {
+        final PublicRecall expected = new PublicRecall(
+                new Recall(
+                        "recall ABC",
+                        "May 27, 2025",
+                        "The windshield explodes when the car runs for 10 minutes.",
+                        "See a local Purdue Motor Company dealer.",
+                        "NOT_COMPLETED"
+                ),
+                "1",
+                new Vehicle(
+                        "123",
+                        "Purdue Motor Company",
+                        "Boilermaker"
+                )
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC")).thenReturn(
+                objectMapper.writeValueAsBytes(expected)
+        );
+
+        final PublicRecall result = subject.getVehicleRecall(
+                mockedContext,
+                "recall ABC",
+                "Purdue Motor Company",
+                "Boilermaker",
+                "123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC");
+        assertEquals(
+                expected,
+                result
         );
     }
 }

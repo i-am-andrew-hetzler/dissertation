@@ -1,0 +1,18 @@
+{
+  "title": "Vehicle Recalls",
+  "description": "This schema is only used to support the use case. This is not subject to compliance requirements.",
+  "type": "object",
+  "properties": {
+    "recalls": {
+      "description": "The array of recalls for a vehicle.",
+      "type": "array",
+      "items": {
+        "description": "The recall campaign number.",
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "vehicle"
+  ]
+}

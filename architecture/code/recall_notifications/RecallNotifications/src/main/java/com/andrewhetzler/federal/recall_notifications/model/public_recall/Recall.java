@@ -1,5 +1,6 @@
 package com.andrewhetzler.federal.recall_notifications.model.public_recall;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
@@ -13,17 +14,20 @@ public class Recall {
     private final String campaignNumber;
     private final String date;
     private final String description;
+    private final String remedyProgramDescription;
     private final String remedyStatus;
 
     public Recall(
-            String campaignNumber,
-            String date,
-            String description,
-            String remedyStatus
+            @JsonProperty("campaignNumber") String campaignNumber,
+            @JsonProperty("date") String date,
+            @JsonProperty("description") String description,
+            @JsonProperty("remedyProgramDescription") String remedyProgramDescription,
+            @JsonProperty("remedyStatus") String remedyStatus
     ) {
         this.campaignNumber = campaignNumber;
         this.date = date;
         this.description = description;
+        this.remedyProgramDescription = remedyProgramDescription;
         this.remedyStatus = remedyStatus;
     }
 
@@ -37,6 +41,10 @@ public class Recall {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getRemedyProgramDescription() {
+        return remedyProgramDescription;
     }
 
     public String getRemedyStatus() {
@@ -59,6 +67,9 @@ public class Recall {
                 description,
                 recall.description
         ) && Objects.equals(
+                remedyProgramDescription,
+                recall.remedyProgramDescription
+        ) && Objects.equals(
                 remedyStatus,
                 recall.remedyStatus
         );
@@ -70,6 +81,7 @@ public class Recall {
                 campaignNumber,
                 date,
                 description,
+                remedyProgramDescription,
                 remedyStatus
         );
     }
@@ -80,6 +92,7 @@ public class Recall {
                 "campaignNumber='" + campaignNumber + '\'' +
                 ", date='" + date + '\'' +
                 ", description='" + description + '\'' +
+                ", remedyProgramDescription='" + remedyProgramDescription + '\'' +
                 ", remedyStatus='" + remedyStatus + '\'' +
                 '}';
     }
