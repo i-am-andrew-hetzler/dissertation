@@ -1276,7 +1276,7 @@ class RecallNotificationsChaincodeTest {
         when(mockedClientIdentity.getMSPID()).thenReturn("NHTSAMSP");
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getPrivateData(
-                PURDUE_MOCO_MSP_ID,
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
                 "RECALL ABC"
         )).thenReturn(
                 objectMapper.writeValueAsBytes(expected)
@@ -1324,7 +1324,7 @@ class RecallNotificationsChaincodeTest {
         when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getPrivateData(
-                PURDUE_MOCO_MSP_ID,
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
                 "RECALL ABC"
         )).thenReturn(
                 objectMapper.writeValueAsBytes(expected)
@@ -1336,6 +1336,516 @@ class RecallNotificationsChaincodeTest {
                 PURDUE_MOCO_MSP_ID
         );
 
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseRequestIsUnauthorizedBecauseTheyAreNotNHTSAOrCorrectMSP() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("MaseratiMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "1",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+//    HREE
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseCampaignNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            null,
+                            "NOT_COMPLETED",
+                            "1",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseCampaignNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "",
+                            "NOT_COMPLETED",
+                            "1",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseRemedyStatusIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            null,
+                            "1",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseRemedyStatusIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "",
+                            "1",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            null,
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseCollectionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "1",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseCollectionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "1",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldSaveNewVehicleEntry() throws
+                                                                                   IOException {
+        final ImpactedOwnerList expected = new ImpactedOwnerList(
+                List.of(
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "1FV",
+                                new Owner(
+                                        new Address(
+                                                "123 Test Road",
+                                                null,
+                                                "Example",
+                                                "OH",
+                                                "98765"
+                                        ),
+                                        "Unfortunate Dude"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "NOT_COMPLETED"
+                                )
+                        )
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC"
+        )).thenReturn(null);
+
+        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+                mockedContext,
+                "1FV",
+                "Unfortunate Dude",
+                "123 Test Road",
+                null,
+                "Example",
+                "OH",
+                "98765",
+                "recall ABC",
+                "NOT_COMPLETED",
+                "1",
+                PURDUE_MOCO_MSP_ID
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC",
+                objectMapper.writeValueAsBytes(expected)
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldSaveForSecondVehicleEntry() throws
+                                                                IOException {
+        final ImpactedOwnerList expected = new ImpactedOwnerList(
+                List.of(
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "1FV",
+                                new Owner(
+                                        new Address(
+                                                "123 Test Road",
+                                                null,
+                                                "Example",
+                                                "OH",
+                                                "98765"
+                                        ),
+                                        "Unfortunate Dude"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "NOT_COMPLETED"
+                                )
+                        ),
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "2FV",
+                                new Owner(
+                                        new Address(
+                                                "987 University Lane",
+                                                "Suite 1",
+                                                "West Lafayette",
+                                                "IN",
+                                                "34567"
+                                        ),
+                                        "Jane Doe"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "COMPLETED"
+                                )
+                        )
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new ImpactedOwnerList(
+                                List.of(
+                                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                                "1FV",
+                                                new Owner(
+                                                        new Address(
+                                                                "123 Test Road",
+                                                                null,
+                                                                "Example",
+                                                                "OH",
+                                                                "98765"
+                                                        ),
+                                                        "Unfortunate Dude"
+                                                ),
+                                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                                        "recall ABC",
+                                                        "NOT_COMPLETED"
+                                                )
+                                        )
+                                ),
+                                "1"
+                        )
+                )
+        );
+
+        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+                mockedContext,
+                "2FV",
+                "Jane Doe",
+                "987 University Lane",
+                "Suite 1",
+                "West Lafayette",
+                "IN",
+                "34567",
+                "recall ABC",
+                "COMPLETED",
+                "1",
+                PURDUE_MOCO_MSP_ID
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC",
+                objectMapper.writeValueAsBytes(expected)
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldUpdateFirstVehicleEntry() throws
+                                                                      IOException {
+        final ImpactedOwnerList expected = new ImpactedOwnerList(
+                List.of(
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "1FV",
+                                new Owner(
+                                        new Address(
+                                                "123 Test Road",
+                                                null,
+                                                "Example",
+                                                "OH",
+                                                "98765"
+                                        ),
+                                        "Unfortunate Dude"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "COMPLETED"
+                                )
+                        )
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new ImpactedOwnerList(
+                                List.of(
+                                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                                "1FV",
+                                                new Owner(
+                                                        new Address(
+                                                                "123 Test Road",
+                                                                null,
+                                                                "Example",
+                                                                "OH",
+                                                                "98765"
+                                                        ),
+                                                        "Unfortunate Dude"
+                                                ),
+                                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                                        "recall ABC",
+                                                        "NOT_COMPLETED"
+                                                )
+                                        )
+                                ),
+                                "1"
+                        )
+                )
+        );
+
+        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+                mockedContext,
+                "1FV",
+                "Unfortunate Dude",
+                "123 Test Road",
+                null,
+                "Example",
+                "OH",
+                "98765",
+                "recall ABC",
+                "COMPLETED",
+                "1",
+                PURDUE_MOCO_MSP_ID
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                PURDUE_MOCO_MSP_ID.toUpperCase(),
+                "RECALL ABC",
+                objectMapper.writeValueAsBytes(expected)
+        );
         assertEquals(
                 expected,
                 result

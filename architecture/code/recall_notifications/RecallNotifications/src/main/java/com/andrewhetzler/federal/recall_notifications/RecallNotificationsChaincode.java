@@ -1,6 +1,8 @@
 package com.andrewhetzler.federal.recall_notifications;
 
+import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Address;
 import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.ImpactedOwnerList;
+import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Owner;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Recall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Vehicle;
@@ -223,10 +225,6 @@ public class RecallNotificationsChaincode {
             final String collection
     ) throws
       IOException {
-        /*
-        The key is the campaign number. We will return an impactedownerlist for each recall.
-        The impactedownerlist will hold a list of vehicles. each vehicle will have an owner andrecall
-         */
         if (!isAuthorized(
                 context.getClientIdentity(),
                 collection
@@ -261,6 +259,112 @@ public class RecallNotificationsChaincode {
         }
 
         return impactedOwnersList;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public ImpactedOwnerList saveImpactedOwnersForRecall(
+            final Context context,
+            final String vin,
+            final String name,
+            final String street1,
+            final String street2,
+            final String city,
+            final String state,
+            final String zipCode,
+            final String campaignNumber,
+            final String remedyStatus,
+            final String schemaVersion,
+            final String collection
+    ) throws
+      IOException {
+        if (!isAuthorized(
+                context.getClientIdentity(),
+                collection
+        )) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city) || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(campaignNumber) || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) || isNullOrBlank(collection)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final ImpactedOwnerList impactedOwnersList = getImpactedOwnersListForRecall(
+                context,
+                campaignNumber,
+                collection
+        );
+
+        final ImpactedOwnerList newList;
+        com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle existingVehicle = impactedOwnersList != null ? impactedOwnersList.getVehicles().stream().filter(vehicle -> vehicle.getIdentificationNumber().equalsIgnoreCase(vin)).findFirst().orElse(null) : null;
+
+        if (existingVehicle != null) {
+            newList = new ImpactedOwnerList(
+                    impactedOwnersList.getVehicles(),
+                    schemaVersion
+            );
+
+            newList.getVehicles().set(
+                    newList.getVehicles().indexOf(existingVehicle),
+                    new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                            vin,
+                            new Owner(
+                                    new Address(
+                                            street1,
+                                            street2,
+                                            city,
+                                            state,
+                                            zipCode
+                                    ),
+                                    name
+                            ),
+                            new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                    campaignNumber,
+                                    remedyStatus
+                            )
+                    )
+            );
+        }
+        else {
+            newList = new ImpactedOwnerList(
+                    impactedOwnersList != null ? impactedOwnersList.getVehicles() : new ArrayList<>(),
+                    schemaVersion
+            );
+
+            newList.getVehicles().add(
+                    new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                            vin,
+                            new Owner(
+                                    new Address(
+                                            street1,
+                                            street2,
+                                            city,
+                                            state,
+                                            zipCode
+                                    ),
+                                    name
+                            ),
+                            new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                    campaignNumber,
+                                    remedyStatus
+                            )
+                    )
+            );
+        }
+
+        save(
+                context,
+                campaignNumber,
+                collection,
+                newList
+        );
+
+        return newList;
     }
 
     private boolean isNullOrBlank(final String value) {
@@ -363,7 +467,7 @@ public class RecallNotificationsChaincode {
     ) throws
       IOException {
         final byte[] list = context.getStub().getPrivateData(
-                collection,
+                collection.toUpperCase(),
                 campaignNumber.toUpperCase()
         );
 
@@ -375,5 +479,19 @@ public class RecallNotificationsChaincode {
         }
 
         return null;
+    }
+
+    private void save(
+            final Context context,
+            final String campaignNumber,
+            final String collection,
+            final ImpactedOwnerList impactedOwnersList
+    ) throws
+      JsonProcessingException {
+        context.getStub().putPrivateData(
+                collection.toUpperCase(),
+                campaignNumber.toUpperCase(),
+                objectMapper.writeValueAsBytes(impactedOwnersList)
+        );
     }
 }
