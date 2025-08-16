@@ -1,9 +1,9 @@
 {
-  "title": "Recall Notifications - Registered Owners Notified",
+  "title": "Recall Notifications - Lessor's List of Notified Lessees",
   "type": "object",
   "properties": {
     "vehicles": {
-      "description": "Contains information about the impacted owners and vehicles for a particular recall.",
+      "description": "Contains information about the lessees notified of a particular recall.",
       "type": "array",
       "items": {
         "type": "object",
@@ -12,32 +12,32 @@
             "description": "The vehicle's identification number.",
             "type": "string"
           },
-          "owner": {
-            "description": "The vehicle's owner.",
+          "lessee": {
+            "description": "The vehicle's lessee.",
             "type": "object",
             "properties": {
               "address": {
-                "description": "The registered owner's address.",
+                "description": "The lessee's address.",
                 "type": "object",
                 "properties": {
                   "street1": {
-                    "description": "The registered owner's street1 line.",
+                    "description": "The lessee's street1 line.",
                     "type": "string"
                   },
                   "street2": {
-                    "description": "The registered owner's street2 line.",
+                    "description": "The lessee's street2 line.",
                     "type": "string"
                   },
                   "city": {
-                    "description": "The registered owner's city.",
+                    "description": "The lessee's city.",
                     "type": "string"
                   },
                   "state": {
-                    "description": "The registered owner's state.",
+                    "description": "The lessee's state.",
                     "type": "string"
                   },
                   "zipCode": {
-                    "description": "The registered owner's zip code.",
+                    "description": "The lessee's zip code.",
                     "type": "string"
                   }
                 },
@@ -49,7 +49,7 @@
                 ]
               },
               "name": {
-                "description": "The registered owner's name.",
+                "description": "The lessee's name.",
                 "type": "string"
               }
             },
@@ -57,6 +57,14 @@
               "address",
               "name"
             ]
+          },
+          "make": {
+            "description": "The make of the vehicle.",
+            "type": "string"
+          },
+          "model": {
+            "description": "The model of the vehicle.",
+            "type": "string"
           },
           "recall": {
             "description": "Information about the recall.",
@@ -66,22 +74,29 @@
                 "description": "The recall's campaign number.",
                 "type": "string"
               },
-              "remedyStatus": {
-                "description": "The remedy status for the vehicle.",
+              "dateNotificationMailed": {
+                "description": "The date that the lessor mailed the recall information to the lessee.",
                 "type": "string"
               }
             },
             "required": [
               "campaignNumber",
-              "remedyStatus"
+              "dateNotificationMailed"
             ]
+          },
+          "year": {
+            "description": "The model year of the vehicle.",
+            "type": "string"
           }
         }
       },
       "required": [
         "identificationNumber",
-        "owner",
-        "recall"
+        "lessee",
+        "make",
+        "model",
+        "recall",
+        "year"
       ]
     },
     "schemaVersion": {

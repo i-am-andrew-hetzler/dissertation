@@ -3,6 +3,8 @@ package com.andrewhetzler.federal.recall_notifications;
 import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Address;
 import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.ImpactedOwnerList;
 import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Owner;
+import com.andrewhetzler.federal.recall_notifications.model.lessor_list.Lessee;
+import com.andrewhetzler.federal.recall_notifications.model.lessor_list.LessorsList;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Recall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Vehicle;
@@ -372,6 +374,164 @@ public class RecallNotificationsChaincode {
         return newList;
     }
 
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public LessorsList viewLessorsListForRecall(
+            final Context context,
+            final String campaignNumber,
+            final String collection
+    ) throws
+      IOException {
+        if (!isAuthorized(
+                context.getClientIdentity(),
+                collection
+        )) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(campaignNumber) || isNullOrBlank(collection)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final LessorsList lessorsList = getLessorsListForRecall(
+                context,
+                campaignNumber,
+                collection
+        );
+
+        if (lessorsList == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No list exists for campaign number %s.",
+                            campaignNumber
+                    ),
+                    NO_LIST_EXISTS_FOR_CAMPAIGN_NUMBER.toString()
+            );
+        }
+
+        return lessorsList;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public LessorsList saveLessorsListForRecall(
+            final Context context,
+            final String vin,
+            final String name,
+            final String street1,
+            final String street2,
+            final String city,
+            final String state,
+            final String zipCode,
+            final String make,
+            final String model,
+            final String campaignNumber,
+            final String dateNotificationMailed,
+            final String year,
+            final String schemaVersion,
+            final String collection
+    ) throws
+      IOException {
+        if (!isAuthorized(
+                context.getClientIdentity(),
+                collection
+        )) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city) || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(campaignNumber) || isNullOrBlank(dateNotificationMailed) || isNullOrBlank(year) || isNullOrBlank(schemaVersion) || isNullOrBlank(collection)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final LessorsList lessorsList = getLessorsListForRecall(
+                context,
+                campaignNumber,
+                collection
+        );
+
+        final LessorsList newList;
+        com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle existingVehicle = lessorsList != null ? lessorsList.getVehicles().stream().filter(vehicle -> vehicle.getIdentificationNumber().equalsIgnoreCase(vin)).findFirst().orElse(null) : null;
+
+        if (existingVehicle != null) {
+            newList = new LessorsList(
+                    lessorsList.getVehicles(),
+                    schemaVersion
+            );
+
+            newList.getVehicles().set(
+                    newList.getVehicles().indexOf(existingVehicle),
+                    new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
+                            vin,
+                            new Lessee(
+                                    new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Address(
+                                            street1,
+                                            street2,
+                                            city,
+                                            state,
+                                            zipCode
+                                    ),
+                                    name
+                            ),
+                            make,
+                            model,
+                            new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Recall(
+                                    campaignNumber,
+                                    dateNotificationMailed
+                            ),
+                            year
+                    )
+            );
+        }
+        else {
+            newList = new LessorsList(
+                    lessorsList != null ? lessorsList.getVehicles() : new ArrayList<>(),
+                    schemaVersion
+            );
+
+            newList.getVehicles().add(
+                    new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
+                            vin,
+                            new Lessee(
+                                    new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Address(
+                                            street1,
+                                            street2,
+                                            city,
+                                            state,
+                                            zipCode
+                                    ),
+                                    name
+                            ),
+                            make,
+                            model,
+                            new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Recall(
+                                    campaignNumber,
+                                    dateNotificationMailed
+                            ),
+                            year
+                    )
+            );
+        }
+
+        save(
+                context,
+                campaignNumber,
+                collection,
+                newList
+        );
+
+        return newList;
+    }
+
     private boolean isNullOrBlank(final String value) {
         return value == null || value.isBlank();
     }
@@ -497,6 +657,41 @@ public class RecallNotificationsChaincode {
                 collection.toUpperCase(),
                 campaignNumber.toUpperCase(),
                 objectMapper.writeValueAsBytes(impactedOwnersList)
+        );
+    }
+
+    private LessorsList getLessorsListForRecall(
+            final Context context,
+            final String campaignNumber,
+            final String collection
+    ) throws
+      IOException {
+        final byte[] list = context.getStub().getPrivateData(
+                collection.toUpperCase(),
+                campaignNumber.toUpperCase()
+        );
+
+        if (list != null) {
+            return objectMapper.readValue(
+                    list,
+                    LessorsList.class
+            );
+        }
+
+        return null;
+    }
+
+    private void save(
+            final Context context,
+            final String campaignNumber,
+            final String collection,
+            final LessorsList lessorsList
+    ) throws
+      JsonProcessingException {
+        context.getStub().putPrivateData(
+                collection.toUpperCase(),
+                campaignNumber.toUpperCase(),
+                objectMapper.writeValueAsBytes(lessorsList)
         );
     }
 }
