@@ -113,15 +113,20 @@ public class RecallNotificationsChaincode {
             recallsForVehicle = new VehicleRecalls(new ArrayList<>());
         }
 
-        recallsForVehicle.addRecallT(campaignNumber);
+        final String existingRecall = recallsForVehicle.getRecalls().stream().filter(recall -> recall
+                .equalsIgnoreCase(campaignNumber)).findFirst().orElse(null);
 
-        save(
-                context,
-                make,
-                model,
-                vin,
-                recallsForVehicle
-        );
+        if (existingRecall == null) {
+            recallsForVehicle.addRecall(campaignNumber);
+
+            save(
+                    context,
+                    make,
+                    model,
+                    vin,
+                    recallsForVehicle
+            );
+        }
 
         return recallsForVehicle;
     }

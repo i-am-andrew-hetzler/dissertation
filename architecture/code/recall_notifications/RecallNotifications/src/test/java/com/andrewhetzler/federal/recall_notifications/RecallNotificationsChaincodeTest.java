@@ -442,6 +442,49 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
+    void saveRecallListForVehicleShouldNotSaveWhenRecallAlreadyExists() throws
+                                                                         IOException {
+        final VehicleRecalls expected = new VehicleRecalls(
+                List.of("recall ABC")
+        );
+
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new VehicleRecalls(List.of("recall ABC"))
+                )
+        );
+
+        final VehicleRecalls result = subject.saveRecallListForVehicle(
+                mockedContext,
+                "recall ABC",
+                "Purdue Motor Company",
+                "Boilermaker",
+                "123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123");
+        verify(
+                mockedChaincodeStub,
+                times(0)
+        ).putState(
+                "PURDUE MOTOR COMPANY-BOILERMAKER-123",
+                objectMapper.writeValueAsBytes(expected)
+        );
+        assertEquals(
+                expected,
+                result
+        );
+        assertEquals(
+                expected.getRecalls().get(0),
+                "recall ABC"
+        );
+    }
+
+    @Test
     void getVehicleRecallShouldThrowExceptionBecauseRequestIsMissingCampaignNumber() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
@@ -1067,7 +1110,7 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
-    void saveVehicleRecallShouldThrowExceptionBecauseErrorCallingSaveRecall() throws
+    void saveVehicleRecallShouldSaveRecall() throws
                                                                               IOException {
         final PublicRecall expected = new PublicRecall(
                 new Recall(

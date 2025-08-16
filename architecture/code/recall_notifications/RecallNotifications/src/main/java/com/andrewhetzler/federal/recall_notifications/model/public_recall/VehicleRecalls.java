@@ -21,7 +21,7 @@ public class VehicleRecalls {
         this.recalls = recalls != null ? recalls : Collections.emptyList();
     }
 
-    public void addRecallT(String recallT) {
+    public void addRecall(String recallT) {
         this.recalls.add(recallT);
     }
 

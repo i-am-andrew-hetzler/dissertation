@@ -1,0 +1,96 @@
+{
+  "title": "Recall Notifications - Registered Owners Notified",
+  "type": "object",
+  "properties": {
+    "vehicles": {
+      "description": "Contains information about the firmware artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "identificationNumber": {
+            "description": "The vehicle's identification number.",
+            "type": "string"
+          },
+          "owner": {
+            "description": "The vehicle's owner.",
+            "type": "object",
+            "properties": {
+              "address": {
+                "description": "The registered owner's address.",
+                "type": "object",
+                "properties": {
+                  "street1": {
+                    "description": "The registered owner's street1 line.",
+                    "type": "string"
+                  },
+                  "street2": {
+                    "description": "The registered owner's street2 line.",
+                    "type": "string"
+                  },
+                  "city": {
+                    "description": "The registered owner's city.",
+                    "type": "string"
+                  },
+                  "state": {
+                    "description": "The registered owner's state.",
+                    "type": "string"
+                  },
+                  "zipCode": {
+                    "description": "The registered owner's zip code.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "street1",
+                  "city",
+                  "state",
+                  "zipCode"
+                ]
+              },
+              "name": {
+                "description": "The registered owner's name.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "address",
+              "name"
+            ]
+          },
+          "recall": {
+            "description": "Information about the recall.",
+            "type": "object",
+            "properties": {
+              "campaignNumber": {
+                "description": "The recall's campaign number.",
+                "type": "string"
+              },
+              "remedyStatus": {
+                "description": "The remedy status for the vehicle.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "campaignNumber",
+              "remedyStatus"
+            ]
+          }
+        }
+      },
+      "required": [
+        "identificationNumber",
+        "owner",
+        "recall"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "vehicles",
+    "schemaVersion"
+  ]
+}
