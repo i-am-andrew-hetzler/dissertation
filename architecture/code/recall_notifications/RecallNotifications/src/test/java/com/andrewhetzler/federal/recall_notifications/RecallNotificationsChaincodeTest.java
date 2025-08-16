@@ -1,10 +1,14 @@
 package com.andrewhetzler.federal.recall_notifications;
 
+import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Address;
+import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.ImpactedOwnerList;
+import com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Owner;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.PublicRecall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Recall;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.Vehicle;
 import com.andrewhetzler.federal.recall_notifications.model.public_recall.VehicleRecalls;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
@@ -18,7 +22,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,8 +36,11 @@ class RecallNotificationsChaincodeTest {
     private Context mockedContext;
     @Mock
     private ChaincodeStub mockedChaincodeStub;
+    @Mock
+    private ClientIdentity mockedClientIdentity;
     private RecallNotificationsChaincode subject;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String PURDUE_MOCO_MSP_ID = "PurdueMotorCompanyMSP";
 
     @BeforeEach
     void setUp() {
@@ -1115,6 +1121,221 @@ class RecallNotificationsChaincodeTest {
                         new VehicleRecalls(List.of("recall ABC"))
                 )
         );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseRequestIsUnauthorizedBecauseTheyAreNotNHTSAOrCorrectMSP() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("MaseratiMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            "recall ABC",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseCampaignNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            null,
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseCampaignNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            "",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseCollectionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            "recall ABC",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseCollectionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            "recall ABC",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldThrowExceptionBecauseListDoesNotExistForRecall() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID,
+                "RECALL ABC"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewImpactedOwnersForRecall(
+                            mockedContext,
+                            "recall ABC",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No list exists for campaign number recall ABC."));
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldReturnListForNHTSA() throws
+                                                               IOException {
+        final ImpactedOwnerList expected = new ImpactedOwnerList(
+                List.of(
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "1FV",
+                                new Owner(
+                                        new Address(
+                                                "123 Test Road",
+                                                null,
+                                                "Example",
+                                                "OH",
+                                                "98765"
+                                        ),
+                                        "Unfortunate Dude"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "NOT_COMPLETED"
+                                )
+                        )
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("NHTSAMSP");
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID,
+                "RECALL ABC"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(expected)
+        );
+
+        final ImpactedOwnerList result = subject.viewImpactedOwnersForRecall(
+                mockedContext,
+                "recall ABC",
+                PURDUE_MOCO_MSP_ID
+        );
+
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void viewImpactedOwnersForRecallShouldReturnListFBecauseCollectionMatchesMSP() throws
+                                                                                   IOException {
+        final ImpactedOwnerList expected = new ImpactedOwnerList(
+                List.of(
+                        new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
+                                "1FV",
+                                new Owner(
+                                        new Address(
+                                                "123 Test Road",
+                                                null,
+                                                "Example",
+                                                "OH",
+                                                "98765"
+                                        ),
+                                        "Unfortunate Dude"
+                                ),
+                                new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Recall(
+                                        "recall ABC",
+                                        "NOT_COMPLETED"
+                                )
+                        )
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                PURDUE_MOCO_MSP_ID,
+                "RECALL ABC"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(expected)
+        );
+
+        final ImpactedOwnerList result = subject.viewImpactedOwnersForRecall(
+                mockedContext,
+                "recall ABC",
+                PURDUE_MOCO_MSP_ID
+        );
+
         assertEquals(
                 expected,
                 result
