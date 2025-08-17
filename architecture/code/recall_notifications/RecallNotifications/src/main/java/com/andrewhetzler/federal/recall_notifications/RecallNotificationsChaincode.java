@@ -187,7 +187,7 @@ public class RecallNotificationsChaincode {
       IOException {
         if (isNullOrBlank(campaignNumber) || isNullOrBlank(date) || isNullOrBlank(description) ||
                 isNullOrBlank(remedyProgramDescription) || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) ||
-                isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(vin)) {
+                isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(vin) || !isNumber(schemaVersion)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
@@ -294,7 +294,10 @@ public class RecallNotificationsChaincode {
             );
         }
 
-        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city) || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(campaignNumber) || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) || isNullOrBlank(collection)) {
+        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city)
+                || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(campaignNumber)
+                || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion)
+                || isNullOrBlank(collection)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
@@ -446,7 +449,10 @@ public class RecallNotificationsChaincode {
             );
         }
 
-        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city) || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(campaignNumber) || isNullOrBlank(dateNotificationMailed) || isNullOrBlank(year) || isNullOrBlank(schemaVersion) || isNullOrBlank(collection)) {
+        if (isNullOrBlank(vin) || isNullOrBlank(name) || isNullOrBlank(street1) || isNullOrBlank(city)
+                || isNullOrBlank(state) || isNullOrBlank(zipCode) || isNullOrBlank(make) || isNullOrBlank(model)
+                || isNullOrBlank(campaignNumber) || isNullOrBlank(dateNotificationMailed) || isNullOrBlank(year)
+                || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion) || isNullOrBlank(collection)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
@@ -534,6 +540,16 @@ public class RecallNotificationsChaincode {
 
     private boolean isNullOrBlank(final String value) {
         return value == null || value.isBlank();
+    }
+
+    private boolean isNumber(final String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private VehicleRecalls getAllRecallsForVehicle(

@@ -975,6 +975,29 @@ class RecallNotificationsChaincodeTest {
     }
 
     @Test
+    void saveVehicleRecallShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveVehicleRecall(
+                            mockedContext,
+                            "recall ABC",
+                            "October 17, 2025",
+                            "Windshield is bad",
+                            "See a dealer",
+                            "NOT_COMPLETED",
+                            "A",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
     void saveVehicleRecallShouldThrowExceptionBecauseMakeIsMissing() {
         final Exception exception = assertThrows(
                 ChaincodeException.class,
@@ -1912,6 +1935,34 @@ class RecallNotificationsChaincodeTest {
                             "recall ABC",
                             "NOT_COMPLETED",
                             "",
+                            PURDUE_MOCO_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveImpactedOwnersForRecallShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(PURDUE_MOCO_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveImpactedOwnersForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "A",
                             PURDUE_MOCO_MSP_ID
                     );
                 }
@@ -3220,6 +3271,37 @@ class RecallNotificationsChaincodeTest {
                             "NOT_COMPLETED",
                             "2025",
                             "",
+                            LESSOR_MSP_ID
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveLessorsListForRecallShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(LESSOR_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveLessorsListForRecall(
+                            mockedContext,
+                            "1FV",
+                            "Unfortunate Dude",
+                            "123 Test Road",
+                            null,
+                            "Example Junction",
+                            "Ohio",
+                            "98765",
+                            "Purdue Motor Company",
+                            "Boilermaker",
+                            "recall ABC",
+                            "NOT_COMPLETED",
+                            "2025",
+                            "A",
                             LESSOR_MSP_ID
                     );
                 }

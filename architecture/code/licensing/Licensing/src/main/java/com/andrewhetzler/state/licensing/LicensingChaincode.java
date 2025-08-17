@@ -5,8 +5,12 @@ import com.andrewhetzler.state.licensing.model.License;
 import com.andrewhetzler.state.licensing.model.LicenseSchema;
 import com.andrewhetzler.state.licensing.model.Licensee;
 import com.andrewhetzler.state.licensing.model.persisted.PersistedAddress;
+import com.andrewhetzler.state.licensing.model.persisted.PersistedBirthdate;
+import com.andrewhetzler.state.licensing.model.persisted.PersistedLicense;
 import com.andrewhetzler.state.licensing.model.persisted.PersistedLicenseSchema;
+import com.andrewhetzler.state.licensing.model.persisted.PersistedLicensee;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -18,9 +22,12 @@ import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import static com.andrewhetzler.state.licensing.LicenseChaincodeError.DESERIALIZATION_ERROR;
 import static com.andrewhetzler.state.licensing.LicenseChaincodeError.INVALID_REQUEST;
 import static com.andrewhetzler.state.licensing.LicenseChaincodeError.LICENSE_DOES_NOT_EXIST;
 import static com.andrewhetzler.state.licensing.LicenseChaincodeError.UNAUTHORIZED_REQUEST;
@@ -223,7 +230,10 @@ public class LicensingChaincode {
         }
 
         final byte[] license = context.getStub().getPrivateData(
-                String.format("%s_LICENSE_COLLECTION", context.getClientIdentity().getMSPID().toUpperCase()),
+                String.format(
+                        "%s_LICENSE_COLLECTION",
+                        context.getClientIdentity().getMSPID().toUpperCase()
+                ),
                 licenseNumber.toUpperCase()
         );
 
@@ -252,16 +262,116 @@ public class LicensingChaincode {
             final String birthDay,
             final String birthMonth,
             final String birthYear,
+            final String serializedLicenseeDescription,
             final String isVeteran,
             final String name,
             final String serializedPhotograph,
             final String serializedSignature,
             final String serializedOther,
-            final String schemaVersion
+            final String schemaVersion,
+            final String licenseeId
 
-    ) {
+    ) throws
+      JsonProcessingException {
+        if (!isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
-        return null;
+        if (
+                isNullOrBlank(licenseNumber) || isNullOrBlank(serializedAddresses) || isNullOrBlank(birthDay)
+                        || isNullOrBlank(birthMonth) || isNullOrBlank(birthYear) || isNullOrBlank(name)
+                        || isNullOrBlank(serializedPhotograph) || isNullOrBlank(serializedSignature)
+                        || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion) || isNullOrBlank(licenseeId)
+        ) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final List<String> classes = deserializeList(
+                serializedClasses,
+                "classes",
+                String.class
+        );
+        final List<PersistedAddress> addresses = deserializeList(
+                serializedAddresses,
+                "addresses",
+                PersistedAddress.class
+        );
+        final Map<String, String> licenseeDescription;
+        final Map<String, String> other;
+
+        try {
+            licenseeDescription = objectMapper.readValue(
+                    serializedLicenseeDescription,
+                    Map.class
+            );
+            other = objectMapper.readValue(
+                    serializedOther,
+                    Map.class
+            );
+        }
+        catch (Exception e) {
+            throw new ChaincodeException(
+                    "Unable to deserialize licenseeDescription or other.",
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+
+        final PersistedLicenseSchema persistedLicense = new PersistedLicenseSchema(
+                new PersistedLicense(
+                        classes,
+                        licenseNumber
+                ),
+                new PersistedLicensee(
+                        addresses,
+                        new PersistedBirthdate(
+                                birthDay,
+                                birthMonth,
+                                birthYear
+                        ),
+                        licenseeDescription,
+                        isVeteran,
+                        name,
+                        serializedPhotograph,
+                        serializedSignature,
+                        licenseeId
+                ),
+                other,
+                schemaVersion
+        );
+
+        context.getStub().putPrivateData(
+                STATE_LICENSE_COLLECTION,
+                licenseNumber.toUpperCase(),
+                objectMapper.writeValueAsBytes(persistedLicense)
+        );
+
+        return new LicenseSchema(
+                new License(
+                        classes,
+                        licenseNumber
+                ),
+                new Licensee(
+                        convertPersistedAddressesToAddresses(addresses),
+                        new Birthdate(
+                                birthDay,
+                                birthMonth,
+                                birthYear
+                        ),
+                        licenseeDescription,
+                        isVeteran,
+                        name,
+                        serializedPhotograph,
+                        serializedSignature
+                ),
+                other,
+                schemaVersion
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -270,39 +380,39 @@ public class LicensingChaincode {
             final String licenseNumber
     ) throws
       IOException {
-       if (!isMspIdTheStateDmv(context.getClientIdentity())) {
-           throw new ChaincodeException(
-                   "Unauthorized request.",
-                   UNAUTHORIZED_REQUEST.toString()
-           );
-       }
+        if (!isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
-       if (isNullOrBlank(licenseNumber)) {
-           throw new ChaincodeException(
-                   "Invalid request.",
-                   INVALID_REQUEST.toString()
-           );
-       }
+        if (isNullOrBlank(licenseNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
 
-       final PersistedLicenseSchema license = getLicense(
-               context,
-               licenseNumber
-       );
+        final PersistedLicenseSchema license = getLicense(
+                context,
+                licenseNumber
+        );
 
-       if (license == null) {
-           throw new ChaincodeException(
-                   String.format(
-                           "No license exists for license number %s.",
-                           licenseNumber
-                   ),
-                   LICENSE_DOES_NOT_EXIST.toString()
-           );
-       }
+        if (license == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No license exists for license number %s.",
+                            licenseNumber
+                    ),
+                    LICENSE_DOES_NOT_EXIST.toString()
+            );
+        }
 
-       context.getStub().delPrivateData(
-               STATE_LICENSE_COLLECTION,
-               licenseNumber.toUpperCase()
-       );
+        context.getStub().delPrivateData(
+                STATE_LICENSE_COLLECTION,
+                licenseNumber.toUpperCase()
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -380,6 +490,16 @@ public class LicensingChaincode {
         return value == null || value.isBlank();
     }
 
+    private boolean isNumber(final String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private PersistedLicenseSchema getLicense(
             final Context context,
             final String licenseNumber
@@ -419,5 +539,39 @@ public class LicensingChaincode {
                 license.getLicenseNumber().toUpperCase(),
                 objectMapper.writeValueAsBytes(license)
         );
+    }
+
+    private <T> List<T> deserializeList(
+            final String serializedList,
+            final String attribute,
+            final Class<T> clazz
+    ) {
+        try {
+            return serializedList != null && !serializedList.isBlank() ? objectMapper.readValue(
+                    serializedList,
+                    objectMapper.getTypeFactory().constructCollectionType(
+                            List.class,
+                            clazz
+                    )
+            ) : new ArrayList<>();
+        }
+        catch (JsonMappingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to map the %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+        catch (JsonProcessingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to deserialize %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
     }
 }

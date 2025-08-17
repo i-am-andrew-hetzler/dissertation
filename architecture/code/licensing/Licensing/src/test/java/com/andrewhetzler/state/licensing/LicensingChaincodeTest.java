@@ -147,7 +147,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -185,7 +185,7 @@ class LicensingChaincodeTest {
                                         new PersistedBirthdate(
                                                 "17",
                                                 "October",
-                                                "2017"
+                                                "2014"
                                         ),
                                         Map.of(
                                                 "eyeColor",
@@ -247,7 +247,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -293,7 +293,7 @@ class LicensingChaincodeTest {
                                         new PersistedBirthdate(
                                                 "17",
                                                 "October",
-                                                "2017"
+                                                "2014"
                                         ),
                                         Map.of(
                                                 "eyeColor",
@@ -347,7 +347,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -386,7 +386,7 @@ class LicensingChaincodeTest {
                                         new PersistedBirthdate(
                                                 "17",
                                                 "October",
-                                                "2017"
+                                                "2014"
                                         ),
                                         Map.of(
                                                 "eyeColor",
@@ -442,7 +442,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -481,7 +481,7 @@ class LicensingChaincodeTest {
                                         new PersistedBirthdate(
                                                 "17",
                                                 "October",
-                                                "2017"
+                                                "2014"
                                         ),
                                         Map.of(
                                                 "eyeColor",
@@ -535,7 +535,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -565,7 +565,7 @@ class LicensingChaincodeTest {
                                 new PersistedBirthdate(
                                         "17",
                                         "October",
-                                        "2017"
+                                        "2014"
                                 ),
                                 Map.of(
                                         "eyeColor",
@@ -715,7 +715,7 @@ class LicensingChaincodeTest {
                         new Birthdate(
                                 "17",
                                 "October",
-                                "2017"
+                                "2014"
                         ),
                         Map.of(
                                 "eyeColor",
@@ -760,6 +760,1172 @@ class LicensingChaincodeTest {
                         AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
                 ),
                 "IN-123"
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseRequestorIsUnauthorized() throws
+                                                                          JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseLicenseNumberIsMissing() throws
+                                                                         JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            null,
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseLicenseNumberIsBlank() throws
+                                                                       JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseAddressesAreMissing() throws
+                                                                      JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            null,
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseAddressesAreBlank() throws
+                                                                    JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthDayIsMissing() throws
+                                                                    JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            null,
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthDayIsBlank() throws
+                                                                  JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthMonthIsMissing() throws
+                                                                      JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            null,
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthMonthIsBlank() throws
+                                                                    JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthYearIsMissing() throws
+                                                                     JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseNameIsMissing() throws
+                                                                JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            null,
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseNameIsBlank() throws
+                                                              JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseBirthYearIsBlank() throws
+                                                                   JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSerializedPhotographIsMissing() throws
+                                                                                JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSerializedPhotographIsBlank() throws
+                                                                              JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSerializedSignatureIsMissing() throws
+                                                                               JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSerializedSignatureIsBlank() throws
+                                                                             JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSchemaVersionIsMissing() throws
+                                                                         JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            null,
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSchemaVersionsBlank() throws
+                                                                      JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseSchemaVersionsIsNotANumber() throws
+                                                                             JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "A",
+                            "unique-1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseLicenseeIdIsMissing() throws
+                                                                      JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldThrowExceptionBecauseLicenseeIdIsBlank() throws
+                                                                    JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueLicense(
+                            mockedContext,
+                            objectMapper.writeValueAsString(List.of("A")),
+                            "IN-123",
+                            objectMapper.writeValueAsString(
+                                    List.of(
+                                            new Address(
+                                                    "123 University Lane",
+                                                    null,
+                                                    "West Lafayette",
+                                                    "IN",
+                                                    "98765"
+                                            )
+                                    )
+                            ),
+                            "17",
+                            "October",
+                            "2014",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "eyeColor",
+                                    "Blue"
+                            )),
+                            "false",
+                            "Maya the Husky",
+                            "string-encoded byte array here",
+                            "string-encoded byte array here",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "lifetimeHuntingLicense",
+                                    "IN-HUNTER-123"
+                            )),
+                            "1",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueLicenseShouldReturnLicense() throws
+                                           JsonProcessingException {
+        final LicenseSchema expected = new LicenseSchema(
+                new License(
+                        List.of("A"),
+                        "IN-123"
+                ),
+                new Licensee(
+                        List.of(
+                                new Address(
+                                        "123 University Lane",
+                                        null,
+                                        "West Lafayette",
+                                        "IN",
+                                        "98765"
+                                )
+                        ),
+                        new Birthdate(
+                                "17",
+                                "October",
+                                "2014"
+                        ),
+                        Map.of(
+                                "eyeColor",
+                                "Blue"
+                        ),
+                        "false",
+                        "Maya the Husky",
+                        "string-encoded byte array here",
+                        "string-encoded byte array here"
+                ),
+                Map.of(
+                        "lifetimeHuntingLicense",
+                        "IN-HUNTER-123"
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final LicenseSchema result = subject.issueLicense(
+                mockedContext,
+                objectMapper.writeValueAsString(List.of("A")),
+                "IN-123",
+                objectMapper.writeValueAsString(
+                        List.of(
+                                new Address(
+                                        "123 University Lane",
+                                        null,
+                                        "West Lafayette",
+                                        "IN",
+                                        "98765"
+                                )
+                        )
+                ),
+                "17",
+                "October",
+                "2014",
+                objectMapper.writeValueAsString(Map.of(
+                        "eyeColor",
+                        "Blue"
+                )),
+                "false",
+                "Maya the Husky",
+                "string-encoded byte array here",
+                "string-encoded byte array here",
+                objectMapper.writeValueAsString(Map.of(
+                        "lifetimeHuntingLicense",
+                        "IN-HUNTER-123"
+                )),
+                "1",
+                "unique-1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                "IN-123",
+                objectMapper.writeValueAsBytes(
+                        new PersistedLicenseSchema(
+                                new PersistedLicense(
+                                        expected.getLicense().getClasses(),
+                                        expected.getLicenseNumber()
+                                ),
+                                new PersistedLicensee(
+                                        expected.getLicensee().getAddresses().stream().map(address -> new PersistedAddress(
+                                                address.getStreet1(),
+                                                address.getStreet2(),
+                                                address.getCity(),
+                                                address.getState(),
+                                                address.getZipCode()
+                                        )).toList(),
+                                        new PersistedBirthdate(
+                                                expected.getLicensee().getBirthdate().getDay(),
+                                                expected.getLicensee().getBirthdate().getMonth(),
+                                                expected.getLicensee().getBirthdate().getYear()
+                                        ),
+                                        expected.getLicensee().getDescription(),
+                                        expected.getLicensee().getIsVeteran(),
+                                        expected.getLicensee().getName(),
+                                        expected.getLicensee().getPhotograph(),
+                                        expected.getLicensee().getSignature(),
+                                        "unique-1"
+                                ),
+                                expected.getOther(),
+                                expected.getSchemaVersion()
+                        )
+                )
         );
         assertEquals(
                 expected,
@@ -858,7 +2024,7 @@ class LicensingChaincodeTest {
                                 new PersistedBirthdate(
                                         "17",
                                         "October",
-                                        "2017"
+                                        "2014"
                                 ),
                                 Map.of(
                                         "eyeColor",
@@ -993,7 +2159,7 @@ class LicensingChaincodeTest {
                                 new PersistedBirthdate(
                                         "17",
                                         "October",
-                                        "2017"
+                                        "2014"
                                 ),
                                 Map.of(
                                         "eyeColor",
@@ -1052,7 +2218,7 @@ class LicensingChaincodeTest {
                                 new PersistedBirthdate(
                                         "17",
                                         "October",
-                                        "2017"
+                                        "2014"
                                 ),
                                 Map.of(
                                         "eyeColor",
