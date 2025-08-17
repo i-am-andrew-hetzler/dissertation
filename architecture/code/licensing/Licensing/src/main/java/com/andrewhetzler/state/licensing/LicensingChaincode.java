@@ -54,6 +54,10 @@ public class LicensingChaincode {
             "STATE_DMV_MSP_ID",
             "TestStateDmvMSP"
     );
+    private static final String STATE_DMV_LICENSEE_MSP_ID = System.getenv().getOrDefault(
+            "STATE_DMV_LICENSEE_MSP_ID",
+            "TestStateDmvLicenseeMSP"
+    );
     private static final List<String> THIRD_PARTY_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
             "THIRD_PARTY_MSP_IDS",
             "TestInsuranceCoMSP"
@@ -99,7 +103,7 @@ public class LicensingChaincode {
         if 3rd party, write to 3rd party collection and return locense;
         otherwise return error;
          */
-        if (isMspIdInStateAgencies(context.getClientIdentity())) {
+        if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
             final List<Address> addresses = convertPersistedAddressesToAddresses(persistedLicense.getLicenseeAddresses());
 
             return new LicenseSchema(
@@ -124,7 +128,7 @@ public class LicensingChaincode {
                     persistedLicense.getSchemaVersion()
             );
         }
-        else if (isMspIdTheStateDmv(context.getClientIdentity())) {
+        else if (isMspIdALicensee(context.getClientIdentity())) {
             if (!context.getClientIdentity().getId().equals(persistedLicense.getLicenseeUniqueId())) {
                 throw new ChaincodeException(
                         "Unauthorized request.",
@@ -239,12 +243,126 @@ public class LicensingChaincode {
         );
     }
 
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public LicenseSchema issueLicense(
+            final Context context,
+            final String serializedClasses,
+            final String licenseNumber,
+            final String serializedAddresses,
+            final String birthDay,
+            final String birthMonth,
+            final String birthYear,
+            final String isVeteran,
+            final String name,
+            final String serializedPhotograph,
+            final String serializedSignature,
+            final String serializedOther,
+            final String schemaVersion
+
+    ) {
+
+        return null;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void revokeLicense(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+       if (!isMspIdTheStateDmv(context.getClientIdentity())) {
+           throw new ChaincodeException(
+                   "Unauthorized request.",
+                   UNAUTHORIZED_REQUEST.toString()
+           );
+       }
+
+       if (isNullOrBlank(licenseNumber)) {
+           throw new ChaincodeException(
+                   "Invalid request.",
+                   INVALID_REQUEST.toString()
+           );
+       }
+
+       final PersistedLicenseSchema license = getLicense(
+               context,
+               licenseNumber
+       );
+
+       if (license == null) {
+           throw new ChaincodeException(
+                   String.format(
+                           "No license exists for license number %s.",
+                           licenseNumber
+                   ),
+                   LICENSE_DOES_NOT_EXIST.toString()
+           );
+       }
+
+       context.getStub().delPrivateData(
+               STATE_LICENSE_COLLECTION,
+               licenseNumber.toUpperCase()
+       );
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void cancelLicense(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+        if (!isMspIdALicensee(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(licenseNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PersistedLicenseSchema license = getLicense(
+                context,
+                licenseNumber
+        );
+
+        if (license == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No license exists for license number %s.",
+                            licenseNumber
+                    ),
+                    LICENSE_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        if (!license.getLicenseeUniqueId().equals(context.getClientIdentity().getId())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        context.getStub().delPrivateData(
+                STATE_LICENSE_COLLECTION,
+                licenseNumber.toUpperCase()
+        );
+    }
+
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
         return STATE_AGENCIES_MSP_IDS.contains(clientIdentity.getMSPID());
     }
 
     private boolean isMspIdTheStateDmv(final ClientIdentity clientIdentity) {
         return STATE_DMV_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+    }
+
+    private boolean isMspIdALicensee(final ClientIdentity clientIdentity) {
+        return STATE_DMV_LICENSEE_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
     }
 
     private boolean isMspIdInThirdPartyMspIds(final ClientIdentity clientIdentity) {
@@ -254,6 +372,7 @@ public class LicensingChaincode {
     private boolean isAuthorized(final ClientIdentity clientIdentity) {
         return isMspIdInStateAgencies(clientIdentity) ||
                 isMspIdTheStateDmv(clientIdentity) ||
+                isMspIdALicensee(clientIdentity) ||
                 isMspIdInThirdPartyMspIds(clientIdentity);
     }
 

@@ -44,10 +44,10 @@ class LicensingChaincodeTest {
     private ClientIdentity mockedClientIdentity;
     private LicensingChaincode subject = new LicensingChaincode();
     private static final String AUTHORIZED_STATE_MSP_ID = "TestStateMSP";
-    private static final String AUTHORIZED_ISSUEE_MSP_ID = "TestStateDmvMSP";
+    private static final String AUTHORIZED_ISSUEE_MSP_ID = "TestStateDmvLicenseeMSP";
+    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
     private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
     private static final String STATE_COLLECTION = "TestStateLicenseCollection";
-    private static final String TEST_INSURANCE_CO_COLLECTION = "TestInsuranceCoCollection";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -612,7 +612,10 @@ class LicensingChaincodeTest {
                 mockedChaincodeStub,
                 times(1)
         ).putPrivateData(
-                String.format("%s_LICENSE_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_LICENSE_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 "IN-123",
                 objectMapper.writeValueAsBytes(expected)
         );
@@ -701,7 +704,7 @@ class LicensingChaincodeTest {
 
     @Test
     void viewLicenseIn3rdPartyCollectionShouldReturnLicenseBecauseRequestorIsInThe3rdPartyMSPAndLicenseExists() throws
-                                                                             IOException {
+                                                                                                                IOException {
         final LicenseSchema expected = new LicenseSchema(
                 new License(
                         List.of("A"),
@@ -736,7 +739,10 @@ class LicensingChaincodeTest {
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getPrivateData(
-                String.format("%s_LICENSE_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_LICENSE_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 "IN-123"
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
@@ -749,12 +755,345 @@ class LicensingChaincodeTest {
                 mockedChaincodeStub,
                 times(1)
         ).getPrivateData(
-                String.format("%s_LICENSE_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_LICENSE_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 "IN-123"
         );
         assertEquals(
                 expected,
                 result
+        );
+    }
+
+    @Test
+    void revokeLicenseShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeLicense(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void revokeLicenseShouldThrowExceptionBecauseLicenseNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeLicense(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeLicenseShouldThrowExceptionBecauseLicenseNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeLicense(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeLicenseShouldThrowExceptionBecauseNoLicenseExistsForSpecifiedLicenseNumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-ABC123"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeLicense(
+                            mockedContext,
+                            "OH-abc123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No license exists for license number OH-abc123."));
+    }
+
+    @Test
+    void revokeLicenseShouldDeleteLicense() throws
+                                            IOException {
+        final byte[] persistedLicense = objectMapper.writeValueAsBytes(
+                new PersistedLicenseSchema(
+                        new PersistedLicense(
+                                List.of("A"),
+                                "IN-123"
+                        ),
+                        new PersistedLicensee(
+                                List.of(),
+                                new PersistedBirthdate(
+                                        "17",
+                                        "October",
+                                        "2017"
+                                ),
+                                Map.of(
+                                        "eyeColor",
+                                        "Blue",
+                                        "weight",
+                                        "40 ls"
+                                ),
+                                "false",
+                                "Maya",
+                                "string-encoded byte array here",
+                                "string-encoded byte array here",
+                                "unique-1"
+                        ),
+                        Map.of(
+                                "isPurdueStudent",
+                                "true"
+                        ),
+                        "1"
+                )
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "IN-123"
+        )).thenReturn(persistedLicense);
+
+        subject.revokeLicense(
+                mockedContext,
+                "IN-123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).delPrivateData(
+                STATE_COLLECTION,
+                "IN-123"
+        );
+    }
+
+    @Test
+    void cancelLicenseShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeLicense(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void cancelLicenseShouldThrowExceptionBecauseLicenseNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelLicense(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void cancelLicenseShouldThrowExceptionBecauseLicenseNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelLicense(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void cancelLicenseShouldThrowExceptionBecauseNoLicenseExistsForSpecifiedLicenseNumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-ABC123"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelLicense(
+                            mockedContext,
+                            "OH-abc123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No license exists for license number OH-abc123."));
+    }
+
+    @Test
+    void cancelLicenseShouldThrowExceptionBecauseRequestorIsALicenseeButNotTheActualLicensee() throws
+                                                                                               JsonProcessingException {
+        final byte[] persistedLicense = objectMapper.writeValueAsBytes(
+                new PersistedLicenseSchema(
+                        new PersistedLicense(
+                                List.of("A"),
+                                "IN-123"
+                        ),
+                        new PersistedLicensee(
+                                List.of(),
+                                new PersistedBirthdate(
+                                        "17",
+                                        "October",
+                                        "2017"
+                                ),
+                                Map.of(
+                                        "eyeColor",
+                                        "Blue",
+                                        "weight",
+                                        "40 ls"
+                                ),
+                                "false",
+                                "Maya",
+                                "string-encoded byte array here",
+                                "string-encoded byte array here",
+                                "unique-1"
+                        ),
+                        Map.of(
+                                "isPurdueStudent",
+                                "true"
+                        ),
+                        "1"
+                )
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+        when(mockedClientIdentity.getId()).thenReturn("unique-2");
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "IN-123"
+        )).thenReturn(persistedLicense);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelLicense(
+                            mockedContext,
+                            "IN-123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+
+    @Test
+    void cancelLicenseShouldDeleteLicense() throws
+                                            IOException {
+        final byte[] persistedLicense = objectMapper.writeValueAsBytes(
+                new PersistedLicenseSchema(
+                        new PersistedLicense(
+                                List.of("A"),
+                                "IN-123"
+                        ),
+                        new PersistedLicensee(
+                                List.of(),
+                                new PersistedBirthdate(
+                                        "17",
+                                        "October",
+                                        "2017"
+                                ),
+                                Map.of(
+                                        "eyeColor",
+                                        "Blue",
+                                        "weight",
+                                        "40 ls"
+                                ),
+                                "false",
+                                "Maya",
+                                "string-encoded byte array here",
+                                "string-encoded byte array here",
+                                "unique-1"
+                        ),
+                        Map.of(
+                                "isPurdueStudent",
+                                "true"
+                        ),
+                        "1"
+                )
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_ISSUEE_MSP_ID);
+        when(mockedClientIdentity.getId()).thenReturn("unique-1");
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "IN-123"
+        )).thenReturn(persistedLicense);
+
+        subject.cancelLicense(
+                mockedContext,
+                "IN-123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).delPrivateData(
+                STATE_COLLECTION,
+                "IN-123"
         );
     }
 }
