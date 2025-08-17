@@ -198,6 +198,47 @@ public class LicensingChaincode {
         }
     }
 
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public LicenseSchema viewLicenseIn3rdPartyCollection(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+        if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(licenseNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] license = context.getStub().getPrivateData(
+                String.format("%s_LICENSE_COLLECTION", context.getClientIdentity().getMSPID().toUpperCase()),
+                licenseNumber.toUpperCase()
+        );
+
+        if (license == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No license exists for license number %s.",
+                            licenseNumber
+                    ),
+                    LICENSE_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        return objectMapper.readValue(
+                license,
+                LicenseSchema.class
+        );
+    }
+
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
         return STATE_AGENCIES_MSP_IDS.contains(clientIdentity.getMSPID());
     }
@@ -252,8 +293,11 @@ public class LicensingChaincode {
     ) throws
       JsonProcessingException {
         context.getStub().putPrivateData(
-                String.format("%s_LICENSE_COLLECTION", context.getClientIdentity().getMSPID().toUpperCase()),
-                license.getLicenseNumber(),
+                String.format(
+                        "%s_LICENSE_COLLECTION",
+                        context.getClientIdentity().getMSPID().toUpperCase()
+                ),
+                license.getLicenseNumber().toUpperCase(),
                 objectMapper.writeValueAsBytes(license)
         );
     }

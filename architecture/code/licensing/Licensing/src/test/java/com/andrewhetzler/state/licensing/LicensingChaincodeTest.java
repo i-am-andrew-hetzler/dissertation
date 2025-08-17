@@ -621,4 +621,140 @@ class LicensingChaincodeTest {
                 result
         );
     }
+
+    @Test
+    void viewLicenseIn3rdPartyCollectionShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewLicenseIn3rdPartyCollection(
+                            mockedContext,
+                            "OH-ABC123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void viewLicenseIn3rdPartyCollectionShouldThrowExceptionBecauseLicenseNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewLicenseIn3rdPartyCollection(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void viewLicenseIn3rdPartyCollectionShouldThrowExceptionBecauseLicenseNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewLicenseIn3rdPartyCollection(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void viewLicenseIn3rdPartyCollectionShouldThrowExceptionBecauseNoLicenseExistsForSpecifiedLicenseNumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-ABC123"
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewLicenseIn3rdPartyCollection(
+                            mockedContext,
+                            "OH-abc123"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No license exists for license number OH-abc123."));
+    }
+
+    @Test
+    void viewLicenseIn3rdPartyCollectionShouldReturnLicenseBecauseRequestorIsInThe3rdPartyMSPAndLicenseExists() throws
+                                                                             IOException {
+        final LicenseSchema expected = new LicenseSchema(
+                new License(
+                        List.of("A"),
+                        "IN-123"
+                ),
+                new Licensee(
+                        List.of(),
+                        new Birthdate(
+                                "17",
+                                "October",
+                                "2017"
+                        ),
+                        Map.of(
+                                "eyeColor",
+                                "Blue",
+                                "weight",
+                                "40 ls"
+                        ),
+                        "false",
+                        "Maya",
+                        "string-encoded byte array here",
+                        "string-encoded byte array here"
+                ),
+                Map.of(
+                        "isPurdueStudent",
+                        "true"
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                String.format("%s_LICENSE_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                "IN-123"
+        )).thenReturn(objectMapper.writeValueAsBytes(expected));
+
+        final LicenseSchema result = subject.viewLicenseIn3rdPartyCollection(
+                mockedContext,
+                "IN-123"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                String.format("%s_LICENSE_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                "IN-123"
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
 }

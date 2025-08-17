@@ -1,0 +1,120 @@
+{
+  "title": "Licensing",
+  "type": "object",
+  "properties": {
+    "license": {
+      "description": "Contains information about the license.",
+      "type": "object",
+      "properties": {
+        "classes": {
+          "description": "A list of the license classes the licensee is entitled to.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "number": {
+          "description": "The license number assigned by the state.",
+          "type": "string"
+        }
+      },
+      "required": ["number"]
+    },
+    "licensee": {
+      "description": "Contains information about the licensee.",
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "description": "The address(es) the licensee provided.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "street1": {
+                "description": "The first line of the address of the licensee.",
+                "type": "string"
+              },
+              "street2": {
+                "description": "The second line of the address of the licensee.",
+                "type": "string"
+              },
+              "city": {
+                "description": "The city of the licensee.",
+                "type": "string"
+              },
+              "zipCode": {
+                "description": "The zip code of the licensee.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "street1",
+              "city",
+              "zipCode"
+            ]
+          }
+        },
+        "birthdate": {
+          "description": "The licensee's birthdate.",
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": "string"
+            },
+            "month": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "day",
+            "month",
+            "year"
+          ]
+        },
+        "description": {
+          "description": "A collection of key-value pairs that contain attributes required or allowed by the state of the licensee.",
+          "type": "object"
+        },
+        "isVeteran": {
+          "description": "A veteran distinction for the licensee.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The licensee's name.",
+          "type": "string"
+        },
+        "photograph": {
+          "description": "The string-encoded byte array of the licensee's photo.",
+          "type": "string"
+        },
+        "signature": {
+          "description": "The string-encoded byte array of the licensee's signature.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "addresses",
+        "birthdate",
+        "name",
+        "photograph",
+        "signature"
+      ]
+    },
+    "other": {
+      "description": "A collection of key-value pairs that contains data that states allow or require attributes that fall outside of the minimum compliance requirements.",
+      "type": "object"
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "license",
+    "licensee",
+    "schemaVersion"
+  ]
+}
