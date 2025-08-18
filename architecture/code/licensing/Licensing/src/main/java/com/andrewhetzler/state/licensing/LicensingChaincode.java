@@ -104,12 +104,7 @@ public class LicensingChaincode {
                     LICENSE_DOES_NOT_EXIST.toString()
             );
         }
-        /*
-        if statemsp, return license;
-        if dmv msp and uniqueid == clientidenty, then return license;
-        if 3rd party, write to 3rd party collection and return locense;
-        otherwise return error;
-         */
+
         if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
             final List<Address> addresses = convertPersistedAddressesToAddresses(persistedLicense.getLicenseeAddresses());
 

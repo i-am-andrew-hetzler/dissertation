@@ -1,56 +1,51 @@
-package com.andrewhetzler.state.licensing.model;
+package com.andrewhetzler.state.registration.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hyperledger.fabric.contract.annotation.DataType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * Author:       Andrew Hetzler
- * Date Created: 8/17/25
+ * Date Created: 8/18/25
  **/
 @JsonPropertyOrder(alphabetic = true)
 @DataType
-public class LicenseSchema {
-    private final License license;
-    private final Licensee licensee;
+public class RegistrationSchema {
     private final Map<String, String> other;
+    private final List<Registrant> registrants;
+    private final Registration registration;
     private final String schemaVersion;
 
-    public LicenseSchema(
-            @JsonProperty("license") License license,
-            @JsonProperty("licensee") Licensee licensee,
+    public RegistrationSchema(
             @JsonProperty("other") Map<String, String> other,
+            @JsonProperty("registrants") List<Registrant> registrants,
+            @JsonProperty("registration") Registration registration,
             @JsonProperty("schemaVersion") String schemaVersion
     ) {
-        this.license = license;
-        this.licensee = licensee;
         this.other = other;
+        this.registrants = registrants;
+        this.registration = registration;
         this.schemaVersion = schemaVersion;
-    }
-
-    public License getLicense() {
-        return license;
-    }
-
-    public Licensee getLicensee() {
-        return licensee;
     }
 
     public Map<String, String> getOther() {
         return other;
     }
 
-    public String getSchemaVersion() {
-        return schemaVersion;
+    public List<Registrant> getRegistrants() {
+        return registrants;
     }
 
-    @JsonIgnore
-    public String getLicenseNumber() {
-        return license.getNumber();
+    public Registration getRegistration() {
+        return registration;
+    }
+
+    public String getSchemaVersion() {
+        return schemaVersion;
     }
 
     @Override
@@ -58,16 +53,16 @@ public class LicenseSchema {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LicenseSchema that = (LicenseSchema) o;
+        RegistrationSchema that = (RegistrationSchema) o;
         return Objects.equals(
-                license,
-                that.license
-        ) && Objects.equals(
-                licensee,
-                that.licensee
-        ) && Objects.equals(
                 other,
                 that.other
+        ) && Objects.equals(
+                registrants,
+                that.registrants
+        ) && Objects.equals(
+                registration,
+                that.registration
         ) && Objects.equals(
                 schemaVersion,
                 that.schemaVersion
@@ -77,19 +72,19 @@ public class LicenseSchema {
     @Override
     public int hashCode() {
         return Objects.hash(
-                license,
-                licensee,
                 other,
+                registrants,
+                registration,
                 schemaVersion
         );
     }
 
     @Override
     public String toString() {
-        return "LicenseSchema{" +
-                "license=" + license +
-                ", licensee=" + licensee +
-                ", other=" + other +
+        return "RegistrationSchema{" +
+                "other=" + other +
+                ", registrants=" + registrants +
+                ", registration=" + registration +
                 ", schemaVersion='" + schemaVersion + '\'' +
                 '}';
     }
