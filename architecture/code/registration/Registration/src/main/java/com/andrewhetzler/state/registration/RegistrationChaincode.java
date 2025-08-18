@@ -113,7 +113,8 @@ public class RegistrationChaincode {
             }
 
             return createRegistrationFromPersistedRegistration(persistedRegistration);
-        } else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+        }
+        else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             final RegistrationSchema registration = createRegistrationFromPersistedRegistration(persistedRegistration);
 
             saveRegistrationDataTo3rdPartyCollection(
@@ -122,7 +123,8 @@ public class RegistrationChaincode {
             );
 
             return registration;
-        } else {
+        }
+        else {
             /*
             This should not happen
              */
@@ -137,9 +139,44 @@ public class RegistrationChaincode {
     public RegistrationSchema viewRegistrationIn3rdPartyCollection(
             final Context context,
             final String registrationNumber
-    ) {
+    ) throws
+      IOException {
+        if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
-        return null;
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] registration = context.getStub().getPrivateData(
+                String.format(
+                        "%s_REGISTRATION_COLLECTION",
+                        context.getClientIdentity().getMSPID().toUpperCase()
+                ),
+                registrationNumber.toUpperCase()
+        );
+
+        if (registration == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No registration exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    REGISTRATION_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        return objectMapper.readValue(
+                registration,
+                RegistrationSchema.class
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -154,16 +191,118 @@ public class RegistrationChaincode {
     public void revokeRegistration(
             final Context context,
             final String registrationNumber
-    ) {
+    ) throws
+      IOException {
+        if (!isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PersistedRegistrationSchema persistedRegistration = getRegistration(
+                context,
+                registrationNumber
+        );
+
+        if (persistedRegistration == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No registration exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    REGISTRATION_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        context.getStub().delPrivateData(
+                STATE_REGISTRATION_COLLECTION,
+                registrationNumber.toUpperCase()
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void cancelRegistration(
+    public RegistrationSchema cancelRegistration(
             final Context context,
             final String registrationNumber
-    ) {
+    ) throws
+      IOException {
+        if (!isMspIdARegistrant(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PersistedRegistrationSchema persistedRegistration = getRegistration(
+                context,
+                registrationNumber
+        );
+
+        if (persistedRegistration == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No registration exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    REGISTRATION_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        if (!isRequestorTheRegistrant(
+                context.getClientIdentity(),
+                persistedRegistration.getRegistrants()
+        )) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (persistedRegistration.getRegistrants().size() <= 1) {
+            context.getStub().delPrivateData(
+                    STATE_REGISTRATION_COLLECTION,
+                    registrationNumber.toUpperCase()
+            );
+
+            return null;
+        }
+
+        final PersistedRegistrationSchema updatedRegisration = new PersistedRegistrationSchema(
+                persistedRegistration.getOther(),
+                persistedRegistration.getRegistrants().stream().filter(registrant -> !registrant.getUniqueId().equals(context.getClientIdentity().getId())).toList(),
+                persistedRegistration.getRegistration(),
+                persistedRegistration.getSchemaVersion()
+        );
+
+        saveRegistration(
+                context,
+                updatedRegisration
+        );
+
+        return new RegistrationSchema(
+                updatedRegisration.getOther(),
+                convertPersistedRegistrant(updatedRegisration.getRegistrants()),
+                new Registration(
+                        updatedRegisration.getRegistration().getNumber(),
+                        updatedRegisration.getRegistration().getVehicleDescription()
+                ),
+                updatedRegisration.getSchemaVersion()
+        );
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
@@ -251,6 +390,18 @@ public class RegistrationChaincode {
                         "%s_REGISTRATION_COLLECTION",
                         context.getClientIdentity().getMSPID().toUpperCase()
                 ),
+                registration.getRegistration().getNumber().toUpperCase(),
+                objectMapper.writeValueAsBytes(registration)
+        );
+    }
+
+    private void saveRegistration(
+            final Context context,
+            final PersistedRegistrationSchema registration
+    ) throws
+      JsonProcessingException {
+        context.getStub().putPrivateData(
+                STATE_REGISTRATION_COLLECTION,
                 registration.getRegistration().getNumber().toUpperCase(),
                 objectMapper.writeValueAsBytes(registration)
         );
