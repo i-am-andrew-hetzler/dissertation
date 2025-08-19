@@ -1,0 +1,108 @@
+{
+  "title": "Proof of Financial Responsibility",
+  "type": "object",
+  "properties": {
+    "certificatesOfDeposit": {
+      "type": "array",
+      "items": {
+        "description": "Contains data about the certificate of deposit.",
+        "type": "object",
+        "properties": {
+          "amount": {
+            "description": "The amount of the deposit. The value should be in dollars.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the person that owns the certificate of deposit.",
+            "type": "object"
+          }
+        },
+        "required": [
+          "amount",
+          "name"
+        ]
+      }
+    },
+    "insurance": {
+      "description": "Contains data about the insurance policy.",
+      "type": "object",
+      "properties": {
+        "insured": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "The name of the person insured under this policy.",
+                "type": "string"
+              },
+              "vehicles": {
+                "description": "Contains data about the vehicle(s) the insured person is permitted to drive. Each state is responsible for submitting the data it requires or supports.",
+                "type": "array",
+                "items": {
+                  "type": "object"
+                },
+                "required": []
+              }
+            },
+            "required": []
+          }
+        },
+        "policy": {
+          "description": "Contains information about the insurance policy.",
+          "type": "object",
+          "properties": {
+            "effectiveDate": {
+              "description": "The date the insurance policy started.",
+              "type": "string"
+            },
+            "expirationDate": {
+              "description": "The date the insurance policy expires.",
+              "type": "string"
+            },
+            "insurer": {
+              "description": "The name of the insurer.",
+              "type": "string"
+            },
+            "policyNumber": {
+              "description": "The policy number for the insurance policy.",
+              "type": "string"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "selfInsurer": {
+      "description": "Contains data about the self-insurance certificate.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "description": "The maximum amount the self-insurance certificate is liable for. The value should be in dollars.",
+          "type": "string"
+        },
+        "businessName": {
+          "description": "The name of the business.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the person the self-insurance certificate is issued to.",
+          "type": "string"
+        },
+        "title": {
+          "description": "The business title of the person the self-insurance certificate is issued to.",
+          "type": "string"
+        }
+      },
+      "required": []
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion"
+  ]
+}
