@@ -31,7 +31,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
     private static final String AUTHORIZED_INSURED_MSP_ID = "TestStateDmvInsuredMSP";
     private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
     private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
-    private static final String STATE_COLLECTION = "TestStateProofCollection";
+    private static final String STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION = "TestStateCertificateOfDepositCollection";
+    private static final String STATE_INSURANCE_COLLECTION = "TestStateInsuranceCollection";
+    private static final String STATE_SELF_INSURANCE_COLLECTION = "TestStateSelfInsuranceCollection";
+    private static final String LICENSE_NUMBER = "OH-123";
 
     @BeforeEach
     void setUp() {
@@ -50,7 +53,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 () -> {
                     subject.viewProof(
                             mockedContext,
-                            "OH-123"
+                            LICENSE_NUMBER
                     );
                 }
         );
@@ -92,5 +95,36 @@ class ProofOfFinancialResponsibilityChaincodeTest {
         );
 
         assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void viewProofShouldThrowExceptionBecauseNoPOFRFound() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION,
+                LICENSE_NUMBER
+        )).thenReturn(null);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_INSURANCE_COLLECTION,
+                LICENSE_NUMBER
+        )).thenReturn(null);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_SELF_INSURANCE_COLLECTION,
+                LICENSE_NUMBER
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.viewProof(
+                            mockedContext,
+                            LICENSE_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for license number"));
     }
 }

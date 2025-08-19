@@ -1,6 +1,9 @@
 package com.andrewhetzler.state.pofr;
 
 import com.andrewhetzler.state.pofr.model.Proof;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedCertificateOfDeposit;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedInsurance;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedSelfInsurer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -11,10 +14,13 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.INVALID_REQUEST;
+import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.PROOF_DOES_NOT_EXIST;
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.UNAUTHORIZED_REQUEST;
 
 /**
@@ -34,9 +40,17 @@ import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChainco
 @Default
 public class ProofOfFinancialResponsibilityChaincode {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String STATE_PROOF_COLLECTION = System.getenv().getOrDefault(
-            "STATE_PROOF_COLLECTION",
-            "TestStateProofCollection"
+    private static final String STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION = System.getenv().getOrDefault(
+            "STATE_CERTIFICATE_OF_DEPOSIT_COLLECTION",
+            "TestStateCertificateOfDepositCollection"
+    );
+    private static final String STATE_INSURANCE_COLLECTION = System.getenv().getOrDefault(
+            "STATE_INSURANCE_COLLECTION",
+            "TestStateInsuranceCollection"
+    );
+    private static final String STATE_SELF_INSURANCE_COLLECTION = System.getenv().getOrDefault(
+            "STATE_SELF_INSURANCE_COLLECTION",
+            "TestStateSelfInsuranceCollection"
     );
     private static final List<String> STATE_AGENCIES_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
             "STATE_AGENCIES_MSP_IDS",
@@ -59,7 +73,8 @@ public class ProofOfFinancialResponsibilityChaincode {
     public Proof viewProof(
             final Context context,
             final String licenseNumber
-    ) {
+    ) throws
+      IOException {
         if (!isAuthorized(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -74,7 +89,25 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
+        final List<PersistedCertificateOfDeposit> certificateOfDeposits = getPersistedCertificateOfDeposits(
+                context,
+                licenseNumber
+        );
+        final PersistedInsurance insurance = getInsurance(
+                context,
+                licenseNumber
+        );
+        final PersistedSelfInsurer selfInsurance = getSelfInsurance(
+                context,
+                licenseNumber
+        );
 
+        if (certificateOfDeposits.isEmpty() && insurance == null && selfInsurance == null) {
+            throw new ChaincodeException(
+                    String.format("No proof of financial responsibility exists for license number %s.", licenseNumber),
+                    PROOF_DOES_NOT_EXIST.toString()
+            );
+        }
 
         return null;
     }
@@ -114,5 +147,56 @@ public class ProofOfFinancialResponsibilityChaincode {
         catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private List<PersistedCertificateOfDeposit> getPersistedCertificateOfDeposits(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+        final byte[] certificateOfDeposits = context.getStub().getPrivateData(
+                STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION,
+                licenseNumber.toUpperCase()
+        );
+
+        return certificateOfDeposits != null ? objectMapper.readValue(
+                certificateOfDeposits,
+                objectMapper.getTypeFactory().constructCollectionType(
+                        List.class,
+                        PersistedCertificateOfDeposit.class
+                )
+        ) : Collections.emptyList();
+    }
+
+    private PersistedInsurance getInsurance(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+        final byte[] insurance = context.getStub().getPrivateData(
+                STATE_INSURANCE_COLLECTION,
+                licenseNumber.toUpperCase()
+        );
+
+        return insurance != null ? objectMapper.readValue(
+                insurance,
+                PersistedInsurance.class
+        ) : null;
+    }
+
+    private PersistedSelfInsurer getSelfInsurance(
+            final Context context,
+            final String licenseNumber
+    ) throws
+      IOException {
+        final byte[] selfInsurance = context.getStub().getPrivateData(
+                STATE_SELF_INSURANCE_COLLECTION,
+                licenseNumber.toUpperCase()
+        );
+
+        return selfInsurance != null ? objectMapper.readValue(
+                selfInsurance,
+                PersistedSelfInsurer.class
+        ) : null;
     }
 }
