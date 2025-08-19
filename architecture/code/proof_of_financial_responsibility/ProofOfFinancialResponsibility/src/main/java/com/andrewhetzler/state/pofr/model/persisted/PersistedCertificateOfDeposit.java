@@ -11,20 +11,16 @@ import java.util.Objects;
  * Date Created: 8/19/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-@DataType
 public class PersistedCertificateOfDeposit {
     private final String amount;
     private final String name;
-    private final String uniqueId;
 
     public PersistedCertificateOfDeposit(
             @JsonProperty("amount") String amount,
-            @JsonProperty("name") String name,
-            @JsonProperty("uniqueId") String uniqueId
+            @JsonProperty("name") String name
     ) {
         this.amount = amount;
         this.name = name;
-        this.uniqueId = uniqueId;
     }
 
     public String getAmount() {
@@ -33,10 +29,6 @@ public class PersistedCertificateOfDeposit {
 
     public String getName() {
         return name;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
     }
 
     @Override
@@ -51,9 +43,6 @@ public class PersistedCertificateOfDeposit {
         ) && Objects.equals(
                 name,
                 that.name
-        ) && Objects.equals(
-                uniqueId,
-                that.uniqueId
         );
     }
 
@@ -61,8 +50,7 @@ public class PersistedCertificateOfDeposit {
     public int hashCode() {
         return Objects.hash(
                 amount,
-                name,
-                uniqueId
+                name
         );
     }
 
@@ -71,7 +59,6 @@ public class PersistedCertificateOfDeposit {
         return "PersistedCertificateOfDeposit{" +
                 "amount='" + amount + '\'' +
                 ", name='" + name + '\'' +
-                ", uniqueId='" + uniqueId + '\'' +
                 '}';
     }
 }

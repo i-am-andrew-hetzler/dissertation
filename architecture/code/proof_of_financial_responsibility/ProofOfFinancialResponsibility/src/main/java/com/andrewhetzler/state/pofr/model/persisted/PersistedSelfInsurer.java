@@ -11,26 +11,22 @@ import java.util.Objects;
  * Date Created: 8/19/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-@DataType
 public class PersistedSelfInsurer {
     private final String amount;
     private final String businessName;
     private final String name;
     private final String title;
-    private final String uniqueId;
 
     public PersistedSelfInsurer(
             @JsonProperty("amount") String amount,
             @JsonProperty("businessName") String businessName,
             @JsonProperty("name") String name,
-            @JsonProperty("title") String title,
-            @JsonProperty("uniqueId") String uniqueId
+            @JsonProperty("title") String title
     ) {
         this.amount = amount;
         this.businessName = businessName;
         this.name = name;
         this.title = title;
-        this.uniqueId = uniqueId;
     }
 
     public String getAmount() {
@@ -47,10 +43,6 @@ public class PersistedSelfInsurer {
 
     public String getTitle() {
         return title;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
     }
 
     @Override
@@ -71,9 +63,6 @@ public class PersistedSelfInsurer {
         ) && Objects.equals(
                 title,
                 that.title
-        ) && Objects.equals(
-                uniqueId,
-                that.uniqueId
         );
     }
 
@@ -83,8 +72,7 @@ public class PersistedSelfInsurer {
                 amount,
                 businessName,
                 name,
-                title,
-                uniqueId
+                title
         );
     }
 
@@ -95,7 +83,6 @@ public class PersistedSelfInsurer {
                 ", businessName='" + businessName + '\'' +
                 ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
-                ", uniqueId='" + uniqueId + '\'' +
                 '}';
     }
 }

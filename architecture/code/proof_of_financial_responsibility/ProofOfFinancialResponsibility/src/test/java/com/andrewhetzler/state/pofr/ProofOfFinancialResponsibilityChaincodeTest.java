@@ -31,10 +31,8 @@ class ProofOfFinancialResponsibilityChaincodeTest {
     private static final String AUTHORIZED_INSURED_MSP_ID = "TestStateDmvInsuredMSP";
     private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
     private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
-    private static final String STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION = "TestStateCertificateOfDepositCollection";
-    private static final String STATE_INSURANCE_COLLECTION = "TestStateInsuranceCollection";
-    private static final String STATE_SELF_INSURANCE_COLLECTION = "TestStateSelfInsuranceCollection";
-    private static final String LICENSE_NUMBER = "OH-123";
+    private static final String STATE_COLLECTION = "TestStateCollection";
+    private static final String REGISTRATION_NUMBER = "OH-123";
 
     @BeforeEach
     void setUp() {
@@ -53,7 +51,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 () -> {
                     subject.viewProof(
                             mockedContext,
-                            LICENSE_NUMBER
+                            REGISTRATION_NUMBER
                     );
                 }
         );
@@ -62,7 +60,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
     }
 
     @Test
-    void viewProofShouldThrowExceptionBecauseLicenseNumberIsMissing() {
+    void viewProofShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
 
@@ -80,7 +78,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
     }
 
     @Test
-    void viewProofShouldThrowExceptionBecauseLicenseNumberIsBlank() {
+    void viewProofShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
 
@@ -103,16 +101,8 @@ class ProofOfFinancialResponsibilityChaincodeTest {
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getPrivateData(
-                STATE_CERTIFICATE_OF_DEPOSITS_COLLECTION,
-                LICENSE_NUMBER
-        )).thenReturn(null);
-        when(mockedChaincodeStub.getPrivateData(
-                STATE_INSURANCE_COLLECTION,
-                LICENSE_NUMBER
-        )).thenReturn(null);
-        when(mockedChaincodeStub.getPrivateData(
-                STATE_SELF_INSURANCE_COLLECTION,
-                LICENSE_NUMBER
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER
         )).thenReturn(null);
 
         final Exception exception = assertThrows(
@@ -120,11 +110,11 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 () -> {
                     subject.viewProof(
                             mockedContext,
-                            LICENSE_NUMBER
+                            REGISTRATION_NUMBER
                     );
                 }
         );
 
-        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for license number"));
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123"));
     }
 }

@@ -1,7 +1,8 @@
-package com.andrewhetzler.state.pofr.model;
+package com.andrewhetzler.state.pofr.model.persisted;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.hyperledger.fabric.contract.annotation.DataType;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,17 +12,18 @@ import java.util.Objects;
  * Date Created: 8/19/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-public class Proof {
-    private final List<CertificateOfDeposit> certificateOfDeposits;
-    private final Insurance insurance;
+@DataType
+public class PersistedProof {
+    private final List<PersistedCertificateOfDeposit> certificateOfDeposits;
+    private final PersistedInsurance insurance;
     private final String schemaVersion;
-    private final SelfInsurer selfInsurer;
+    private final PersistedSelfInsurer selfInsurer;
 
-    public Proof(
-            @JsonProperty("certificateOfDeposits") List<CertificateOfDeposit> certificateOfDeposits,
-            @JsonProperty("insurance") Insurance insurance,
+    public PersistedProof(
+            @JsonProperty("certificateOfDeposits") List<PersistedCertificateOfDeposit> certificateOfDeposits,
+            @JsonProperty("insurance") PersistedInsurance insurance,
             @JsonProperty("schemaVersion") String schemaVersion,
-            @JsonProperty("selfInsurer") SelfInsurer selfInsurer
+            @JsonProperty("selfInsurer") PersistedSelfInsurer selfInsurer
     ) {
         this.certificateOfDeposits = certificateOfDeposits;
         this.insurance = insurance;
@@ -29,11 +31,11 @@ public class Proof {
         this.selfInsurer = selfInsurer;
     }
 
-    public List<CertificateOfDeposit> getCertificateOfDeposits() {
+    public List<PersistedCertificateOfDeposit> getCertificateOfDeposits() {
         return certificateOfDeposits;
     }
 
-    public Insurance getInsurance() {
+    public PersistedInsurance getInsurance() {
         return insurance;
     }
 
@@ -41,7 +43,7 @@ public class Proof {
         return schemaVersion;
     }
 
-    public SelfInsurer getSelfInsurer() {
+    public PersistedSelfInsurer getSelfInsurer() {
         return selfInsurer;
     }
 
@@ -50,19 +52,19 @@ public class Proof {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Proof proof = (Proof) o;
+        PersistedProof that = (PersistedProof) o;
         return Objects.equals(
                 certificateOfDeposits,
-                proof.certificateOfDeposits
+                that.certificateOfDeposits
         ) && Objects.equals(
                 insurance,
-                proof.insurance
+                that.insurance
         ) && Objects.equals(
                 schemaVersion,
-                proof.schemaVersion
+                that.schemaVersion
         ) && Objects.equals(
                 selfInsurer,
-                proof.selfInsurer
+                that.selfInsurer
         );
     }
 
@@ -78,7 +80,7 @@ public class Proof {
 
     @Override
     public String toString() {
-        return "Proof{" +
+        return "PersistedProof{" +
                 "certificateOfDeposits=" + certificateOfDeposits +
                 ", insurance=" + insurance +
                 ", schemaVersion='" + schemaVersion + '\'' +
