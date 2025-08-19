@@ -1,0 +1,74 @@
+{
+  "title": "Registration",
+  "type": "object",
+  "properties": {
+    "other": {
+      "description": "A collection of key-value pairs containing additional information either allowed or needed by the state.",
+      "type": "object"
+    },
+    "registrants": {
+      "description": "Contains data about the registrant(s).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "description": "The address of the registrant.",
+            "type": "object",
+            "properties": {
+              "street1": {
+                "description": "The first line of the address of the registrant.",
+                "type": "string"
+              },
+              "street2": {
+                "description": "The second line of the address of the registrant.",
+                "type": "string"
+              },
+              "city": {
+                "description": "The city of the registrant.",
+                "type": "string"
+              },
+              "county": {
+                "description": "The county of the registrant.",
+                "type": "string"
+              },
+              "zipCode": {
+                "description": "The zip code of the registrant.",
+                "type": "string"
+              }
+            }
+          },
+          "name": {
+            "description": "The registrant's name.",
+            "type": "string"
+          }
+        },
+        "required": []
+      }
+    },
+    "registration": {
+      "description": "Contains registration data.",
+      "type": "object",
+      "properties": {
+        "number": {
+          "description": "The registration number (typically the license plate number).",
+          "type": "string"
+        },
+        "vehicleDescription": {
+          "description": "The vehicle's description.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "number"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion"
+  ]
+}
