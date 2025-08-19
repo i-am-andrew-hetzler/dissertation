@@ -26,7 +26,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -670,6 +669,561 @@ class RegistrationChaincodeTest {
     }
 
     @Test
+    void issueRegistrationShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "Jane Doe",
+                            "unique-1",
+                            "OH-HETZLER",
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            "unique-1",
+                            null,
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "",
+                            "unique-1",
+                            "",
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseUniqueIdIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            "OH-HETZLER",
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseUniqueIdIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "",
+                            "",
+                            "OH-HETZLER",
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "Jane Doe",
+                            "unique-1",
+                            "OH-HETZLER",
+                            null,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "Jane Doe",
+                            "unique-1",
+                            "OH-HETZLER",
+                            null,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.issueRegistration(
+                            mockedContext,
+                            null,
+                            null,
+                            "Jane Doe",
+                            "unique-1",
+                            "A",
+                            null,
+                            "A"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void issueRegistrationShouldIssueBecauseNoRegistrationExists() throws
+                                                                   IOException {
+        final Map<String, String> other = Map.of(
+                "isAutonomousVehicle",
+                "true"
+        );
+        final List<Address> addresses = List.of(
+                new Address(
+                        "123 University Lane",
+                        null,
+                        "West Lafayette",
+                        "Purdue County",
+                        "98765"
+                )
+        );
+        final Map<String, String> vehicleDescriptions = Map.of(
+                "make",
+                "Purdue Motor Company",
+                "model",
+                "Boilermaker",
+                "year",
+                "2025",
+                "color",
+                "Black"
+        );
+        final RegistrationSchema expected = new RegistrationSchema(
+                other,
+                List.of(
+                        new Registrant(
+                                addresses,
+                                "Jane Doe"
+                        )
+                ),
+                new Registration(
+                        "OH-HETZLER",
+                        vehicleDescriptions
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER"
+        )).thenReturn(null);
+
+        final RegistrationSchema result = subject.issueRegistration(
+                mockedContext,
+                objectMapper.writeValueAsString(other),
+                objectMapper.writeValueAsString(addresses),
+                "Jane Doe",
+                "unique-1",
+                "OH-HETZLER",
+                objectMapper.writeValueAsString(vehicleDescriptions),
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER",
+                objectMapper.writeValueAsBytes(
+                        new PersistedRegistrationSchema(
+                                other,
+                                List.of(
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "123 University Lane",
+                                                                null,
+                                                                "West Lafayette",
+                                                                "Purdue County",
+                                                                "98765"
+                                                        )
+                                                ),
+                                                "Jane Doe",
+                                                "unique-1"
+                                        )
+                                ),
+                                new PersistedRegistration(
+                                        "OH-HETZLER",
+                                        vehicleDescriptions
+                                ),
+                                "1"
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void issueRegistrationShouldIssueBecauseRegistrationExistsButNewRegistrantAdded() throws
+                                                                   IOException {
+        final Map<String, String> other = Map.of(
+                "isAutonomousVehicle",
+                "true"
+        );
+        final List<Address> addresses = List.of(
+                new Address(
+                        "123 University Lane",
+                        null,
+                        "West Lafayette",
+                        "Purdue County",
+                        "98765"
+                )
+        );
+        final Map<String, String> vehicleDescriptions = Map.of(
+                "make",
+                "Purdue Motor Company",
+                "model",
+                "Boilermaker",
+                "year",
+                "2025",
+                "color",
+                "Black"
+        );
+        final RegistrationSchema expected = new RegistrationSchema(
+                other,
+                List.of(
+                        new Registrant(
+                                addresses,
+                                "Jane Doe"
+                        ),
+                        new Registrant(
+                                addresses,
+                                "Maya Doe"
+                        )
+                ),
+                new Registration(
+                        "OH-HETZLER",
+                        vehicleDescriptions
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedRegistrationSchema(
+                                other,
+                                List.of(
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "123 University Lane",
+                                                                null,
+                                                                "West Lafayette",
+                                                                "Purdue County",
+                                                                "98765"
+                                                        )
+                                                ),
+                                                "Jane Doe",
+                                                "unique-1"
+                                        )
+                                ),
+                                new PersistedRegistration(
+                                        "OH-HETZLER",
+                                        vehicleDescriptions
+                                ),
+                                "1"
+                        )
+                )
+        );
+
+        final RegistrationSchema result = subject.issueRegistration(
+                mockedContext,
+                objectMapper.writeValueAsString(other),
+                objectMapper.writeValueAsString(addresses),
+                "Maya Doe",
+                "unique-2",
+                "OH-HETZLER",
+                objectMapper.writeValueAsString(vehicleDescriptions),
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER",
+                objectMapper.writeValueAsString(
+                        new PersistedRegistrationSchema(
+                                other,
+                                List.of(
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "123 University Lane",
+                                                                null,
+                                                                "West Lafayette",
+                                                                "Purdue County",
+                                                                "98765"
+                                                        )
+                                                ),
+                                                "Jane Doe",
+                                                "unique-1"
+                                        ),
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "123 University Lane",
+                                                                null,
+                                                                "West Lafayette",
+                                                                "Purdue County",
+                                                                "98765"
+                                                        )
+                                                ),
+                                                "Maya Doe",
+                                                "unique-2"
+                                        )
+                                ),
+                                new PersistedRegistration(
+                                        "OH-HETZLER",
+                                        vehicleDescriptions
+                                ),
+                                "1"
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void issueRegistrationShouldIssueBecauseRegistrationExistsRegistrantDataUpdated() throws
+                                                                                      IOException {
+        final Map<String, String> other = Map.of(
+                "isAutonomousVehicle",
+                "true"
+        );
+        final List<Address> addresses = List.of(
+                new Address(
+                        "123 University Lane",
+                        null,
+                        "West Lafayette",
+                        "Purdue County",
+                        "98765"
+                )
+        );
+        final Map<String, String> vehicleDescriptions = Map.of(
+                "make",
+                "Purdue Motor Company",
+                "model",
+                "Boilermaker",
+                "year",
+                "2025",
+                "color",
+                "Black"
+        );
+        final RegistrationSchema expected = new RegistrationSchema(
+                other,
+                List.of(
+                        new Registrant(
+                                addresses,
+                                "Jane Doe"
+                        )
+                ),
+                new Registration(
+                        "OH-HETZLER",
+                        vehicleDescriptions
+                ),
+                "1"
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER"
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedRegistrationSchema(
+                                other,
+                                List.of(
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "856 Teacher Drive",
+                                                                "Suite B",
+                                                                "College Park",
+                                                                "Penn State County",
+                                                                "98732"
+                                                        )
+                                                ),
+                                                "Jane Doe",
+                                                "unique-1"
+                                        )
+                                ),
+                                new PersistedRegistration(
+                                        "OH-HETZLER",
+                                        vehicleDescriptions
+                                ),
+                                "1"
+                        )
+                )
+        );
+
+        final RegistrationSchema result = subject.issueRegistration(
+                mockedContext,
+                objectMapper.writeValueAsString(other),
+                objectMapper.writeValueAsString(addresses),
+                "Jane Doe",
+                "unique-1",
+                "OH-HETZLER",
+                objectMapper.writeValueAsString(vehicleDescriptions),
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                "OH-HETZLER",
+                objectMapper.writeValueAsString(
+                        new PersistedRegistrationSchema(
+                                other,
+                                List.of(
+                                        new PersistedRegistrant(
+                                                List.of(
+                                                        new PersistedAddress(
+                                                                "123 University Lane",
+                                                                null,
+                                                                "West Lafayette",
+                                                                "Purdue County",
+                                                                "98765"
+                                                        )
+                                                ),
+                                                "Jane Doe",
+                                                "unique-1"
+                                        )
+                                ),
+                                new PersistedRegistration(
+                                        "OH-HETZLER",
+                                        vehicleDescriptions
+                                ),
+                                "1"
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
     void revokeRegistrationShouldThrowExceptionBecauseRequestorIsUnauthorized() {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
@@ -1139,7 +1693,7 @@ class RegistrationChaincodeTest {
 
     @Test
     void cancelRegistrationShouldDeleteRecordBecauseThereWasOnly1Registrant() throws
-                                                                                                     IOException {
+                                                                              IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_REGISTRANT_MSP_ID);
         when(mockedClientIdentity.getId()).thenReturn("unique-1");

@@ -4,9 +4,12 @@ import com.andrewhetzler.state.registration.model.Address;
 import com.andrewhetzler.state.registration.model.Registrant;
 import com.andrewhetzler.state.registration.model.Registration;
 import com.andrewhetzler.state.registration.model.RegistrationSchema;
+import com.andrewhetzler.state.registration.model.persisted.PersistedAddress;
 import com.andrewhetzler.state.registration.model.persisted.PersistedRegistrant;
+import com.andrewhetzler.state.registration.model.persisted.PersistedRegistration;
 import com.andrewhetzler.state.registration.model.persisted.PersistedRegistrationSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -18,9 +21,14 @@ import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
+import static com.andrewhetzler.state.registration.RegistrationChaincodeError.DESERIALIZATION_ERROR;
 import static com.andrewhetzler.state.registration.RegistrationChaincodeError.INVALID_REQUEST;
 import static com.andrewhetzler.state.registration.RegistrationChaincodeError.REGISTRATION_DOES_NOT_EXIST;
 import static com.andrewhetzler.state.registration.RegistrationChaincodeError.UNAUTHORIZED_REQUEST;
@@ -181,10 +189,119 @@ public class RegistrationChaincode {
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public RegistrationSchema issueRegistration(
-            final Context context
-    ) {
+            final Context context,
+            final String serializedOther,
+            final String serializedAddresses,
+            final String name,
+            final String uniqueId,
+            final String registrationNumber,
+            final String serializedVehicleDescription,
+            final String schemaVersion
+    ) throws
+      IOException {
+        if (!isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
 
-        return null;
+        if (isNullOrBlank(registrationNumber) || isNullOrBlank(uniqueId) || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final List<PersistedAddress> addresses = deserializeList(
+                serializedAddresses,
+                "addresses",
+                PersistedAddress.class
+        );
+        final Map<String, String> other = deserializeMap(
+                serializedOther,
+                "other"
+        );
+        final Map<String, String> vehicleDescription = deserializeMap(
+                serializedVehicleDescription,
+                "vehicleDescription"
+        );
+
+        final PersistedRegistrationSchema existingRegistration = getRegistration(
+                context,
+                registrationNumber
+        );
+        final PersistedRegistrationSchema registration;
+
+        if (existingRegistration != null) {
+            final List<PersistedRegistrant> registrants = existingRegistration.getRegistrants();
+
+            if (doesRegistrantAlreadyExist(existingRegistration.getRegistrants(), uniqueId)) {
+                final OptionalInt index = IntStream.range(0, existingRegistration.getRegistrants().size())
+                        .filter(i -> existingRegistration.getRegistrants().get(i).getUniqueId().equals(uniqueId))
+                        .findFirst();
+
+                if (index.isPresent()) {
+                    registrants.set(
+                            index.getAsInt(),
+                            new PersistedRegistrant(
+                                    addresses,
+                                    name,
+                                    uniqueId
+                            )
+                    );
+                }
+            } else {
+                registrants.add(
+                        new PersistedRegistrant(
+                                addresses,
+                                name,
+                                uniqueId
+                        )
+                );
+            }
+
+            registration = new PersistedRegistrationSchema(
+                    other,
+                    registrants,
+                    new PersistedRegistration(
+                            registrationNumber,
+                            vehicleDescription
+                    ),
+                    schemaVersion
+            );
+        } else {
+            registration = new PersistedRegistrationSchema(
+                    other,
+                    List.of(
+                            new PersistedRegistrant(
+                                    addresses,
+                                    name,
+                                    uniqueId
+                            )
+                    ),
+                    new PersistedRegistration(
+                            registrationNumber,
+                            vehicleDescription
+                    ),
+                    schemaVersion
+            );
+        }
+
+        saveRegistration(
+                context,
+                registration
+        );
+
+        return new RegistrationSchema(
+                registration.getOther(),
+                convertPersistedRegistrant(registration.getRegistrants()),
+                new Registration(
+                        registration.getRegistration().getNumber(),
+                        registration.getRegistration().getVehicleDescription()
+                ),
+                registration.getSchemaVersion()
+        );
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -403,7 +520,76 @@ public class RegistrationChaincode {
         context.getStub().putPrivateData(
                 STATE_REGISTRATION_COLLECTION,
                 registration.getRegistration().getNumber().toUpperCase(),
-                objectMapper.writeValueAsBytes(registration)
+                objectMapper.writeValueAsString(registration)
         );
+    }
+
+    private boolean isNumber(final String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private <T> List<T> deserializeList(
+            final String serializedList,
+            final String attribute,
+            final Class<T> clazz
+    ) {
+        try {
+            return serializedList != null && !serializedList.isBlank() ? objectMapper.readValue(
+                    serializedList,
+                    objectMapper.getTypeFactory().constructCollectionType(
+                            List.class,
+                            clazz
+                    )
+            ) : new ArrayList<>();
+        }
+        catch (JsonMappingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to map the %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+        catch (JsonProcessingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to deserialize %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+    }
+
+    private Map<String, String> deserializeMap(
+            final String serializedMap,
+            final String attribute
+    ) throws
+      JsonProcessingException {
+        try {
+            return objectMapper.readValue(
+                    serializedMap,
+                    Map.class
+            );
+        } catch (Exception e) {
+            throw new ChaincodeException(
+                    String.format("Unable to deserialize %s.", attribute),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+    }
+
+    private boolean doesRegistrantAlreadyExist(
+            final List<PersistedRegistrant> registrants,
+            final String id
+    ) {
+        return registrants.stream().anyMatch(registrant -> id.equals(registrant.getUniqueId()));
     }
 }
