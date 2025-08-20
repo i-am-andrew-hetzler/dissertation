@@ -170,7 +170,163 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
-        return objectMapper.readValue(existingProof, Proof.class);
+        return objectMapper.readValue(
+                existingProof,
+                Proof.class
+        );
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void revokeCertificateOfDeposits(
+            final Context context,
+            final String registrationNumber
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] existingProof = context.getStub().getPrivateData(
+                STATE_PROOF_COLLECTION,
+                registrationNumber.toUpperCase()
+        );
+        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
+                existingProof,
+                PersistedProof.class
+        ) : null;
+
+        if (proof == null || proof.getCertificateOfDeposits().isEmpty()) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No proof of financial responsibility exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    PROOF_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        save(
+                context,
+                new PersistedProof(
+                        List.of(),
+                        proof.getInsurance(),
+                        proof.getSchemaVersion(),
+                        proof.getSelfInsurer()
+                ),
+                registrationNumber
+        );
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void revokeSelfInsurance(
+            final Context context,
+            final String registrationNumber
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] existingProof = context.getStub().getPrivateData(
+                STATE_PROOF_COLLECTION,
+                registrationNumber.toUpperCase()
+        );
+        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
+                existingProof,
+                PersistedProof.class
+        ) : null;
+
+        if (proof == null || proof.getSelfInsurer() == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No proof of financial responsibility exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    PROOF_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        save(
+                context,
+                new PersistedProof(
+                        proof.getCertificateOfDeposits(),
+                        proof.getInsurance(),
+                        proof.getSchemaVersion(),
+                        null
+                ),
+                registrationNumber
+        );
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public void cancelInsurance(
+            final Context context,
+            final String registrationNumber
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] existingProof = context.getStub().getPrivateData(
+                STATE_PROOF_COLLECTION,
+                registrationNumber.toUpperCase()
+        );
+        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
+                existingProof,
+                PersistedProof.class
+        ) : null;
+
+        if (proof == null || proof.getInsurance() == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No proof of financial responsibility exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    PROOF_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        save(
+                context,
+                new PersistedProof(
+                        proof.getCertificateOfDeposits(),
+                        null,
+                        proof.getSchemaVersion(),
+                        proof.getSelfInsurer()
+                ),
+                registrationNumber
+        );
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
@@ -181,19 +337,8 @@ public class ProofOfFinancialResponsibilityChaincode {
         return STATE_DMV_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
     }
 
-    private boolean isMspIdAnInsured(final ClientIdentity clientIdentity) {
-        return STATE_DMV_INSURED_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
-    }
-
     private boolean isMspIdInThirdPartyMspIds(final ClientIdentity clientIdentity) {
         return THIRD_PARTY_MSP_IDS.contains(clientIdentity.getMSPID());
-    }
-
-    private boolean isAuthorized(final ClientIdentity clientIdentity) {
-        return isMspIdInStateAgencies(clientIdentity) ||
-                isMspIdTheStateDmv(clientIdentity) ||
-                isMspIdAnInsured(clientIdentity) ||
-                isMspIdInThirdPartyMspIds(clientIdentity);
     }
 
     private boolean isNullOrBlank(final String value) {
@@ -262,6 +407,26 @@ public class ProofOfFinancialResponsibilityChaincode {
                 selfInsurer.getName(),
                 selfInsurer.getTitle()
         ) : null;
+    }
+
+    private void save(
+            final Context context,
+            final PersistedProof proof,
+            final String registrationNumber
+    ) throws
+      JsonProcessingException {
+        if (proof.hasNoProofs()) {
+            context.getStub().delPrivateData(
+                    STATE_PROOF_COLLECTION,
+                    registrationNumber.toUpperCase()
+            );
+        } else {
+            context.getStub().putPrivateData(
+                    STATE_PROOF_COLLECTION,
+                    registrationNumber.toUpperCase(),
+                    objectMapper.writeValueAsBytes(proof)
+            );
+        }
     }
 
     private void saveProofDataTo3rdPartyCollection(

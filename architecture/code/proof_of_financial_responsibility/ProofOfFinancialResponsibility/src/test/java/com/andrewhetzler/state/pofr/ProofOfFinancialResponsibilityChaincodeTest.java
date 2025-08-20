@@ -4,7 +4,13 @@ import com.andrewhetzler.state.pofr.model.Insurance;
 import com.andrewhetzler.state.pofr.model.Insured;
 import com.andrewhetzler.state.pofr.model.Policy;
 import com.andrewhetzler.state.pofr.model.Proof;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedCertificateOfDeposit;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedInsurance;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedInsured;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedPolicy;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedProof;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedSelfInsurer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -137,9 +143,12 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 List.of(),
                 new Insurance(
                         Map.of(
-                                "make", "Purdue Motor Company",
-                                "model", "Boilermaker",
-                                "year", "2024"
+                                "make",
+                                "Purdue Motor Company",
+                                "model",
+                                "Boilermaker",
+                                "year",
+                                "2024"
                         ),
                         List.of(
                                 new Insured("Maya Husky")
@@ -182,14 +191,17 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void viewProofShouldReturnProofBecauseRequestorIsAnAuthorized3rdParty() throws
-                                                                   IOException {
+                                                                            IOException {
         final Proof expected = new Proof(
                 List.of(),
                 new Insurance(
                         Map.of(
-                                "make", "Purdue Motor Company",
-                                "model", "Boilermaker",
-                                "year", "2024"
+                                "make",
+                                "Purdue Motor Company",
+                                "model",
+                                "Boilermaker",
+                                "year",
+                                "2024"
                         ),
                         List.of(
                                 new Insured("Maya Husky")
@@ -228,7 +240,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 mockedChaincodeStub,
                 times(1)
         ).putPrivateData(
-                String.format("%s_PROOF_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_PROOF_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 REGISTRATION_NUMBER.toUpperCase(),
                 objectMapper.writeValueAsBytes(expected)
         );
@@ -317,14 +332,17 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void viewProofIn3rdPartyCollectionShouldReturnProofBecauseRequestorIsAnAuthorized3rdParty() throws
-                                                                   IOException {
+                                                                                                IOException {
         final Proof expected = new Proof(
                 List.of(),
                 new Insurance(
                         Map.of(
-                                "make", "Purdue Motor Company",
-                                "model", "Boilermaker",
-                                "year", "2024"
+                                "make",
+                                "Purdue Motor Company",
+                                "model",
+                                "Boilermaker",
+                                "year",
+                                "2024"
                         ),
                         List.of(
                                 new Insured("Maya Husky")
@@ -343,7 +361,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_3RD_PARTY_MSP_ID);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getPrivateData(
-                String.format("%s_PROOF_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_PROOF_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
@@ -356,12 +377,680 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 mockedChaincodeStub,
                 times(1)
         ).getPrivateData(
-                String.format("%s_PROOF_COLLECTION", AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()),
+                String.format(
+                        "%s_PROOF_COLLECTION",
+                        AUTHORIZED_3RD_PARTY_MSP_ID.toUpperCase()
+                ),
                 REGISTRATION_NUMBER
         );
         assertEquals(
                 expected,
                 result
+        );
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeCertificateOfDeposits(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeCertificateOfDeposits(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeCertificateOfDeposits(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldThrowExceptionBecausePofrDoesNotExist() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeCertificateOfDeposits(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldThrowExceptionBecausePofrExistsButNoCoDExist() throws
+                                                                                        JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeCertificateOfDeposits(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldDeleteEntryBecauseProofHasNoProofs() throws
+                                                                              IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        subject.revokeCertificateOfDeposits(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).delPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+    }
+
+    @Test
+    void revokeCertificateOfDepositShouldSaveProofBecauseOtherProofsExist() throws
+                                                                              IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "1000",
+                                        "Lazy Cat Inc",
+                                        "Samson",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+
+        subject.revokeCertificateOfDeposits(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "1000",
+                                        "Lazy Cat Inc",
+                                        "Samson",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeSelfInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeSelfInsurance(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeSelfInsurance(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldThrowExceptionBecausePofrDoesNotExist() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeSelfInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldThrowExceptionBecausePofrExistsButNoSelfInsuranceExist() throws
+                                                                                        JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.revokeSelfInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldDeleteEntryBecauseProofHasNoProofs() throws
+                                                                              IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "1000",
+                                        "The Lazy Cat",
+                                        "Samson the cat",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+
+        subject.revokeSelfInsurance(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).delPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+    }
+
+    @Test
+    void revokeSelfInsuranceShouldSaveProofBecauseOtherProofsExist() throws
+                                                                            IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "1000",
+                                        "Lazy Cat Inc",
+                                        "Samson",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+
+        subject.revokeSelfInsurance(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+    }
+
+    @Test
+    void cancelInsuranceShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void cancelInsuranceShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelInsurance(
+                            mockedContext,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void cancelInsuranceShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelInsurance(
+                            mockedContext,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void cancelInsuranceShouldThrowExceptionBecausePofrDoesNotExist() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void cancelInsuranceShouldThrowExceptionBecausePofrExistsButNoInsuranceExist() throws
+                                                                                           JsonProcessingException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.cancelInsurance(
+                            mockedContext,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("No proof of financial responsibility exists for registration number OH-123."));
+    }
+
+    @Test
+    void cancelInsuranceShouldDeleteEntryBecauseProofHasNoProofs() throws
+                                                                       IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(),
+                                new PersistedInsurance(
+                                        null,
+                                        null,
+                                        null
+                                ),
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        subject.cancelInsurance(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).delPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+    }
+
+    @Test
+    void cancelInsuranceShouldSaveProofBecauseOtherProofsExist() throws
+                                                                     IOException {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                new PersistedInsurance(
+                                        Map.of(),
+                                        List.of(
+                                                new PersistedInsured("Maya the Husky")
+                                        ),
+                                        new PersistedPolicy(
+                                                "01/01/25",
+                                                "12/31/25",
+                                                "Progressive",
+                                                "ABC123"
+                                        )
+                                ),
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        subject.cancelInsurance(
+                mockedContext,
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "1000",
+                                                "Samson the cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
         );
     }
 }

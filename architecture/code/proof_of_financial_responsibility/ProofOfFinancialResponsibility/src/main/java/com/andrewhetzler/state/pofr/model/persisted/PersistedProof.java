@@ -1,5 +1,6 @@
 package com.andrewhetzler.state.pofr.model.persisted;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hyperledger.fabric.contract.annotation.DataType;
@@ -45,6 +46,11 @@ public class PersistedProof {
 
     public PersistedSelfInsurer getSelfInsurer() {
         return selfInsurer;
+    }
+
+    @JsonIgnore
+    public boolean hasNoProofs() {
+        return (certificateOfDeposits == null || certificateOfDeposits.isEmpty() && insurance == null && selfInsurer == null);
     }
 
     @Override
