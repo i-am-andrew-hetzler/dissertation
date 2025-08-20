@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -12,15 +13,22 @@ import java.util.Objects;
  **/
 @JsonPropertyOrder(alphabetic = true)
 public class Insurance {
+    private final Map<String, String> descriptionOfVehicle;
     private final List<Insured> insured;
     private final Policy policy;
 
     public Insurance(
+            @JsonProperty("descriptionOfVehicles") Map<String, String> descriptionOfVehicle,
             @JsonProperty("insured") List<Insured> insured,
             @JsonProperty("policy") Policy policy
     ) {
+        this.descriptionOfVehicle = descriptionOfVehicle;
         this.insured = insured;
         this.policy = policy;
+    }
+
+    public Map<String, String> getDescriptionOfVehicle() {
+        return descriptionOfVehicle;
     }
 
     public List<Insured> getInsured() {
@@ -33,11 +41,15 @@ public class Insurance {
 
     @Override
     public boolean equals(Object o) {
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Insurance insurance = (Insurance) o;
         return Objects.equals(
+                descriptionOfVehicle,
+                insurance.descriptionOfVehicle
+        ) && Objects.equals(
                 insured,
                 insurance.insured
         ) && Objects.equals(
@@ -49,6 +61,7 @@ public class Insurance {
     @Override
     public int hashCode() {
         return Objects.hash(
+                descriptionOfVehicle,
                 insured,
                 policy
         );
@@ -57,7 +70,8 @@ public class Insurance {
     @Override
     public String toString() {
         return "Insurance{" +
-                "insured=" + insured +
+                "descriptionOfVehicle=" + descriptionOfVehicle +
+                ", insured=" + insured +
                 ", policy=" + policy +
                 '}';
     }

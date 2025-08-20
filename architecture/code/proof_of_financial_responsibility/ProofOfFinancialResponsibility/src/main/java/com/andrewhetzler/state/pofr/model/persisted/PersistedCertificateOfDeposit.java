@@ -2,7 +2,6 @@ package com.andrewhetzler.state.pofr.model.persisted;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.hyperledger.fabric.contract.annotation.DataType;
 
 import java.util.Objects;
 

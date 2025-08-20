@@ -3,8 +3,6 @@ package com.andrewhetzler.state.pofr.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,22 +12,13 @@ import java.util.Objects;
 @JsonPropertyOrder(alphabetic = true)
 public class Insured {
     private final String name;
-    private final List<Map<String, String>> descriptionOfVehicles;
 
-    public Insured(
-            @JsonProperty("name") String name,
-            @JsonProperty("descriptionOfVehicles") List<Map<String, String>> descriptionOfVehicles
-    ) {
+    public Insured(@JsonProperty("name") String name) {
         this.name = name;
-        this.descriptionOfVehicles = descriptionOfVehicles;
     }
 
     public String getName() {
         return name;
-    }
-
-    public List<Map<String, String>> getDescriptionOfVehicles() {
-        return descriptionOfVehicles;
     }
 
     @Override
@@ -41,17 +30,13 @@ public class Insured {
         return Objects.equals(
                 name,
                 insured.name
-        ) && Objects.equals(
-                descriptionOfVehicles,
-                insured.descriptionOfVehicles
         );
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                name,
-                descriptionOfVehicles
+                name
         );
     }
 
@@ -59,7 +44,6 @@ public class Insured {
     public String toString() {
         return "Insured{" +
                 "name='" + name + '\'' +
-                ", descriptionOfVehicles=" + descriptionOfVehicles +
                 '}';
     }
 }

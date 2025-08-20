@@ -2,9 +2,9 @@ package com.andrewhetzler.state.pofr.model.persisted;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.hyperledger.fabric.contract.annotation.DataType;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -13,15 +13,22 @@ import java.util.Objects;
  **/
 @JsonPropertyOrder(alphabetic = true)
 public class PersistedInsurance {
+    private final Map<String, String> descriptionOfVehicle;
     private final List<PersistedInsured> insured;
     private final PersistedPolicy policy;
 
     public PersistedInsurance(
+            @JsonProperty("descriptionOfVehicle") Map<String, String> descriptionOfVehicle,
             @JsonProperty("insured") List<PersistedInsured> insured,
             @JsonProperty("policy") PersistedPolicy policy
     ) {
+        this.descriptionOfVehicle = descriptionOfVehicle;
         this.insured = insured;
         this.policy = policy;
+    }
+
+    public Map<String, String> getDescriptionOfVehicle() {
+        return descriptionOfVehicle;
     }
 
     public List<PersistedInsured> getInsured() {
@@ -39,6 +46,9 @@ public class PersistedInsurance {
         }
         PersistedInsurance that = (PersistedInsurance) o;
         return Objects.equals(
+                descriptionOfVehicle,
+                that.descriptionOfVehicle
+        ) && Objects.equals(
                 insured,
                 that.insured
         ) && Objects.equals(
@@ -50,6 +60,7 @@ public class PersistedInsurance {
     @Override
     public int hashCode() {
         return Objects.hash(
+                descriptionOfVehicle,
                 insured,
                 policy
         );
@@ -58,7 +69,8 @@ public class PersistedInsurance {
     @Override
     public String toString() {
         return "PersistedInsurance{" +
-                "insured=" + insured +
+                "descriptionOfVehicle=" + descriptionOfVehicle +
+                ", insured=" + insured +
                 ", policy=" + policy +
                 '}';
     }

@@ -2,6 +2,7 @@ package com.andrewhetzler.state.pofr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.hyperledger.fabric.contract.annotation.DataType;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Objects;
  * Date Created: 8/19/25
  **/
 @JsonPropertyOrder(alphabetic = true)
+@DataType
 public class Proof {
     private final List<CertificateOfDeposit> certificateOfDeposits;
     private final Insurance insurance;

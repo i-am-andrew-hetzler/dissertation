@@ -1,7 +1,16 @@
 package com.andrewhetzler.state.pofr;
 
+import com.andrewhetzler.state.pofr.model.CertificateOfDeposit;
+import com.andrewhetzler.state.pofr.model.Insurance;
+import com.andrewhetzler.state.pofr.model.Insured;
+import com.andrewhetzler.state.pofr.model.Policy;
 import com.andrewhetzler.state.pofr.model.Proof;
+import com.andrewhetzler.state.pofr.model.SelfInsurer;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedCertificateOfDeposit;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedInsurance;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedProof;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedSelfInsurer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -14,6 +23,7 @@ import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.INVALID_REQUEST;
@@ -58,13 +68,19 @@ public class ProofOfFinancialResponsibilityChaincode {
             "TestInsuranceCoMSP"
     ).split(";"));
 
+    /*
+    State agencies and 3rd parties would call this method. Individuals would call the specific method (e.g., insurance)
+     */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public Proof viewProof(
             final Context context,
             final String registrationNumber
     ) throws
       IOException {
-        if (!isAuthorized(context.getClientIdentity())) {
+        if (!isMspIdInStateAgencies(context.getClientIdentity())
+                && !isMspIdTheStateDmv(context.getClientIdentity())
+                && !isMspIdInThirdPartyMspIds(context.getClientIdentity())
+        ) {
             throw new ChaincodeException(
                     "Unauthorized request.",
                     UNAUTHORIZED_REQUEST.toString()
@@ -93,9 +109,68 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
+        if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
+            return createProofFromPersistedProof(existingProof);
+        }
+        else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+            saveProofDataTo3rdPartyCollection(
+                    context,
+                    createProofFromPersistedProof(existingProof),
+                    registrationNumber
+            );
 
+            return createProofFromPersistedProof(existingProof);
+        }
+        else {
+            /*
+            This should not happen
+             */
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+    }
 
-        return null;
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public Proof viewProofIn3rdPartyCollection(
+            final Context context,
+            final String registrationNumber
+    ) throws
+      IOException {
+        if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final byte[] existingProof = context.getStub().getPrivateData(
+                String.format(
+                        "%s_PROOF_COLLECTION",
+                        context.getClientIdentity().getMSPID().toUpperCase()
+                ),
+                registrationNumber.toUpperCase()
+        );
+
+        if (existingProof == null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No proof of financial responsibility exists for registration number %s.",
+                            registrationNumber
+                    ),
+                    PROOF_DOES_NOT_EXIST.toString()
+            );
+        }
+
+        return objectMapper.readValue(existingProof, Proof.class);
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
@@ -149,5 +224,59 @@ public class ProofOfFinancialResponsibilityChaincode {
                 proof,
                 PersistedProof.class
         ) : null;
+    }
+
+    private Proof createProofFromPersistedProof(final PersistedProof proof) {
+        return new Proof(
+                createCertificateOfDepositsFromPersistedCertificateOfDeposits(proof.getCertificateOfDeposits()),
+                createInsuranceFromPersistedInsurance(proof.getInsurance()),
+                proof.getSchemaVersion(),
+                createSelfInsurerFromPersistedSelfInsurer(proof.getSelfInsurer())
+        );
+    }
+
+    private List<CertificateOfDeposit> createCertificateOfDepositsFromPersistedCertificateOfDeposits(List<PersistedCertificateOfDeposit> deposits) {
+        return deposits != null ? deposits.stream().map(cd -> new CertificateOfDeposit(
+                cd.getAmount(),
+                cd.getName()
+        )).toList() : Collections.emptyList();
+    }
+
+    private Insurance createInsuranceFromPersistedInsurance(PersistedInsurance insurance) {
+        return insurance != null ? new Insurance(
+                insurance.getDescriptionOfVehicle(),
+                insurance.getInsured().stream().map(insured -> new Insured(insured.getName())).toList(),
+                new Policy(
+                        insurance.getPolicy().getEffectiveDate(),
+                        insurance.getPolicy().getExpirationDate(),
+                        insurance.getPolicy().getInsurer(),
+                        insurance.getPolicy().getPolicyNumber()
+                )
+        ) : null;
+    }
+
+    private SelfInsurer createSelfInsurerFromPersistedSelfInsurer(PersistedSelfInsurer selfInsurer) {
+        return selfInsurer != null ? new SelfInsurer(
+                selfInsurer.getAmount(),
+                selfInsurer.getBusinessName(),
+                selfInsurer.getName(),
+                selfInsurer.getTitle()
+        ) : null;
+    }
+
+    private void saveProofDataTo3rdPartyCollection(
+            final Context context,
+            final Proof proof,
+            final String registrationNumber
+    ) throws
+      JsonProcessingException {
+        context.getStub().putPrivateData(
+                String.format(
+                        ("%s_PROOF_COLLECTION"),
+                        context.getClientIdentity().getMSPID().toUpperCase()
+                ),
+                registrationNumber.toUpperCase(),
+                objectMapper.writeValueAsBytes(proof)
+        );
     }
 }
