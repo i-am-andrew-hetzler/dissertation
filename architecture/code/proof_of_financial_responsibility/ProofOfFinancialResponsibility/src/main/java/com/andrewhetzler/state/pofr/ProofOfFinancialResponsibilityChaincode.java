@@ -177,6 +177,88 @@ public class ProofOfFinancialResponsibilityChaincode {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public Proof saveCertificateOfDeposit(
+            final Context context,
+            final String amount,
+            final String name,
+            final String registrationNumber,
+            final String schemaVersion
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(amount) || !isNumber(amount) || isNullOrBlank(name) || isNullOrBlank(registrationNumber)
+                || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PersistedProof existingProof = getProof(
+                context,
+                registrationNumber
+        );
+        final PersistedProof proof;
+
+        if (existingProof == null) {
+            proof = new PersistedProof(
+                    List.of(
+                            new PersistedCertificateOfDeposit(
+                                    amount,
+                                    name
+                            )
+                    ),
+                    null,
+                    schemaVersion,
+                    null
+            );
+        }
+        else {
+            final var certificates = existingProof.getCertificateOfDeposits();
+
+            certificates.add(new PersistedCertificateOfDeposit(
+                    amount,
+                    name
+            ));
+
+            proof = new PersistedProof(
+                    certificates,
+                    existingProof.getInsurance(),
+                    existingProof.getSchemaVersion(),
+                    existingProof.getSelfInsurer()
+            );
+        }
+
+        save(
+                context,
+                proof,
+                registrationNumber
+        );
+
+        return new Proof(
+                createCertificateOfDepositsFromPersistedCertificateOfDeposits(proof.getCertificateOfDeposits()),
+                createInsuranceFromPersistedInsurance(proof.getInsurance()),
+                createSelfInsurerFromPersistedSelfInsurer(proof.getSelfInsurer())
+        );
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public Proof saveInsurance() {
+        return null;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public Proof saveSelfInsurance() {
+        return null;
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
     public void revokeCertificateOfDeposits(
             final Context context,
             final String registrationNumber
@@ -196,14 +278,10 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
-        final byte[] existingProof = context.getStub().getPrivateData(
-                STATE_PROOF_COLLECTION,
-                registrationNumber.toUpperCase()
+        final PersistedProof proof = getProof(
+                context,
+                registrationNumber
         );
-        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
-                existingProof,
-                PersistedProof.class
-        ) : null;
 
         if (proof == null || proof.getCertificateOfDeposits().isEmpty()) {
             throw new ChaincodeException(
@@ -247,14 +325,10 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
-        final byte[] existingProof = context.getStub().getPrivateData(
-                STATE_PROOF_COLLECTION,
-                registrationNumber.toUpperCase()
+        final PersistedProof proof = getProof(
+                context,
+                registrationNumber
         );
-        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
-                existingProof,
-                PersistedProof.class
-        ) : null;
 
         if (proof == null || proof.getSelfInsurer() == null) {
             throw new ChaincodeException(
@@ -298,14 +372,10 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
-        final byte[] existingProof = context.getStub().getPrivateData(
-                STATE_PROOF_COLLECTION,
-                registrationNumber.toUpperCase()
+        final PersistedProof proof = getProof(
+                context,
+                registrationNumber
         );
-        final PersistedProof proof = existingProof != null ? objectMapper.readValue(
-                existingProof,
-                PersistedProof.class
-        ) : null;
 
         if (proof == null || proof.getInsurance() == null) {
             throw new ChaincodeException(
@@ -375,7 +445,6 @@ public class ProofOfFinancialResponsibilityChaincode {
         return new Proof(
                 createCertificateOfDepositsFromPersistedCertificateOfDeposits(proof.getCertificateOfDeposits()),
                 createInsuranceFromPersistedInsurance(proof.getInsurance()),
-                proof.getSchemaVersion(),
                 createSelfInsurerFromPersistedSelfInsurer(proof.getSelfInsurer())
         );
     }
@@ -420,7 +489,8 @@ public class ProofOfFinancialResponsibilityChaincode {
                     STATE_PROOF_COLLECTION,
                     registrationNumber.toUpperCase()
             );
-        } else {
+        }
+        else {
             context.getStub().putPrivateData(
                     STATE_PROOF_COLLECTION,
                     registrationNumber.toUpperCase(),

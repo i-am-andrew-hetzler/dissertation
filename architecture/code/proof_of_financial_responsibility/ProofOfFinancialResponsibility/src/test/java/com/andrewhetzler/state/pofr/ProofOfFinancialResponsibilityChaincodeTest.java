@@ -1,5 +1,6 @@
 package com.andrewhetzler.state.pofr;
 
+import com.andrewhetzler.state.pofr.model.CertificateOfDeposit;
 import com.andrewhetzler.state.pofr.model.Insurance;
 import com.andrewhetzler.state.pofr.model.Insured;
 import com.andrewhetzler.state.pofr.model.Policy;
@@ -160,7 +161,6 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                 "ABC123"
                         )
                 ),
-                "1",
                 null
         );
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
@@ -213,7 +213,6 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                 "ABC123"
                         )
                 ),
-                "1",
                 null
         );
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
@@ -354,7 +353,6 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                 "ABC123"
                         )
                 ),
-                "1",
                 null
         );
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
@@ -388,6 +386,387 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 result
         );
     }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "1000",
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseAmountIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            null,
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseAmountIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "",
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseAmountIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "A",
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseNameIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "1000",
+                            null,
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseNameIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "1000",
+                            "",
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "10000",
+                            "Maya the Husky",
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "10000",
+                            "Maya the Husky",
+                            "",
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            null,
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "",
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveCertificateOfDeposit(
+                            mockedContext,
+                            "A",
+                            "Maya the Husky",
+                            REGISTRATION_NUMBER,
+                            "A"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldReturnProofBecauseItsNewProof() throws
+                                                                       IOException {
+        final Proof expected = new Proof(
+                List.of(
+                        new CertificateOfDeposit(
+                                "10000",
+                                "Maya the Husky"
+                        )
+                ),
+                null,
+                null
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Proof result = subject.saveCertificateOfDeposit(
+                mockedContext,
+                "10000",
+                "Maya the Husky",
+                REGISTRATION_NUMBER,
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "10000",
+                                                "Maya the Husky"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveCertificateOfDepositShouldReturnProofBecauseExistsAndWeAddedCertificate() throws
+                                                                                       IOException {
+        final Proof expected = new Proof(
+                List.of(
+                        new CertificateOfDeposit(
+                                "20000",
+                                "Samson the Cat"
+                        ),
+                        new CertificateOfDeposit(
+                                "10000",
+                                "Maya the Husky"
+                        )
+                ),
+                null,
+                null
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "20000",
+                                                "Samson the Cat"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+
+        final Proof result = subject.saveCertificateOfDeposit(
+                mockedContext,
+                "10000",
+                "Maya the Husky",
+                REGISTRATION_NUMBER,
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        );
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                List.of(
+                                        new PersistedCertificateOfDeposit(
+                                                "20000",
+                                                "Samson the Cat"
+                                        ),
+                                        new PersistedCertificateOfDeposit(
+                                                "10000",
+                                                "Maya the Husky"
+                                        )
+                                ),
+                                null,
+                                "1",
+                                null
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+
 
     @Test
     void revokeCertificateOfDepositShouldThrowExceptionBecauseRequestorIsUnauthorized() {
@@ -547,7 +926,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void revokeCertificateOfDepositShouldSaveProofBecauseOtherProofsExist() throws
-                                                                              IOException {
+                                                                            IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -688,7 +1067,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void revokeSelfInsuranceShouldThrowExceptionBecausePofrExistsButNoSelfInsuranceExist() throws
-                                                                                        JsonProcessingException {
+                                                                                           JsonProcessingException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -721,7 +1100,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void revokeSelfInsuranceShouldDeleteEntryBecauseProofHasNoProofs() throws
-                                                                              IOException {
+                                                                       IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -767,7 +1146,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void revokeSelfInsuranceShouldSaveProofBecauseOtherProofsExist() throws
-                                                                            IOException {
+                                                                     IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -908,7 +1287,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void cancelInsuranceShouldThrowExceptionBecausePofrExistsButNoInsuranceExist() throws
-                                                                                           JsonProcessingException {
+                                                                                   JsonProcessingException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -941,7 +1320,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void cancelInsuranceShouldDeleteEntryBecauseProofHasNoProofs() throws
-                                                                       IOException {
+                                                                   IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
@@ -986,7 +1365,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void cancelInsuranceShouldSaveProofBecauseOtherProofsExist() throws
-                                                                     IOException {
+                                                                 IOException {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);

@@ -12,22 +12,18 @@ import java.util.Objects;
  * Date Created: 8/19/25
  **/
 @JsonPropertyOrder(alphabetic = true)
-@DataType
 public class Proof {
     private final List<CertificateOfDeposit> certificateOfDeposits;
     private final Insurance insurance;
-    private final String schemaVersion;
     private final SelfInsurer selfInsurer;
 
     public Proof(
             @JsonProperty("certificateOfDeposits") List<CertificateOfDeposit> certificateOfDeposits,
             @JsonProperty("insurance") Insurance insurance,
-            @JsonProperty("schemaVersion") String schemaVersion,
             @JsonProperty("selfInsurer") SelfInsurer selfInsurer
     ) {
         this.certificateOfDeposits = certificateOfDeposits;
         this.insurance = insurance;
-        this.schemaVersion = schemaVersion;
         this.selfInsurer = selfInsurer;
     }
 
@@ -37,10 +33,6 @@ public class Proof {
 
     public Insurance getInsurance() {
         return insurance;
-    }
-
-    public String getSchemaVersion() {
-        return schemaVersion;
     }
 
     public SelfInsurer getSelfInsurer() {
@@ -60,9 +52,6 @@ public class Proof {
                 insurance,
                 proof.insurance
         ) && Objects.equals(
-                schemaVersion,
-                proof.schemaVersion
-        ) && Objects.equals(
                 selfInsurer,
                 proof.selfInsurer
         );
@@ -73,7 +62,6 @@ public class Proof {
         return Objects.hash(
                 certificateOfDeposits,
                 insurance,
-                schemaVersion,
                 selfInsurer
         );
     }
@@ -83,7 +71,6 @@ public class Proof {
         return "Proof{" +
                 "certificateOfDeposits=" + certificateOfDeposits +
                 ", insurance=" + insurance +
-                ", schemaVersion='" + schemaVersion + '\'' +
                 ", selfInsurer=" + selfInsurer +
                 '}';
     }
