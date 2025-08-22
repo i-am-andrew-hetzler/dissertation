@@ -8,9 +8,12 @@ import com.andrewhetzler.state.pofr.model.Proof;
 import com.andrewhetzler.state.pofr.model.SelfInsurer;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedCertificateOfDeposit;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedInsurance;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedInsured;
+import com.andrewhetzler.state.pofr.model.persisted.PersistedPolicy;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedProof;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedSelfInsurer;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
@@ -22,10 +25,13 @@ import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.DESERIALIZATION_ERROR;
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.INVALID_REQUEST;
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.PROOF_DOES_NOT_EXIST;
 import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChaincodeError.UNAUTHORIZED_REQUEST;
@@ -241,16 +247,161 @@ public class ProofOfFinancialResponsibilityChaincode {
                 registrationNumber
         );
 
-        return new Proof(
-                createCertificateOfDepositsFromPersistedCertificateOfDeposits(proof.getCertificateOfDeposits()),
-                createInsuranceFromPersistedInsurance(proof.getInsurance()),
-                createSelfInsurerFromPersistedSelfInsurer(proof.getSelfInsurer())
-        );
+        return createProofFromPersistedProof(proof);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Proof saveInsurance() {
-        return null;
+    public Proof saveInsurance(
+            final Context context,
+            final String serializedVehicleDescription,
+            final String serializedInsured,
+            final String effectiveDate,
+            final String expirationDate,
+            final String insurer,
+            final String policyNumber,
+            final String registrationNumber,
+            final String schemaVersion
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(schemaVersion) || !isNumber(schemaVersion) || isNullOrBlank(registrationNumber)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final Map<String, String> vehicleDescription = deserializeMap(
+                serializedVehicleDescription,
+                "descriptionOfVehicle"
+        );
+        final List<PersistedInsured> insured = deserializeList(
+                serializedInsured,
+                "insured",
+                PersistedInsured.class
+        );
+        final PersistedProof exitingProof = getProof(
+                context,
+                registrationNumber
+        );
+        final PersistedProof proof;
+
+        if (exitingProof == null) {
+            proof = new PersistedProof(
+                    null,
+                    new PersistedInsurance(
+                            vehicleDescription != null ? vehicleDescription : Map.of(),
+                            insured != null ? insured : List.of(),
+                            new PersistedPolicy(
+                                    effectiveDate,
+                                    expirationDate,
+                                    insurer,
+                                    policyNumber
+                            )
+                    ),
+                    schemaVersion,
+                    null
+            );
+        }
+        else {
+            proof = new PersistedProof(
+                    exitingProof.getCertificateOfDeposits(),
+                    new PersistedInsurance(
+                            vehicleDescription != null ? vehicleDescription : Map.of(),
+                            insured != null ? insured : List.of(),
+                            new PersistedPolicy(
+                                    effectiveDate,
+                                    expirationDate,
+                                    insurer,
+                                    policyNumber
+                            )
+                    ),
+                    exitingProof.getSchemaVersion(),
+                    exitingProof.getSelfInsurer()
+            );
+        }
+
+        save(
+                context,
+                proof,
+                registrationNumber
+        );
+
+        return createProofFromPersistedProof(proof);
+    }
+
+    @Transaction(intent = Transaction.TYPE.SUBMIT)
+    public Proof saveSelfInsurance(
+            final Context context,
+            final String amount,
+            final String businessName,
+            final String name,
+            final String title,
+            final String schemaVersion,
+            final String registrationNumber
+    ) throws
+      IOException {
+        if (!isMspIdInStateAgencies(context.getClientIdentity()) && !isMspIdTheStateDmv(context.getClientIdentity())) {
+            throw new ChaincodeException(
+                    "Unauthorized request.",
+                    UNAUTHORIZED_REQUEST.toString()
+            );
+        }
+
+        if (isNullOrBlank(schemaVersion) || !isNumber(schemaVersion) || isNullOrBlank(registrationNumber) ||
+                (!isNullOrBlank(amount) && !isNumber(amount))) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        final PersistedProof exitingProof = getProof(
+                context,
+                registrationNumber
+        );
+        final PersistedProof proof;
+
+        if (exitingProof == null) {
+            proof = new PersistedProof(
+                    null,
+                    null,
+                    schemaVersion,
+                    new PersistedSelfInsurer(
+                            amount,
+                            businessName,
+                            name,
+                            title
+                    )
+            );
+        }
+        else {
+            proof = new PersistedProof(
+                    exitingProof.getCertificateOfDeposits(),
+                    exitingProof.getInsurance(),
+                    exitingProof.getSchemaVersion(),
+                    new PersistedSelfInsurer(
+                            amount,
+                            businessName,
+                            name,
+                            title
+                    )
+            );
+        }
+
+        save(
+                context,
+                proof,
+                registrationNumber
+        );
+
+        return createProofFromPersistedProof(proof);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -513,5 +664,61 @@ public class ProofOfFinancialResponsibilityChaincode {
                 registrationNumber.toUpperCase(),
                 objectMapper.writeValueAsBytes(proof)
         );
+    }
+
+    private <T> List<T> deserializeList(
+            final String serializedList,
+            final String attribute,
+            final Class<T> clazz
+    ) {
+        try {
+            return serializedList != null && !serializedList.isBlank() ? objectMapper.readValue(
+                    serializedList,
+                    objectMapper.getTypeFactory().constructCollectionType(
+                            List.class,
+                            clazz
+                    )
+            ) : new ArrayList<>();
+        }
+        catch (JsonMappingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to map the %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+        catch (JsonProcessingException e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to deserialize %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
+    }
+
+    private Map<String, String> deserializeMap(
+            final String serializedMap,
+            final String attribute
+    ) throws
+      ChaincodeException {
+        try {
+            return objectMapper.readValue(
+                    serializedMap,
+                    Map.class
+            );
+        }
+        catch (Exception e) {
+            throw new ChaincodeException(
+                    String.format(
+                            "Unable to deserialize %s.",
+                            attribute
+                    ),
+                    DESERIALIZATION_ERROR.toString()
+            );
+        }
     }
 }

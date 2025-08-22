@@ -5,6 +5,7 @@ import com.andrewhetzler.state.pofr.model.Insurance;
 import com.andrewhetzler.state.pofr.model.Insured;
 import com.andrewhetzler.state.pofr.model.Policy;
 import com.andrewhetzler.state.pofr.model.Proof;
+import com.andrewhetzler.state.pofr.model.SelfInsurer;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedCertificateOfDeposit;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedInsurance;
 import com.andrewhetzler.state.pofr.model.persisted.PersistedInsured;
@@ -766,7 +767,622 @@ class ProofOfFinancialResponsibilityChaincodeTest {
         );
     }
 
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
 
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            REGISTRATION_NUMBER,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            "",
+                            "1"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            REGISTRATION_NUMBER,
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            REGISTRATION_NUMBER,
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveInsuranceShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveInsurance(
+                            mockedContext,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            REGISTRATION_NUMBER,
+                            "A"
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveInsuranceShouldReturnProofBecauseItsNewProof() throws
+                                                            IOException {
+        final Map<String, String> vehicleDescription = Map.of(
+                "make",
+                "Purdue Motor Company",
+                "model",
+                "Boilermaker",
+                "year",
+                "2025"
+        );
+        final Proof expected = new Proof(
+                List.of(),
+                new Insurance(
+                        vehicleDescription,
+                        List.of(
+                                new Insured("Maya the Husky")
+                        ),
+                        new Policy(
+                                "01/01/25",
+                                "12/31/25",
+                                "Lazy Cat Insurer",
+                                "ABC123"
+                        )
+                ),
+                null
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Proof result = subject.saveInsurance(
+                mockedContext,
+                objectMapper.writeValueAsString(vehicleDescription),
+                objectMapper.writeValueAsString(List.of(new Insured("Maya the Husky"))),
+                "01/01/25",
+                "12/31/25",
+                "Lazy Cat Insurer",
+                "ABC123",
+                REGISTRATION_NUMBER,
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                null,
+                                new PersistedInsurance(
+                                        vehicleDescription,
+                                        List.of(
+                                                new PersistedInsured("Maya the Husky")
+                                        ),
+                                        new PersistedPolicy(
+                                                "01/01/25",
+                                                "12/31/25",
+                                                "Lazy Cat Insurer",
+                                                "ABC123"
+                                        )
+                                ),
+                                "1",
+                                null
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveInsuranceShouldReturnProofBecauseItsUpdatingProof() throws
+                                                                 IOException {
+        final Map<String, String> vehicleDescription = Map.of(
+                "make",
+                "Purdue Motor Company",
+                "model",
+                "Boilermaker",
+                "year",
+                "2025"
+        );
+        final Proof expected = new Proof(
+                List.of(),
+                new Insurance(
+                        vehicleDescription,
+                        List.of(
+                                new Insured("Maya the Husky")
+                        ),
+                        new Policy(
+                                "01/01/25",
+                                "12/31/25",
+                                "Lazy Cat Insurer",
+                                "ABC123"
+                        )
+                ),
+                null
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(new PersistedProof(
+                        null,
+                        new PersistedInsurance(
+                                Map.of(),
+                                List.of(),
+                                new PersistedPolicy(
+                                        "01/01/24",
+                                        "12/31/24",
+                                        "Lazy Cat Insurer",
+                                        "ABC123"
+                                )
+                        ),
+                        "1",
+                        null
+                ))
+        );
+
+        final Proof result = subject.saveInsurance(
+                mockedContext,
+                objectMapper.writeValueAsString(vehicleDescription),
+                objectMapper.writeValueAsString(List.of(new Insured("Maya the Husky"))),
+                "01/01/25",
+                "12/31/25",
+                "Lazy Cat Insurer",
+                "ABC123",
+                REGISTRATION_NUMBER,
+                "1"
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                null,
+                                new PersistedInsurance(
+                                        vehicleDescription,
+                                        List.of(
+                                                new PersistedInsured("Maya the Husky")
+                                        ),
+                                        new PersistedPolicy(
+                                                "01/01/25",
+                                                "12/31/25",
+                                                "Lazy Cat Insurer",
+                                                "ABC123"
+                                        )
+                                ),
+                                "1",
+                                null
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseRequestorIsUnauthorized() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn("BessCoMSP");
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "1",
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Unauthorized request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseAmountIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "A",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "1",
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseRegistrationNumberIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "1",
+                            null
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseRegistrationNumberIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "1",
+                            ""
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseSchemaVersionIsMissing() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            null,
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseSchemaVersionIsBlank() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "",
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldThrowExceptionBecauseSchemaVersionIsNotANumber() {
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+
+        final Exception exception = assertThrows(
+                ChaincodeException.class,
+                () -> {
+                    subject.saveSelfInsurance(
+                            mockedContext,
+                            "10000",
+                            "Lazy Cat Insurer",
+                            "Samson the Cat",
+                            "CEO",
+                            "A",
+                            REGISTRATION_NUMBER
+                    );
+                }
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid request."));
+    }
+
+    @Test
+    void saveSelfInsuranceShouldReturnBecauseItsNewProof() throws
+                                                           IOException {
+        final Proof expected = new Proof(
+                List.of(),
+                null,
+                new SelfInsurer(
+                        "10000",
+                        "Lazy Cat Insurer",
+                        "Samson the Cat",
+                        "CEO"
+                )
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(null);
+
+        final Proof result =  subject.saveSelfInsurance(
+                mockedContext,
+                "10000",
+                "Lazy Cat Insurer",
+                "Samson the Cat",
+                "CEO",
+                "1",
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                null,
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "10000",
+                                        "Lazy Cat Insurer",
+                                        "Samson the Cat",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
+
+    @Test
+    void saveSelfInsuranceShouldReturnBecauseItsUpdatingProof() throws
+                                                           IOException {
+        final Proof expected = new Proof(
+                List.of(),
+                null,
+                new SelfInsurer(
+                        "10000",
+                        "Lazy Cat Insurer",
+                        "Samson the Cat",
+                        "CEO"
+                )
+        );
+
+        when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
+        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
+        when(mockedChaincodeStub.getPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase()
+        )).thenReturn(
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                null,
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "99999",
+                                        "Lazy Cat Insurer",
+                                        "Maya the Husky",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+
+        final Proof result =  subject.saveSelfInsurance(
+                mockedContext,
+                "10000",
+                "Lazy Cat Insurer",
+                "Samson the Cat",
+                "CEO",
+                "1",
+                REGISTRATION_NUMBER
+        );
+
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putPrivateData(
+                STATE_COLLECTION,
+                REGISTRATION_NUMBER.toUpperCase(),
+                objectMapper.writeValueAsBytes(
+                        new PersistedProof(
+                                null,
+                                null,
+                                "1",
+                                new PersistedSelfInsurer(
+                                        "10000",
+                                        "Lazy Cat Insurer",
+                                        "Samson the Cat",
+                                        "CEO"
+                                )
+                        )
+                )
+        );
+        assertEquals(
+                expected,
+                result
+        );
+    }
 
     @Test
     void revokeCertificateOfDepositShouldThrowExceptionBecauseRequestorIsUnauthorized() {

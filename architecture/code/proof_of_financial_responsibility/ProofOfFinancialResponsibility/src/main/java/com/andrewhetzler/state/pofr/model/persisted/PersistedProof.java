@@ -50,7 +50,7 @@ public class PersistedProof {
 
     @JsonIgnore
     public boolean hasNoProofs() {
-        return (certificateOfDeposits == null || certificateOfDeposits.isEmpty() && insurance == null && selfInsurer == null);
+        return (certificateOfDeposits == null || certificateOfDeposits.isEmpty()) && insurance == null && selfInsurer == null;
     }
 
     @Override
