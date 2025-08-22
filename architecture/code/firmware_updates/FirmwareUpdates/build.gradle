@@ -1,0 +1,76 @@
+plugins {
+    id 'com.gradleup.shadow' version '8.3.5'
+    id 'application'
+    id 'jacoco'
+}
+
+group 'com.andrewhetzler.federal'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.5.5'
+    implementation 'org.json:json:+'
+    implementation 'com.owlike:genson:1.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.assertj:assertj-core:3.25.3'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.12.0'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+
+application {
+    mainClass = 'org.hyperledger.fabric.contract.ContractRouter'
+}
+
+jacocoTestReport {
+    dependsOn test
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8
+            }
+        }
+    }
+
+    finalizedBy jacocoTestReport
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+mainClassName = 'org.hyperledger.fabric.contract.ContractRouter'
+
+shadowJar {
+    archiveBaseName = 'firmware-updates-chaincode'
+    archiveVersion = '1.0.0'
+    archiveClassifier = ''
+    mergeServiceFiles()
+
+    manifest {
+        attributes 'Main-Class': 'org.hyperledger.fabric.contract.ContractRouter'
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+installDist.dependsOn check

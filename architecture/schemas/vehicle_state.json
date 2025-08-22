@@ -1,0 +1,32 @@
+{
+  "title": "Vehicle State",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    },
+    "vehicle": {
+      "description": "Contains data about the vehicle state.",
+      "type": "object",
+      "properties": {
+        "hash": {
+          "description": "The Merkle tree root hash of the vehicle.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The vehicle identification number of the vehicle.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hash",
+        "id"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "vehicle"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "title": "Recall Notifications - Lessor's List of Notified Lessees",
+  "type": "object",
+  "properties": {
+    "vehicles": {
+      "description": "Contains information about the lessees notified of a particular recall.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "identificationNumber": {
+            "description": "The vehicle's identification number.",
+            "type": "string"
+          },
+          "lessee": {
+            "description": "The vehicle's lessee.",
+            "type": "object",
+            "properties": {
+              "address": {
+                "description": "The lessee's address.",
+                "type": "object",
+                "properties": {
+                  "street1": {
+                    "description": "The lessee's street1 line.",
+                    "type": "string"
+                  },
+                  "street2": {
+                    "description": "The lessee's street2 line.",
+                    "type": "string"
+                  },
+                  "city": {
+                    "description": "The lessee's city.",
+                    "type": "string"
+                  },
+                  "state": {
+                    "description": "The lessee's state.",
+                    "type": "string"
+                  },
+                  "zipCode": {
+                    "description": "The lessee's zip code.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "street1",
+                  "city",
+                  "state",
+                  "zipCode"
+                ]
+              },
+              "name": {
+                "description": "The lessee's name.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "address",
+              "name"
+            ]
+          },
+          "make": {
+            "description": "The make of the vehicle.",
+            "type": "string"
+          },
+          "model": {
+            "description": "The model of the vehicle.",
+            "type": "string"
+          },
+          "recall": {
+            "description": "Information about the recall.",
+            "type": "object",
+            "properties": {
+              "campaignNumber": {
+                "description": "The recall's campaign number.",
+                "type": "string"
+              },
+              "dateNotificationMailed": {
+                "description": "The date that the lessor mailed the recall information to the lessee.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "campaignNumber",
+              "dateNotificationMailed"
+            ]
+          },
+          "year": {
+            "description": "The model year of the vehicle.",
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "identificationNumber",
+        "lessee",
+        "make",
+        "model",
+        "recall",
+        "year"
+      ]
+    },
+    "schemaVersion": {
+      "description": "The version number of the schema",
+      "type": "string"
+    }
+  },
+  "required": [
+    "vehicles",
+    "schemaVersion"
+  ]
+}
