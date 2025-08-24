@@ -97,10 +97,8 @@
       },
       "required": [
         "addresses",
-        "birthdate",
         "name",
-        "photograph",
-        "signature"
+        "photograph"
       ]
     },
     "other": {

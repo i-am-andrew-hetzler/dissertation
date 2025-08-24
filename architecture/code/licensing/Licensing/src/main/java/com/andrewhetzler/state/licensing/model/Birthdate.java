@@ -1,4 +1,4 @@
-package com.andrewhetzler.state.licensing;
+package com.andrewhetzler.state.licensing.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
