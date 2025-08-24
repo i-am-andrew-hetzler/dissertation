@@ -15,15 +15,18 @@ import java.util.Objects;
 public class Insurance {
     private final Map<String, String> descriptionOfVehicle;
     private final List<Insured> insured;
+    private final Map<String, String> other;
     private final Policy policy;
 
     public Insurance(
             @JsonProperty("descriptionOfVehicles") Map<String, String> descriptionOfVehicle,
             @JsonProperty("insured") List<Insured> insured,
+            @JsonProperty("other") Map<String, String> other,
             @JsonProperty("policy") Policy policy
     ) {
         this.descriptionOfVehicle = descriptionOfVehicle;
         this.insured = insured;
+        this.other = other;
         this.policy = policy;
     }
 
@@ -35,13 +38,16 @@ public class Insurance {
         return insured;
     }
 
+    public Map<String, String> getOther() {
+        return other;
+    }
+
     public Policy getPolicy() {
         return policy;
     }
 
     @Override
     public boolean equals(Object o) {
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
@@ -53,6 +59,9 @@ public class Insurance {
                 insured,
                 insurance.insured
         ) && Objects.equals(
+                other,
+                insurance.other
+        ) && Objects.equals(
                 policy,
                 insurance.policy
         );
@@ -63,6 +72,7 @@ public class Insurance {
         return Objects.hash(
                 descriptionOfVehicle,
                 insured,
+                other,
                 policy
         );
     }
@@ -72,6 +82,7 @@ public class Insurance {
         return "Insurance{" +
                 "descriptionOfVehicle=" + descriptionOfVehicle +
                 ", insured=" + insured +
+                ", other=" + other +
                 ", policy=" + policy +
                 '}';
     }

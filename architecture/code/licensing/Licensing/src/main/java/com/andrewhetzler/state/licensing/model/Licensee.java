@@ -1,6 +1,5 @@
 package com.andrewhetzler.state.licensing.model;
 
-import com.andrewhetzler.state.licensing.Birthdate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

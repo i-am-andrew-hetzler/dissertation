@@ -1,6 +1,7 @@
 package com.andrewhetzler.state.licensing;
 
 import com.andrewhetzler.state.licensing.model.Address;
+import com.andrewhetzler.state.licensing.model.Birthdate;
 import com.andrewhetzler.state.licensing.model.License;
 import com.andrewhetzler.state.licensing.model.LicenseSchema;
 import com.andrewhetzler.state.licensing.model.Licensee;
@@ -276,10 +277,9 @@ public class LicensingChaincode {
         }
 
         if (
-                isNullOrBlank(licenseNumber) || isNullOrBlank(serializedAddresses) || isNullOrBlank(birthDay)
-                        || isNullOrBlank(birthMonth) || isNullOrBlank(birthYear) || isNullOrBlank(name)
-                        || isNullOrBlank(serializedPhotograph) || isNullOrBlank(serializedSignature)
-                        || isNullOrBlank(schemaVersion) || !isNumber(schemaVersion) || isNullOrBlank(licenseeId)
+                isNullOrBlank(licenseNumber) || isNullOrBlank(serializedAddresses) || isNullOrBlank(name)
+                        || isNullOrBlank(serializedPhotograph) || isNullOrBlank(schemaVersion)
+                        || !isNumber(schemaVersion) || isNullOrBlank(licenseeId)
         ) {
             throw new ChaincodeException(
                     "Invalid request.",

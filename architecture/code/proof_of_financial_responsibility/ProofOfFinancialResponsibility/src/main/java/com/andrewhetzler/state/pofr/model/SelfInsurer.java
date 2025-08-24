@@ -3,6 +3,7 @@ package com.andrewhetzler.state.pofr.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,17 +15,20 @@ public class SelfInsurer {
     private final String amount;
     private final String businessName;
     private final String name;
+    private final Map<String, String> other;
     private final String title;
 
     public SelfInsurer(
             @JsonProperty("amount") String amount,
             @JsonProperty("businessName") String businessName,
             @JsonProperty("name") String name,
+            @JsonProperty("other") Map<String, String> other,
             @JsonProperty("title") String title
     ) {
         this.amount = amount;
         this.businessName = businessName;
         this.name = name;
+        this.other = other;
         this.title = title;
     }
 
@@ -38,6 +42,10 @@ public class SelfInsurer {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, String> getOther() {
+        return other;
     }
 
     public String getTitle() {
@@ -60,6 +68,9 @@ public class SelfInsurer {
                 name,
                 that.name
         ) && Objects.equals(
+                other,
+                that.other
+        ) && Objects.equals(
                 title,
                 that.title
         );
@@ -71,6 +82,7 @@ public class SelfInsurer {
                 amount,
                 businessName,
                 name,
+                other,
                 title
         );
     }
@@ -81,6 +93,7 @@ public class SelfInsurer {
                 "amount='" + amount + '\'' +
                 ", businessName='" + businessName + '\'' +
                 ", name='" + name + '\'' +
+                ", other=" + other +
                 ", title='" + title + '\'' +
                 '}';
     }
