@@ -44,6 +44,10 @@
             "required": []
           }
         },
+        "other": {
+          "description": "A collection of key-value pairs to hold other data needed by the state for self-insurance.",
+          "type": "object"
+        },
         "policy": {
           "description": "Contains information about the insurance policy.",
           "type": "object",
@@ -85,6 +89,10 @@
         "name": {
           "description": "The name of the person the self-insurance certificate is issued to.",
           "type": "string"
+        },
+        "other": {
+          "description": "A collection of key-value pairs to hold other data needed by the state for self-insurance.",
+          "type": "object"
         },
         "title": {
           "description": "The business title of the person the self-insurance certificate is issued to.",

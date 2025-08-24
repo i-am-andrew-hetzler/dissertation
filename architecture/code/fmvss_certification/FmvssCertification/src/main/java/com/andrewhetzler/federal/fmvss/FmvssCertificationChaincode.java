@@ -507,20 +507,6 @@ public class FmvssCertificationChaincode {
             );
         }
 
-        if (isNullOrBlank(serializedGawr) || grossAxleWeightRatings.isEmpty() || !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
-            throw new ChaincodeException(
-                    "Invalid request.",
-                    INVALID_REQUEST.toString()
-            );
-        }
-
-        if (isNullOrBlank(serializedGvwr) || grossVehicleWeightRatings.isEmpty() || !isValidGrossVehicleWeightRatings(grossVehicleWeightRatings)) {
-            throw new ChaincodeException(
-                    "Invalid request.",
-                    INVALID_REQUEST.toString()
-            );
-        }
-
         if (!hasValidManufactured(
                 manufacturedMonth,
                 manufacturedYear

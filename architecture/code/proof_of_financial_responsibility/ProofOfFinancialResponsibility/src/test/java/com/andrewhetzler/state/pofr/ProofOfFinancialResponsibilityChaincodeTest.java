@@ -155,6 +155,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         List.of(
                                 new Insured("Maya Husky")
                         ),
+                        null,
                         new Policy(
                                 "01/01/25",
                                 "12/31/25",
@@ -207,6 +208,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         List.of(
                                 new Insured("Maya Husky")
                         ),
+                        null,
                         new Policy(
                                 "01/01/25",
                                 "12/31/25",
@@ -347,6 +349,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         List.of(
                                 new Insured("Maya Husky")
                         ),
+                        null,
                         new Policy(
                                 "01/01/25",
                                 "12/31/25",
@@ -782,6 +785,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             REGISTRATION_NUMBER,
                             "1"
@@ -807,6 +814,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             null,
                             "1"
@@ -832,6 +843,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             "",
                             "1"
@@ -857,6 +872,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             REGISTRATION_NUMBER,
                             null
@@ -882,6 +901,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             REGISTRATION_NUMBER,
                             ""
@@ -907,6 +930,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             null,
                             null,
                             null,
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             null,
                             REGISTRATION_NUMBER,
                             "A"
@@ -935,6 +962,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         List.of(
                                 new Insured("Maya the Husky")
                         ),
+                        Map.of(
+                                "policyIssuer",
+                                "Some Local Guy"
+                        ),
                         new Policy(
                                 "01/01/25",
                                 "12/31/25",
@@ -960,6 +991,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 "01/01/25",
                 "12/31/25",
                 "Lazy Cat Insurer",
+                objectMapper.writeValueAsString(Map.of(
+                        "policyIssuer",
+                        "Some Local Guy"
+                )),
                 "ABC123",
                 REGISTRATION_NUMBER,
                 "1"
@@ -978,6 +1013,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         vehicleDescription,
                                         List.of(
                                                 new PersistedInsured("Maya the Husky")
+                                        ),
+                                        Map.of(
+                                                "policyIssuer",
+                                                "Some Local Guy"
                                         ),
                                         new PersistedPolicy(
                                                 "01/01/25",
@@ -1015,6 +1054,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         List.of(
                                 new Insured("Maya the Husky")
                         ),
+                        Map.of(
+                                "policyIssuer",
+                                "Some Local Guy"
+                        ),
                         new Policy(
                                 "01/01/25",
                                 "12/31/25",
@@ -1037,6 +1080,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         new PersistedInsurance(
                                 Map.of(),
                                 List.of(),
+                                Map.of(
+                                        "policyIssuer",
+                                        "Some Local Guy"
+                                ),
                                 new PersistedPolicy(
                                         "01/01/24",
                                         "12/31/24",
@@ -1056,6 +1103,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 "01/01/25",
                 "12/31/25",
                 "Lazy Cat Insurer",
+                objectMapper.writeValueAsString(Map.of(
+                        "policyIssuer",
+                        "Some Local Guy"
+                )),
                 "ABC123",
                 REGISTRATION_NUMBER,
                 "1"
@@ -1074,6 +1125,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         vehicleDescription,
                                         List.of(
                                                 new PersistedInsured("Maya the Husky")
+                                        ),
+                                        Map.of(
+                                                "policyIssuer",
+                                                "Some Local Guy"
                                         ),
                                         new PersistedPolicy(
                                                 "01/01/25",
@@ -1106,6 +1161,10 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            objectMapper.writeValueAsString(Map.of(
+                                    "policyIssuer",
+                                    "Some Local Guy"
+                            )),
                             "CEO",
                             "1",
                             REGISTRATION_NUMBER
@@ -1129,6 +1188,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "A",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             "1",
                             REGISTRATION_NUMBER
@@ -1152,6 +1212,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             "1",
                             null
@@ -1175,6 +1236,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             "1",
                             ""
@@ -1198,6 +1260,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             null,
                             REGISTRATION_NUMBER
@@ -1221,6 +1284,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             "",
                             REGISTRATION_NUMBER
@@ -1244,6 +1308,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                             "10000",
                             "Lazy Cat Insurer",
                             "Samson the Cat",
+                            null,
                             "CEO",
                             "A",
                             REGISTRATION_NUMBER
@@ -1264,6 +1329,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         "10000",
                         "Lazy Cat Insurer",
                         "Samson the Cat",
+                        Map.of(),
                         "CEO"
                 )
         );
@@ -1276,11 +1342,12 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(null);
 
-        final Proof result =  subject.saveSelfInsurance(
+        final Proof result = subject.saveSelfInsurance(
                 mockedContext,
                 "10000",
                 "Lazy Cat Insurer",
                 "Samson the Cat",
+                null,
                 "CEO",
                 "1",
                 REGISTRATION_NUMBER
@@ -1301,6 +1368,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "10000",
                                         "Lazy Cat Insurer",
                                         "Samson the Cat",
+                                        Map.of(),
                                         "CEO"
                                 )
                         )
@@ -1314,7 +1382,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
 
     @Test
     void saveSelfInsuranceShouldReturnBecauseItsUpdatingProof() throws
-                                                           IOException {
+                                                                IOException {
         final Proof expected = new Proof(
                 List.of(),
                 null,
@@ -1322,6 +1390,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                         "10000",
                         "Lazy Cat Insurer",
                         "Samson the Cat",
+                        Map.of(),
                         "CEO"
                 )
         );
@@ -1342,17 +1411,19 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "99999",
                                         "Lazy Cat Insurer",
                                         "Maya the Husky",
+                                        null,
                                         "CEO"
                                 )
                         )
                 )
         );
 
-        final Proof result =  subject.saveSelfInsurance(
+        final Proof result = subject.saveSelfInsurance(
                 mockedContext,
                 "10000",
                 "Lazy Cat Insurer",
                 "Samson the Cat",
+                null,
                 "CEO",
                 "1",
                 REGISTRATION_NUMBER
@@ -1373,6 +1444,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "10000",
                                         "Lazy Cat Insurer",
                                         "Samson the Cat",
+                                        Map.of(),
                                         "CEO"
                                 )
                         )
@@ -1564,6 +1636,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "1000",
                                         "Lazy Cat Inc",
                                         "Samson",
+                                        null,
                                         "CEO"
                                 )
                         )
@@ -1597,6 +1670,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "1000",
                                         "Lazy Cat Inc",
                                         "Samson",
+                                        null,
                                         "CEO"
                                 )
                         )
@@ -1733,6 +1807,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "1000",
                                         "The Lazy Cat",
                                         "Samson the cat",
+                                        null,
                                         "CEO"
                                 )
                         )
@@ -1784,6 +1859,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         "1000",
                                         "Lazy Cat Inc",
                                         "Samson",
+                                        null,
                                         "CEO"
                                 )
                         )
@@ -1950,6 +2026,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                 new PersistedInsurance(
                                         null,
                                         null,
+                                        null,
                                         null
                                 ),
                                 "1",
@@ -2002,10 +2079,12 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                                         List.of(
                                                 new PersistedInsured("Maya the Husky")
                                         ),
+                                        null,
                                         new PersistedPolicy(
                                                 "01/01/25",
                                                 "12/31/25",
                                                 "Progressive",
+
                                                 "ABC123"
                                         )
                                 ),

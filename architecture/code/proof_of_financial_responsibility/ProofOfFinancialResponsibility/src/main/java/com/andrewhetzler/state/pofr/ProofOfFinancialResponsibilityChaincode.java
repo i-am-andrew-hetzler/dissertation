@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -258,6 +259,7 @@ public class ProofOfFinancialResponsibilityChaincode {
             final String effectiveDate,
             final String expirationDate,
             final String insurer,
+            final String serializedOther,
             final String policyNumber,
             final String registrationNumber,
             final String schemaVersion
@@ -277,6 +279,10 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
+        final Map<String, String> other = deserializeMap(
+                serializedOther,
+                "other"
+        );
         final Map<String, String> vehicleDescription = deserializeMap(
                 serializedVehicleDescription,
                 "descriptionOfVehicle"
@@ -298,6 +304,7 @@ public class ProofOfFinancialResponsibilityChaincode {
                     new PersistedInsurance(
                             vehicleDescription != null ? vehicleDescription : Map.of(),
                             insured != null ? insured : List.of(),
+                            other,
                             new PersistedPolicy(
                                     effectiveDate,
                                     expirationDate,
@@ -310,11 +317,22 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
         else {
+            Map<String, String> map = exitingProof.getInsurance().getOther() != null ? exitingProof.getInsurance().getOther() : null;
+
+            if (other != null) {
+                if (map == null) {
+                    map = new HashMap<>();
+                }
+
+                map.putAll(other);
+            }
+
             proof = new PersistedProof(
                     exitingProof.getCertificateOfDeposits(),
                     new PersistedInsurance(
                             vehicleDescription != null ? vehicleDescription : Map.of(),
                             insured != null ? insured : List.of(),
+                            exitingProof.getInsurance().getOther(),
                             new PersistedPolicy(
                                     effectiveDate,
                                     expirationDate,
@@ -342,6 +360,7 @@ public class ProofOfFinancialResponsibilityChaincode {
             final String amount,
             final String businessName,
             final String name,
+            final String serializedOther,
             final String title,
             final String schemaVersion,
             final String registrationNumber
@@ -362,6 +381,10 @@ public class ProofOfFinancialResponsibilityChaincode {
             );
         }
 
+        final Map<String, String> other = deserializeMap(
+                serializedOther,
+                "other"
+        );
         final PersistedProof exitingProof = getProof(
                 context,
                 registrationNumber
@@ -377,11 +400,22 @@ public class ProofOfFinancialResponsibilityChaincode {
                             amount,
                             businessName,
                             name,
+                            other,
                             title
                     )
             );
         }
         else {
+            Map<String, String> map = exitingProof.getSelfInsurer().getOther() != null ? exitingProof.getSelfInsurer().getOther() : null;
+
+            if (other != null) {
+                if (map == null) {
+                    map = new HashMap<>();
+                }
+
+                map.putAll(other);
+            }
+
             proof = new PersistedProof(
                     exitingProof.getCertificateOfDeposits(),
                     exitingProof.getInsurance(),
@@ -390,6 +424,7 @@ public class ProofOfFinancialResponsibilityChaincode {
                             amount,
                             businessName,
                             name,
+                            map,
                             title
                     )
             );
@@ -611,6 +646,7 @@ public class ProofOfFinancialResponsibilityChaincode {
         return insurance != null ? new Insurance(
                 insurance.getDescriptionOfVehicle(),
                 insurance.getInsured().stream().map(insured -> new Insured(insured.getName())).toList(),
+                insurance.getOther(),
                 new Policy(
                         insurance.getPolicy().getEffectiveDate(),
                         insurance.getPolicy().getExpirationDate(),
@@ -625,6 +661,7 @@ public class ProofOfFinancialResponsibilityChaincode {
                 selfInsurer.getAmount(),
                 selfInsurer.getBusinessName(),
                 selfInsurer.getName(),
+                selfInsurer.getOther(),
                 selfInsurer.getTitle()
         ) : null;
     }
@@ -706,10 +743,10 @@ public class ProofOfFinancialResponsibilityChaincode {
     ) throws
       ChaincodeException {
         try {
-            return objectMapper.readValue(
+            return serializedMap != null ? objectMapper.readValue(
                     serializedMap,
                     Map.class
-            );
+            ) : Map.of();
         }
         catch (Exception e) {
             throw new ChaincodeException(

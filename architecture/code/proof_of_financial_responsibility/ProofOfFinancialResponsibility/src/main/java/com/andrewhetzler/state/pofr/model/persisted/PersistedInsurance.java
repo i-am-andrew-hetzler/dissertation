@@ -15,15 +15,18 @@ import java.util.Objects;
 public class PersistedInsurance {
     private final Map<String, String> descriptionOfVehicle;
     private final List<PersistedInsured> insured;
+    private final Map<String, String> other;
     private final PersistedPolicy policy;
 
     public PersistedInsurance(
             @JsonProperty("descriptionOfVehicle") Map<String, String> descriptionOfVehicle,
             @JsonProperty("insured") List<PersistedInsured> insured,
+            @JsonProperty("other") Map<String, String> other,
             @JsonProperty("policy") PersistedPolicy policy
     ) {
         this.descriptionOfVehicle = descriptionOfVehicle;
         this.insured = insured;
+        this.other = other;
         this.policy = policy;
     }
 
@@ -33,6 +36,10 @@ public class PersistedInsurance {
 
     public List<PersistedInsured> getInsured() {
         return insured;
+    }
+
+    public Map<String, String> getOther() {
+        return other;
     }
 
     public PersistedPolicy getPolicy() {
@@ -52,6 +59,9 @@ public class PersistedInsurance {
                 insured,
                 that.insured
         ) && Objects.equals(
+                other,
+                that.other
+        ) && Objects.equals(
                 policy,
                 that.policy
         );
@@ -62,6 +72,7 @@ public class PersistedInsurance {
         return Objects.hash(
                 descriptionOfVehicle,
                 insured,
+                other,
                 policy
         );
     }
@@ -71,6 +82,7 @@ public class PersistedInsurance {
         return "PersistedInsurance{" +
                 "descriptionOfVehicle=" + descriptionOfVehicle +
                 ", insured=" + insured +
+                ", other=" + other +
                 ", policy=" + policy +
                 '}';
     }
