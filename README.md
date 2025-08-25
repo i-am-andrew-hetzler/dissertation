@@ -4,9 +4,10 @@
 ## Repository Layout
 
 ### Architecture folder
-The architecture folder contains three child folders: diagrams, code, and schemas. The diagrams folder contains all the UML use 
+The architecture folder contains four child folders: diagrams, code, poc, and schemas. The diagrams folder contains all the UML use 
 case, C4 container, and C4 component diagrams. The code folder contains all the chaincode, gateway code, and performance 
-test code for all the use cases. The schemas folder contains all the formal JSON definitions for each use
+test code for all the use cases. The poc folder contains the docker compose files, scripts, and other artifacts to run
+the poc. The schemas folder contains all the formal JSON definitions for each use
 case's schema.
 
 ### Compliance folder
@@ -32,3 +33,9 @@ The researcher collected and analyzed official sources for the state statutes. T
 Receipts were written for each phase of the study. There are three receipts: (a) architecture analysis, (b) legislation analysis,
 and (c) legislation collection. Each receipt contains the start and end dates for that activity. In the case of the _legislation analysis_, 
 notes were kept for each expert exchange.
+
+## Running the PoC
+**NOTE** Mac users must run the cryptogen binary first before running poc.sh. You will need to allow the binary to run.
+You can do that by double-clicking the binary, open _System Preferences > Privacy & Security_ and scroll down to where
+the binary is blocked. Click allow, run the binary again, click allow and enter your password. You should no longer get
+prompted to allow the _cryptogen_ binary.
