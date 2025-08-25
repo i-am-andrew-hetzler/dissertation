@@ -26,3 +26,13 @@ replay_pid*
 .idea
 
 .DS_Store
+
+architecture/code/firmware_updates/FirmwareUpdates/build
+architecture/code/fmvss_certification/FmvssCertification/build
+architecture/code/recall_notifications/RecallNotifications/build
+architecture/code/vehicle_state/VehicleState/build
+architecture/code/licensing/Licensing/build
+architecture/code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build
+architecture/code/registration/Registration/build
+
+architecture/poc/federal/cryptography/certs

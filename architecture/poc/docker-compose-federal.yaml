@@ -1,0 +1,24 @@
+networks:
+  federal:
+
+name: federal-use-cases
+services:
+  dot-orderer-1:
+    container_name: dot-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - federal
+    ports:
+      - "7050:7050"
+      - "8443:8443"
+    volumes:
+      - ./federal/hosts/dot-orderer-1/etc:/etc/hyperledger/fabric
+      - ./federal/hosts/dot-orderer-1/var:/var/hyperledger
+      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/users/Admin@orderer.transportation.gov/tls:/var/hyperledger/orderer/admin
+      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/msp:/var/hyperledger/orderer/msp
+      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
