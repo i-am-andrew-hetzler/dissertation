@@ -61,6 +61,29 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('NHTSAMSP.peer', 'NHTSAMSP.admin')"
+  - &PurdueMotorCompany
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: PurdueMotorCompanyMSP
+    # ID to load the MSP definition as
+    ID: PurdueMotorCompanyMSP
+    MSPDir: ../cryptography/certs/peerOrganizations/purdue-motor-company.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyMSP.admin', 'PurdueMotorCompanyMSP.peer', 'PurdueMotorCompanyMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyMSP.admin', 'PurdueMotorCompanyMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyMSP.peer', 'PurdueMotorCompanyMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -261,7 +284,9 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *NHTSA
+        - *PurdueMotorCompany
       Capabilities: *ApplicationCapabilities
+
   fmvss:
     <<: *ChannelDefaults
     Orderer:
@@ -296,7 +321,9 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *NHTSA
+        - *PurdueMotorCompany
       Capabilities: *ApplicationCapabilities
+
   recall:
     <<: *ChannelDefaults
     Orderer:
@@ -331,7 +358,9 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *NHTSA
+        - *PurdueMotorCompany
       Capabilities: *ApplicationCapabilities
+
   vehicle:
     <<: *ChannelDefaults
     Orderer:
@@ -366,4 +395,5 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *NHTSA
+        - *PurdueMotorCompany
       Capabilities: *ApplicationCapabilities

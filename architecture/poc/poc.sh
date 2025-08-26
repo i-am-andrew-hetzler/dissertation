@@ -41,6 +41,7 @@ function deleteFederalNetwork() {
   rm -rf federal/hosts/dot-orderer-1/var/orderer
   rm -rf federal/hosts/dot-orderer-1/var/production
   rm -rf federal/hosts/nhtsa-peer0/hyperledger
+  rm -rf federal/hosts/purdue-motor-company-peer0/hyperledger
 
   echo "Deleted files for the federal network"
 }
@@ -76,6 +77,7 @@ function generateCryptography() {
 function generateFederalCryptography() {
   generateCryptography "Department of Transportation" federal/cryptography/config/crypto-config-dot-orderer.yaml
   generateCryptography NHTSA federal/cryptography/config/crypto-config-nhtsa-peer.yaml
+  generateCryptography "Purdue Motor Company" federal/cryptography/config/crypto-config-purdue-motor-company-peer.yaml
 }
 
 function buildChaincode() {
@@ -131,6 +133,11 @@ function joinFederalPeersToChannels() {
   joinPeerToChannel nhtsa-peer0 fmvss dot-orderer-1:7050
   joinPeerToChannel nhtsa-peer0 recall dot-orderer-1:7050
   joinPeerToChannel nhtsa-peer0 vehicle dot-orderer-1:7050
+
+  joinPeerToChannel purdue-motor-company-peer0 firmware dot-orderer-1:7050
+  joinPeerToChannel purdue-motor-company-peer0 fmvss dot-orderer-1:7050
+  joinPeerToChannel purdue-motor-company-peer0 recall dot-orderer-1:7050
+  joinPeerToChannel purdue-motor-company-peer0 vehicle dot-orderer-1:7050
 }
 
 function start() {
