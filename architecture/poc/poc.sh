@@ -148,7 +148,7 @@ function setBinDirectory() {
       fi
       ;;
     *)
-      echo "unsupported operating system!"
+      echo "Unsupported operating system!"
       exit 1
   esac
 }
