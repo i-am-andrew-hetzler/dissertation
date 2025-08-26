@@ -46,11 +46,11 @@ services:
       - "7051:7051"
       - "7052:7052"
     volumes:
-      - ../code/firmware_updates/FirmwareUpdates/build/install:/chaincode
-      - ../code/fmvss_certification/FmvssCertification/build/install:/chaincode
-      - ../code/recall_notifications/RecallNotifications/build/install:/chaincode
-      - ../code/vehicle_state/VehicleState/build/install:/chaincode
-      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/var/hyperledger/orderer/tls
+      - ../code/firmware_updates/FirmwareUpdates/build/install:/chaincode/firmware
+      - ../code/fmvss_certification/FmvssCertification/build/install:/chaincode/fmvss
+      - ../code/recall_notifications/RecallNotifications/build/install:/chaincode/recall
+      - ../code/vehicle_state/VehicleState/build/install:/chaincode/vehicle
+      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/etc/hyperledger/fabric/orderer/tls
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/peers/peer0.nhtsa.gov:/etc/hyperledger/fabric
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/users/Admin@nhtsa.gov:/etc/hyperledger/fabric/admin
       - ./federal/hosts/nhtsa-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml

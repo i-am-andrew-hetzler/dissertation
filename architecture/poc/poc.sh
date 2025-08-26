@@ -40,6 +40,7 @@ function deleteFederalNetwork() {
   rm -f federal/hosts/dot-orderer-1/etc/vehicle.pb
   rm -rf federal/hosts/dot-orderer-1/var/orderer
   rm -rf federal/hosts/dot-orderer-1/var/production
+  rm -rf federal/hosts/nhtsa-peer0/hyperledger
 
   echo "Deleted files for the federal network"
 }
@@ -103,6 +104,35 @@ function generateFederalGenesisBlocks() {
   generateGenesisBlock vehicle federal/config/ vehicle vehicle.pb vehicle
 }
 
+function joinOrdererToChannel() {
+  echo "Joining ${1} to the ${2} channel..."
+  docker exec $1 osnadmin channel join --channelID $2 --config-block /etc/hyperledger/fabric/$2.pb -o localhost:$3 --ca-file /var/hyperledger/orderer/tls/ca.crt --client-cert /var/hyperledger/orderer/admin/client.crt --client-key /var/hyperledger/orderer/admin/client.key
+  echo "Joined ${1} to the ${2} channel."
+}
+
+function joinFederalOrderersToChannels() {
+  joinOrdererToChannel dot-orderer-1 firmware 7053
+  joinOrdererToChannel dot-orderer-1 fmvss 7053
+  joinOrdererToChannel dot-orderer-1 recall 7053
+  joinOrdererToChannel dot-orderer-1 vehicle 7053
+}
+
+function joinPeerToChannel() {
+  echo "Joining ${1} to the ${2} channel..."
+
+  docker exec $1 peer channel fetch 0 $2.pb -c $2 -o $3 --tls --cafile /etc/hyperledger/fabric/orderer/tls/ca.crt
+  docker exec $1 peer channel join -b ./$2.pb
+
+  echo "Joined ${1} to the ${2} channel."
+}
+
+function joinFederalPeersToChannels() {
+  joinPeerToChannel nhtsa-peer0 firmware dot-orderer-1:7050
+  joinPeerToChannel nhtsa-peer0 fmvss dot-orderer-1:7050
+  joinPeerToChannel nhtsa-peer0 recall dot-orderer-1:7050
+  joinPeerToChannel nhtsa-peer0 vehicle dot-orderer-1:7050
+}
+
 function start() {
   checkNetwork $network
 
@@ -128,7 +158,15 @@ function start() {
       ;;
   esac
 
-  header "STARTED THE NETWORK."
+  header "STARTED THE NETWORK.\n\n"
+  header "STARTING NETWORK SETUP..."
+
+  if [[ $network == "federal" ]]; then
+    joinFederalOrderersToChannels
+    joinFederalPeersToChannels
+  fi
+
+  header "FINISHED NETWORK SETUP.\n\n"
 }
 
 function setBinDirectory() {

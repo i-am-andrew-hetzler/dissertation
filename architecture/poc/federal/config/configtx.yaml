@@ -37,7 +37,7 @@ Organizations:
         Type: Signature
         Rule: "OR('DOTOrdererMSP.admin')"
     OrdererEndpoints:
-      - fed-orderer:7050
+      - dot-orderer-1:7050
   - &NHTSA
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment

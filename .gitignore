@@ -36,3 +36,5 @@ architecture/code/proof_of_financial_responsibility/ProofOfFinancialResponsibili
 architecture/code/registration/Registration/build
 
 architecture/poc/federal/cryptography/certs
+architecture/poc/federal/hosts/dot-orderer-1/var/*
+architecture/poc/federal/hosts/nhtsa-peer0/hyperledger
