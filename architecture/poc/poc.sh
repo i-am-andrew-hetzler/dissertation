@@ -34,6 +34,10 @@ function deleteFederalNetwork() {
   rm -rf ../code/fmvss_certification/FmvssCertification/build
   rm -rf ../code/recall_notifications/RecallNotifications/build
   rm -rf ../code/vehicle_state/VehicleState/build
+  rm -f federal/hosts/dot-orderer-1/etc/firmware.pb
+  rm -f federal/hosts/dot-orderer-1/etc/fmvss.pb
+  rm -f federal/hosts/dot-orderer-1/etc/recall.pb
+  rm -f federal/hosts/dot-orderer-1/etc/vehicle.pb
   rm -rf federal/hosts/dot-orderer-1/var/orderer
   rm -rf federal/hosts/dot-orderer-1/var/production
 
@@ -86,6 +90,19 @@ function buildFederalChaincode() {
   buildChaincode "Vehicle State" ../code/vehicle_state/VehicleState/
 }
 
+function generateGenesisBlock() {
+  echo "Generating genesis block for $1 channel..."
+  $binDirectory/configtxgen -configPath $2 -profile $3 -outputBlock federal/hosts/dot-orderer-1/etc/$4 -channelID $5
+  echo "Generated genesis block for $1 channel."
+}
+
+function generateFederalGenesisBlocks() {
+  generateGenesisBlock firmware federal/config/ firmware firmware.pb firmware
+  generateGenesisBlock fmvss federal/config/ fmvss fmvss.pb fmvss
+  generateGenesisBlock recall federal/config/ recall recall.pb recall
+  generateGenesisBlock vehicle federal/config/ vehicle vehicle.pb vehicle
+}
+
 function start() {
   checkNetwork $network
 
@@ -98,12 +115,19 @@ function start() {
     federal)
       generateFederalCryptography
       buildFederalChaincode
+      generateFederalGenesisBlocks
       ;;
   esac
 
   header "FINISHED PREFLIGHT TASKS.\n\n"
   header "STARTING THE NETWORK..."
-  docker compose -f docker-compose-federal.yaml up --build -d
+
+  case "${network}" in
+    federal)
+      docker compose -f docker-compose-federal.yaml up --build -d
+      ;;
+  esac
+
   header "STARTED THE NETWORK."
 }
 

@@ -35,7 +35,7 @@ and (c) legislation collection. Each receipt contains the start and end dates fo
 notes were kept for each expert exchange.
 
 ## Running the PoC
-**NOTE** Mac users must run the cryptogen binary first before running poc.sh. You will need to allow the binary to run.
+**NOTE** Mac users must run the _cryptogen_ and _configtxgen_ binary first before running poc.sh. You will need to allow the binary to run.
 You can do that by double-clicking the binary, open _System Preferences > Privacy & Security_ and scroll down to where
 the binary is blocked. Click allow, run the binary again, click allow and enter your password. You should no longer get
-prompted to allow the _cryptogen_ binary.
+prompted to allow the _cryptogen_ and _configtxgen_ binary.
