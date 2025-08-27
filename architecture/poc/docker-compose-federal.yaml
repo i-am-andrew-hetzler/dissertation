@@ -58,6 +58,7 @@ services:
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/peers/peer0.nhtsa.gov:/etc/hyperledger/fabric
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/users/Admin@nhtsa.gov:/etc/hyperledger/fabric/admin
       - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/peers/peer0.purdue-motor-company.com/tls/ca.crt:/etc/hyperledger/fabric/purdue-motor-company/tls/ca.crt
+      - ./federal/cryptography/certs/peerOrganizations/bess-leasing-company.com/peers/peer0.bess-leasing-company.com/tls/ca.crt:/etc/hyperledger/fabric/bess-leasing-company/tls/ca.crt
       - ./federal/hosts/nhtsa-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./federal/hosts/nhtsa-peer0/hyperledger:/var/hyperledger/production
       - ./scripts:/scripts
@@ -103,6 +104,45 @@ services:
       - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/users/Admin@purdue-motor-company.com:/etc/hyperledger/fabric/admin
       - ./federal/hosts/purdue-motor-company-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./federal/hosts/purdue-motor-company-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/X64/discover:/usr/local/bin/discover
+
+  bess-leasing-company-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: bess-leasing-company-peer0
+    depends_on:
+      - dot-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=federal-use-cases_federal
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=dot-orderer-1
+      - ORDERER_PORT=7050
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=bess-leasing-company-peer0
+      - PEER_PORT=7251
+      - PEER_MSP=BessLeasingCompanyMSP
+    networks:
+      - federal
+    ports:
+      - "7251:7251"
+      - "7252:7252"
+    volumes:
+      - ../code/recall_notifications/RecallNotifications/build/install:/chaincode/recall
+      - ../code/recall_notifications/RecallNotifications/collections_config.json:/chaincode/recall/config/collections_config.json
+      - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./federal/cryptography/certs/peerOrganizations/bess-leasing-company.com/peers/peer0.bess-leasing-company.com:/etc/hyperledger/fabric
+      - ./federal/cryptography/certs/peerOrganizations/bess-leasing-company.com/users/Admin@bess-leasing-company.com:/etc/hyperledger/fabric/admin
+      - ./federal/hosts/bess-leasing-company-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./federal/hosts/bess-leasing-company-peer0/hyperledger:/var/hyperledger/production
       - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock

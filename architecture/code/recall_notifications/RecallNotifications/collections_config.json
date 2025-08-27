@@ -10,5 +10,17 @@
     "endorsementPolicy": {
       "signaturePolicy":"OR('PurdueMotorCompanyMSP.member')"
     }
+  },
+  {
+    "name": "bess-leasing-company-lessee-list",
+    "policy": "OR('BessLeasingCompanyMSP.member', 'NHTSAMSP.member')",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 2,
+    "blockToLive": 0,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": true,
+    "endorsementPolicy": {
+      "signaturePolicy":"OR('BessLeasingCompanyMSP.member')"
+    }
   }
 ]

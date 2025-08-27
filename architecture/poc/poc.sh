@@ -42,6 +42,7 @@ function deleteFederalNetwork() {
   rm -rf federal/hosts/dot-orderer-1/var/production
   rm -rf federal/hosts/nhtsa-peer0/hyperledger
   rm -rf federal/hosts/purdue-motor-company-peer0/hyperledger
+  rm -rf federal/hosts/bess-leasing-company-peer0/hyperledger
 
   echo "Deleted files for the federal network"
 }
@@ -78,6 +79,7 @@ function generateFederalCryptography() {
   generateCryptography "Department of Transportation" federal/cryptography/config/crypto-config-dot-orderer.yaml
   generateCryptography NHTSA federal/cryptography/config/crypto-config-nhtsa-peer.yaml
   generateCryptography "Purdue Motor Company" federal/cryptography/config/crypto-config-purdue-motor-company-peer.yaml
+  generateCryptography "Bess's Leasing Company" federal/cryptography/config/crypto-config-bess-leasing-company-peer.yaml
 }
 
 function buildChaincode() {
@@ -138,6 +140,8 @@ function joinFederalPeersToChannels() {
   joinPeerToChannel purdue-motor-company-peer0 fmvss dot-orderer-1:7050
   joinPeerToChannel purdue-motor-company-peer0 recall dot-orderer-1:7050
   joinPeerToChannel purdue-motor-company-peer0 vehicle dot-orderer-1:7050
+
+  joinPeerToChannel bess-leasing-company-peer0 recall dot-orderer-1:7050
 }
 
 function updateAnchorPeers() {
@@ -156,6 +160,8 @@ function updateFederalAnchorPeers() {
   updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 fmvss
   updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 recall
   updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 vehicle
+
+  updateAnchorPeers "Bess's Leasing Company" bess-leasing-company-peer0 recall
 }
 
 function deployChaincode() {
@@ -173,7 +179,7 @@ function installChaincode() {
 function approveChaincode() {
   echo "Approving all chaincode on ${1}..."
 
-  docker exec $1 ./scripts/$2.sh
+  docker exec $1 ./scripts/$2.sh $1
 
   echo "Approved all chaincode on ${1}."
 }
@@ -205,8 +211,12 @@ function installFederalChaincode() {
   deployChaincode purdue-motor-company-peer0 "vehicle-1.0.0" /chaincode/vehicle/VehicleState
   installChaincode purdue-motor-company-peer0 "vehicle-1.0.0"
 
+  deployChaincode bess-leasing-company-peer0 "recall-1.0.0" /chaincode/recall/RecallNotifications
+  installChaincode bess-leasing-company-peer0 "recall-1.0.0"
+
   approveChaincode nhtsa-peer0 approveFederalChaincode
   approveChaincode purdue-motor-company-peer0 approveFederalChaincode
+  approveChaincode bess-leasing-company-peer0 approveFederalChaincode
 
   commitChaincode nhtsa-peer0 commitFederalChaincode
 }
