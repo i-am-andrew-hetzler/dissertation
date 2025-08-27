@@ -39,3 +39,8 @@ architecture/poc/federal/cryptography/certs
 architecture/poc/federal/hosts/dot-orderer-1/var/*
 architecture/poc/federal/hosts/nhtsa-peer0/hyperledger
 architecture/poc/federal/hosts/purdue-motor-company-peer0/hyperledger
+
+architecture/poc/federal/hosts/dot-orderer-1/etc/firmware.pb
+architecture/poc/federal/hosts/dot-orderer-1/etc/fmvss.pb
+architecture/poc/federal/hosts/dot-orderer-1/etc/recall.pb
+architecture/poc/federal/hosts/dot-orderer-1/etc/vehicle.pb
