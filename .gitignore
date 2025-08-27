@@ -44,3 +44,5 @@ architecture/poc/federal/hosts/dot-orderer-1/etc/firmware.pb
 architecture/poc/federal/hosts/dot-orderer-1/etc/fmvss.pb
 architecture/poc/federal/hosts/dot-orderer-1/etc/recall.pb
 architecture/poc/federal/hosts/dot-orderer-1/etc/vehicle.pb
+
+architecture/poc/state/cryptography/certs

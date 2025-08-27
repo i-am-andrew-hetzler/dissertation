@@ -1,0 +1,25 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: GeorgiaDepartmentOfTransportationOrderer
+    Domain: orderer.georgia.gov
+    EnableNodeOUs: true
+
+
+    # ---------------------------------------------------------------------------
+    # "Specs" - See PeerOrgs for complete description
+    # ---------------------------------------------------------------------------
+    Specs:
+      - Hostname: ga-orderer-1
+        SANS:
+          - localhost
+          - ga-orderer

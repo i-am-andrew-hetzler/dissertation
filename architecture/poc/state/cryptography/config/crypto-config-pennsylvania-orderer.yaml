@@ -1,0 +1,25 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: PennsylvaniaDepartmentOfTransportationOrderer
+    Domain: orderer.pa.gov
+    EnableNodeOUs: true
+
+
+    # ---------------------------------------------------------------------------
+    # "Specs" - See PeerOrgs for complete description
+    # ---------------------------------------------------------------------------
+    Specs:
+      - Hostname: pa-orderer-1
+        SANS:
+          - localhost
+          - pa-orderer

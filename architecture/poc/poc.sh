@@ -19,6 +19,9 @@ function usage() {
 function checkNetwork() {
   case $network in
     federal);;
+    pofr);;
+    licensing);;
+    registration);;
     *)
       echo "Invalid network name. See usage"
       exit 1
@@ -47,11 +50,34 @@ function deleteFederalNetwork() {
   echo "Deleted files for the federal network"
 }
 
+function deleteStateCryptography() {
+  echo "Deleting state cryptography..."
+
+  rm -rf state/cryptography/certs
+
+  echo "Deleted state cryptography."
+}
+
+function deleteLicensingNetwork() {
+  deleteStateCryptography
+}
+
+function deleteProofOfFinancialResponsibilityNetwork() {
+  deleteStateCryptography
+}
+
+function deleteRegistrationNetwork() {
+  deleteStateCryptography
+}
+
 function delete() {
   checkNetwork $network
 
   case "${network}" in
     federal) deleteFederalNetwork;;
+    licensing) deleteLicensingNetwork;;
+    pofr) deleteProofOfFinancialResponsibilityNetwork;;
+    registration) deleteRegistrationNetwork;;
   esac
 }
 
@@ -62,24 +88,70 @@ function quit() {
     federal)
       docker compose -f docker-compose-federal.yaml down
       ;;
+    licensing)
+      docker compose -f docker-compose-licensing.yaml down
+      ;;
+    pofr)
+      docker compose -f docker-compose-proof-of-financial-responsibility.yaml down
+      ;;
+    registration)
+      docker compose -f docker-compose-registration.yaml down
+      ;;
   esac
 }
 
 function generateCryptography() {
   echo "Generating cryptography for $1..."
 
-  $binDirectory/cryptogen generate --config $2 --output=federal/cryptography/certs/
+  $binDirectory/cryptogen generate --config $2 --output=$3/cryptography/certs/
 
   echo "Generated cryptography for $1."
 }
 
 function generateFederalCryptography() {
-  generateCryptography "Department of Transportation" federal/cryptography/config/crypto-config-dot-orderer.yaml
-  generateCryptography NHTSA federal/cryptography/config/crypto-config-nhtsa-peer.yaml
-  generateCryptography "Purdue Motor Company" federal/cryptography/config/crypto-config-purdue-motor-company-peer.yaml
-  generateCryptography "Bess's Leasing Company" federal/cryptography/config/crypto-config-bess-leasing-company-peer.yaml
-  generateCryptography "Purdue Motor Company Assembler" federal/cryptography/config/crypto-config-purdue-motor-company-assembler.yaml
-  generateCryptography "Purdue Motor Company Technician" federal/cryptography/config/crypto-config-purdue-motor-company-technician.yaml
+  generateCryptography "Department of Transportation" federal/cryptography/config/crypto-config-dot-orderer.yaml federal
+
+  generateCryptography NHTSA federal/cryptography/config/crypto-config-nhtsa-peer.yaml federal
+
+  generateCryptography "Purdue Motor Company" federal/cryptography/config/crypto-config-purdue-motor-company-peer.yaml federal
+
+  generateCryptography "Bess's Leasing Company" federal/cryptography/config/crypto-config-bess-leasing-company-peer.yaml federal
+
+  generateCryptography "Purdue Motor Company Assembler" federal/cryptography/config/crypto-config-purdue-motor-company-assembler.yaml federal
+  generateCryptography "Purdue Motor Company Technician" federal/cryptography/config/crypto-config-purdue-motor-company-technician.yaml federal
+}
+
+function generateLicensingCryptography() {
+  generateCryptography "Florida DMV Orderer" state/cryptography/config/crypto-config-florida-orderer.yaml state
+  generateCryptography "Florida DMV" state/cryptography/config/crypto-config-florida-peer.yaml state
+
+  generateCryptography "South Dakota DMV Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
+  generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
+
+  generateCryptography "West Virginia DMV Orderer" state/cryptography/config/crypto-config-west-virginia-orderer.yaml state
+  generateCryptography "West Virginia DMV" state/cryptography/config/crypto-config-west-virginia-peer.yaml state
+}
+
+function generateProofOfFinancialResponsibilityCryptography() {
+  generateCryptography "Alabama DMV Orderer" state/cryptography/config/crypto-config-alabama-orderer.yaml state
+  generateCryptography "Alabama DMV" state/cryptography/config/crypto-config-alabama-peer.yaml state
+
+  generateCryptography "Georgia DMV Orderer" state/cryptography/config/crypto-config-georgia-orderer.yaml state
+  generateCryptography "Georgia DMV" state/cryptography/config/crypto-config-georgia-peer.yaml state
+
+  generateCryptography "North Dakota DMV Orderer" state/cryptography/config/crypto-config-north-dakota-orderer.yaml state
+  generateCryptography "North Dakota DMV" state/cryptography/config/crypto-config-north-dakota-peer.yaml state
+}
+
+function generateRegistrationCryptography() {
+  generateCryptography "Arizona DMV Orderer" state/cryptography/config/crypto-config-arizona-orderer.yaml state
+  generateCryptography "Arizona DMV" state/cryptography/config/crypto-config-arizona-peer.yaml state
+
+  generateCryptography "South Dakota DMV Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
+  generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
+
+  generateCryptography "Pennsylvania DMV Orderer" state/cryptography/config/crypto-config-pennsylvania-orderer.yaml state
+  generateCryptography "Pennsylvania DMV" state/cryptography/config/crypto-config-pennsylvania-peer.yaml state
 }
 
 function buildChaincode() {
@@ -234,6 +306,15 @@ function start() {
       generateFederalCryptography
       buildFederalChaincode
       generateFederalGenesisBlocks
+      ;;
+    pofr)
+      generateProofOfFinancialResponsibilityCryptography
+      ;;
+    licensing)
+      generateLicensingCryptography
+      ;;
+    registration)
+      generateRegistrationCryptography
       ;;
   esac
 
