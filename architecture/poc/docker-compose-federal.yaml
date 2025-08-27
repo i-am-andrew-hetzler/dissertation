@@ -36,7 +36,10 @@ services:
       - CORE_PEER_TLS_ENABLED=true
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=federal-use-cases_federal
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=dot-orderer-1
+      - ORDERER_PORT=7050
       - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=nhtsa-peer0
       - PEER_PORT=7051
       - PEER_MSP=NHTSAMSP
     networks:
@@ -54,6 +57,7 @@ services:
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/users/Admin@nhtsa.gov:/etc/hyperledger/fabric/admin
       - ./federal/hosts/nhtsa-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./federal/hosts/nhtsa-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
@@ -73,7 +77,10 @@ services:
       - CORE_PEER_TLS_ENABLED=true
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=federal-use-cases_federal
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=dot-orderer-1
+      - ORDERER_PORT=7050
       - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=purdue-motor-company-peer0
       - PEER_PORT=7151
       - PEER_MSP=PurdueMotorCompanyMSP
     networks:
@@ -91,6 +98,7 @@ services:
       - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/users/Admin@purdue-motor-company.com:/etc/hyperledger/fabric/admin
       - ./federal/hosts/purdue-motor-company-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./federal/hosts/purdue-motor-company-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE

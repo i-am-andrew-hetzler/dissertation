@@ -140,6 +140,17 @@ function joinFederalPeersToChannels() {
   joinPeerToChannel purdue-motor-company-peer0 vehicle dot-orderer-1:7050
 }
 
+function updateAnchorPeers() {
+  echo "Updating ${1} anchor peers..."
+  docker exec $2 ./scripts/updateAnchorPeers.sh
+  echo "Updated ${1} anchor peers."
+}
+
+function updateFederalAncorPeers() {
+  updateAnchorPeers NHTSA nhtsa-peer0
+  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0
+}
+
 function start() {
   checkNetwork $network
 
@@ -171,6 +182,9 @@ function start() {
   if [[ $network == "federal" ]]; then
     joinFederalOrderersToChannels
     joinFederalPeersToChannels
+    updateFederalAncorPeers
+  else
+    echo "State goes here."
   fi
 
   header "FINISHED NETWORK SETUP.\n\n"
