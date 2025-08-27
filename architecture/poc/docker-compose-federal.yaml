@@ -51,7 +51,9 @@ services:
       - ../code/firmware_updates/FirmwareUpdates/build/install:/chaincode/firmware
       - ../code/fmvss_certification/FmvssCertification/build/install:/chaincode/fmvss
       - ../code/recall_notifications/RecallNotifications/build/install:/chaincode/recall
+      - ../code/recall_notifications/RecallNotifications/collections_config.json:/chaincode/recall/config/collections_config.json
       - ../code/vehicle_state/VehicleState/build/install:/chaincode/vehicle
+      - ../code/vehicle_state/VehicleState/collections_config.json:/chaincode/vehicle/config/collections_config.json
       - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/etc/hyperledger/fabric/orderer/tls
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/peers/peer0.nhtsa.gov:/etc/hyperledger/fabric
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/users/Admin@nhtsa.gov:/etc/hyperledger/fabric/admin
@@ -92,7 +94,9 @@ services:
       - ../code/firmware_updates/FirmwareUpdates/build/install:/chaincode/firmware
       - ../code/fmvss_certification/FmvssCertification/build/install:/chaincode/fmvss
       - ../code/recall_notifications/RecallNotifications/build/install:/chaincode/recall
+      - ../code/recall_notifications/RecallNotifications/collections_config.json:/chaincode/recall/config/collections_config.json
       - ../code/vehicle_state/VehicleState/build/install:/chaincode/vehicle
+      - ../code/vehicle_state/VehicleState/collections_config.json:/chaincode/vehicle/config/collections_config.json
       - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/etc/hyperledger/fabric/orderer/tls
       - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/peers/peer0.purdue-motor-company.com:/etc/hyperledger/fabric
       - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/users/Admin@purdue-motor-company.com:/etc/hyperledger/fabric/admin
