@@ -142,13 +142,52 @@ function joinFederalPeersToChannels() {
 
 function updateAnchorPeers() {
   echo "Updating ${1} anchor peers..."
-  docker exec $2 ./scripts/updateAnchorPeers.sh
+  docker exec $2 ./scripts/updateAnchorPeers.sh $3
   echo "Updated ${1} anchor peers."
 }
 
-function updateFederalAncorPeers() {
-  updateAnchorPeers NHTSA nhtsa-peer0
-  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0
+function updateFederalAnchorPeers() {
+  updateAnchorPeers NHTSA nhtsa-peer0 firmware
+  updateAnchorPeers NHTSA nhtsa-peer0 fmvss
+  updateAnchorPeers NHTSA nhtsa-peer0 recall
+  updateAnchorPeers NHTSA nhtsa-peer0 vehicle
+
+  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 firmware
+  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 fmvss
+  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 recall
+  updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 vehicle
+}
+
+function deployChaincode() {
+  echo "Deploying ${2} chaincode to ${1}..."
+  docker exec $1 peer lifecycle chaincode package $2.tar.gz --path $3 --lang java --label $2
+  echo "Deployed ${2} chaincode to ${1}."
+}
+
+function installChaincode() {
+  echo "Installing ${2} chaincode on ${1}..."
+  docker exec $1 peer lifecycle chaincode install $2.tar.gz
+  echo "Installed ${2} chaincode on ${1}."
+}
+
+function installFederalChaincode() {
+  deployChaincode nhtsa-peer0 "firmware-1.0.0" /chaincode/firmware/FirmwareUpdates
+  installChaincode nhtsa-peer0 "firmware-1.0.0"
+  deployChaincode nhtsa-peer0 "fmvss-1.0.0" /chaincode/fmvss/FmvssCertification
+  installChaincode nhtsa-peer0 "fmvss-1.0.0"
+  deployChaincode nhtsa-peer0 "recall-1.0.0" /chaincode/recall/RecallNotifications
+  installChaincode nhtsa-peer0 "recall-1.0.0"
+  deployChaincode nhtsa-peer0 "vehicle-1.0.0" /chaincode/vehicle/VehicleState
+  installChaincode nhtsa-peer0 "vehicle-1.0.0"
+
+  deployChaincode purdue-motor-company-peer0 "firmware-1.0.0" /chaincode/firmware/FirmwareUpdates
+  installChaincode purdue-motor-company-peer0 "firmware-1.0.0"
+  deployChaincode purdue-motor-company-peer0 "fmvss-1.0.0" /chaincode/fmvss/FmvssCertification
+  installChaincode purdue-motor-company-peer0 "fmvss-1.0.0"
+  deployChaincode purdue-motor-company-peer0 "recall-1.0.0" /chaincode/recall/RecallNotifications
+  installChaincode purdue-motor-company-peer0 "recall-1.0.0"
+  deployChaincode purdue-motor-company-peer0 "vehicle-1.0.0" /chaincode/vehicle/VehicleState
+  installChaincode purdue-motor-company-peer0 "vehicle-1.0.0"
 }
 
 function start() {
@@ -182,7 +221,8 @@ function start() {
   if [[ $network == "federal" ]]; then
     joinFederalOrderersToChannels
     joinFederalPeersToChannels
-    updateFederalAncorPeers
+    updateFederalAnchorPeers
+    installFederalChaincode
   else
     echo "State goes here."
   fi

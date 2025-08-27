@@ -588,7 +588,7 @@ chaincode:
         # tools added for java shim layer packaging.
         # This image is packed with shim layer libraries that are necessary
         # for Java chaincode runtime.
-        runtime: $(DOCKER_NS)/fabric-javaenv:2.5.6 # had to manually set this, otherwise it crashes
+        runtime: $(DOCKER_NS)/fabric-javaenv:2.5.5 # had to manually set this, otherwise it crashes
 
     node:
         # This is an image based on node:$(NODE_VER)-alpine

@@ -38,9 +38,6 @@ function joinAnchorPeers() {
 mkdir -p config_update/original
 mkdir config_update/update
 
-joinAnchorPeers firmware
-joinAnchorPeers fmvss
-joinAnchorPeers recall
-joinAnchorPeers vehicle
+joinAnchorPeers $1
 
 exit 0
