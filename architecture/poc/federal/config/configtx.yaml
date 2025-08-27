@@ -84,6 +84,52 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('PurdueMotorCompanyMSP.peer', 'PurdueMotorCompanyMSP.admin')"
+  - &PurdueMotorCompanyAssembler
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: PurdueMotorCompanyAssemblerMSP
+    # ID to load the MSP definition as
+    ID: PurdueMotorCompanyAssemblerMSP
+    MSPDir: ../cryptography/certs/peerOrganizations/assembler.purdue-motor-company.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyAssemblerMSP.admin', 'PurdueMotorCompanyAssemblerMSP.peer', 'PurdueMotorCompanyAssemblerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyAssemblerMSP.admin', 'PurdueMotorCompanyAssemblerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyAssemblerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyAssemblerMSP.peer', 'PurdueMotorCompanyAssemblerMSP.admin')"
+  - &PurdueMotorCompanyTechnician
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: PurdueMotorCompanyTechnicianMSP
+    # ID to load the MSP definition as
+    ID: PurdueMotorCompanyTechnicianMSP
+    MSPDir: ../cryptography/certs/peerOrganizations/technician.purdue-motor-company.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyTechnicianMSP.admin', 'PurdueMotorCompanyTechnicianMSP.peer', 'PurdueMotorCompanyTechnicianMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyTechnicianMSP.admin', 'PurdueMotorCompanyTechnicianMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyTechnicianMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('PurdueMotorCompanyTechnicianMSP.peer', 'PurdueMotorCompanyTechnicianMSP.admin')"
   - &BessLeasingCompany
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
@@ -420,4 +466,5 @@ Profiles:
       Organizations:
         - *NHTSA
         - *PurdueMotorCompany
+        - *PurdueMotorCompanyAssembler
       Capabilities: *ApplicationCapabilities

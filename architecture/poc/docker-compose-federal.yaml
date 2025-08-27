@@ -87,6 +87,10 @@ services:
       - PEER_ADDRESS=purdue-motor-company-peer0
       - PEER_PORT=7151
       - PEER_MSP=PurdueMotorCompanyMSP
+      - VEHICLE_STATE_COLLECTION=purdue-motor-company-vehicles
+      - VEHICLE_STATE_AUTHORIZED_RECORD_INITIAL_STATE_MSP_IDS=PurdueMotorCompanyAssemblerMSP;PurdueMotorCompanyMSP
+      - VEHICLE_STATE_AUTHORIZED_UPDATE_STATE_MSP_IDS=PurdueMotorCompanyTechnicianMSP;PurdueMotorCompanyMSP
+      - VEHICLE_STATE_AUTHORIZED_OVERRIDE_STATE_MSP_IDS=PurdueMotorCompanyTechnicianMSP;PurdueMotorCompanyMSP
     networks:
       - federal
     ports:

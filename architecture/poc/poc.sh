@@ -63,8 +63,6 @@ function quit() {
       docker compose -f docker-compose-federal.yaml down
       ;;
   esac
-
-  echo "quit"
 }
 
 function generateCryptography() {
@@ -80,6 +78,8 @@ function generateFederalCryptography() {
   generateCryptography NHTSA federal/cryptography/config/crypto-config-nhtsa-peer.yaml
   generateCryptography "Purdue Motor Company" federal/cryptography/config/crypto-config-purdue-motor-company-peer.yaml
   generateCryptography "Bess's Leasing Company" federal/cryptography/config/crypto-config-bess-leasing-company-peer.yaml
+  generateCryptography "Purdue Motor Company Assembler" federal/cryptography/config/crypto-config-purdue-motor-company-assembler.yaml
+  generateCryptography "Purdue Motor Company Technician" federal/cryptography/config/crypto-config-purdue-motor-company-technician.yaml
 }
 
 function buildChaincode() {
