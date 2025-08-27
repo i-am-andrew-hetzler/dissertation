@@ -178,6 +178,14 @@ function approveChaincode() {
   echo "Approved all chaincode on ${1}."
 }
 
+function commitChaincode() {
+  echo "Committing chaincode on ${1}..."
+
+  docker exec $1 ./scripts/$2.sh
+
+  echo "Committed chaincode on ${1}."
+}
+
 function installFederalChaincode() {
   deployChaincode nhtsa-peer0 "firmware-1.0.0" /chaincode/firmware/FirmwareUpdates
   installChaincode nhtsa-peer0 "firmware-1.0.0"
@@ -199,6 +207,8 @@ function installFederalChaincode() {
 
   approveChaincode nhtsa-peer0 approveFederalChaincode
   approveChaincode purdue-motor-company-peer0 approveFederalChaincode
+
+  commitChaincode nhtsa-peer0 commitFederalChaincode
 }
 
 function start() {

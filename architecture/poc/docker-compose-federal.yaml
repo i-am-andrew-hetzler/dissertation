@@ -57,6 +57,7 @@ services:
       - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/etc/hyperledger/fabric/orderer/tls
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/peers/peer0.nhtsa.gov:/etc/hyperledger/fabric
       - ./federal/cryptography/certs/peerOrganizations/nhtsa.gov/users/Admin@nhtsa.gov:/etc/hyperledger/fabric/admin
+      - ./federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/peers/peer0.purdue-motor-company.com/tls/ca.crt:/etc/hyperledger/fabric/purdue-motor-company/tls/ca.crt
       - ./federal/hosts/nhtsa-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./federal/hosts/nhtsa-peer0/hyperledger:/var/hyperledger/production
       - ./scripts:/scripts
