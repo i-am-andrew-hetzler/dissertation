@@ -64,6 +64,12 @@ function deleteLicensingNetwork() {
   rm -f state/hosts/fl-orderer-1/etc/licensing.pb
   rm -f state/hosts/sd-orderer-1/etc/licensing.pb
   rm -f state/hosts/wv-orderer-1/etc/licensing.pb
+  rm -rf state/hosts/fl-orderer-1/var/orderer
+  rm -rf state/hosts/fl-orderer-1/var/production
+  rm -rf state/hosts/sd-orderer-1/var/orderer
+  rm -rf state/hosts/sd-orderer-1/var/production
+  rm -rf state/hosts/wv-orderer-1/var/orderer
+  rm -rf state/hosts/wv-orderer-1/var/production
 }
 
 function deleteProofOfFinancialResponsibilityNetwork() {
@@ -72,6 +78,12 @@ function deleteProofOfFinancialResponsibilityNetwork() {
   rm -f state/hosts/al-orderer-1/etc/proof.pb
   rm -f state/hosts/ga-orderer-1/etc/proof.pb
   rm -f state/hosts/nd-orderer-1/etc/proof.pb
+  rm -rf state/hosts/al-orderer-1/var/orderer
+  rm -rf state/hosts/al-orderer-1/var/production
+  rm -rf state/hosts/ga-orderer-1/var/orderer
+  rm -rf state/hosts/ga-orderer-1/var/production
+  rm -rf state/hosts/nd-orderer-1/var/orderer
+  rm -rf state/hosts/nd-orderer-1/var/production
 }
 
 function deleteRegistrationNetwork() {
@@ -80,6 +92,12 @@ function deleteRegistrationNetwork() {
   rm -f state/hosts/az-orderer-1/etc/registration.pb
   rm -f state/hosts/pa-orderer-1/etc/registration.pb
   rm -f state/hosts/sd-orderer-1/etc/registration.pb
+  rm -rf state/hosts/az-orderer-1/var/orderer
+  rm -rf state/hosts/az-orderer-1/var/production
+  rm -rf state/hosts/pa-orderer-1/var/orderer
+  rm -rf state/hosts/pa-orderer-1/var/production
+  rm -rf state/hosts/sd-orderer-1/var/orderer
+  rm -rf state/hosts/sd-orderer-1/var/production
 }
 
 function delete() {
@@ -373,19 +391,34 @@ function start() {
     federal)
       docker compose -f docker-compose-federal.yaml up --build -d
       ;;
+    licensing)
+      docker compose -f docker-compose-licensing.yaml up --build -d
+      ;;
+    pofr)
+      docker compose -f docker-compose-proof-of-financial-responsibility.yaml up --build -d
+      ;;
+    registration)
+      docker compose -f docker-compose-registration.yaml up --build -d
+      ;;
   esac
 
   header "STARTED THE NETWORK.\n\n"
   header "STARTING NETWORK SETUP..."
 
-  if [[ $network == "federal" ]]; then
-    joinFederalOrderersToChannels
-    joinFederalPeersToChannels
-    updateFederalAnchorPeers
-    installFederalChaincode
-  else
-    echo "State goes here."
-  fi
+  case "$network" in
+    federal)
+      joinFederalOrderersToChannels
+      joinFederalPeersToChannels
+      updateFederalAnchorPeers
+      installFederalChaincode
+      ;;
+    licensing)
+      ;;
+    pofr)
+      ;;
+    registration)
+      ;;
+  esac
 
   header "FINISHED NETWORK SETUP.\n\n"
 }

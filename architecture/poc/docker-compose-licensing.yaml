@@ -1,0 +1,64 @@
+networks:
+  licensing:
+
+name: licensing-use-case
+services:
+  fl-orderer-1:
+    container_name: fl-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7350:7350"
+      - "9443:9443"
+    volumes:
+      - ./state/hosts/fl-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/fl-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/users/Admin@orderer.florida.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+
+  sd-orderer-1:
+    container_name: sd-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7450:7450"
+      - "10443:10443"
+    volumes:
+      - ./state/hosts/sd-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/sd-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/users/Admin@orderer.sd.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+
+  wv-orderer-1:
+    container_name: wv-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7550:7550"
+      - "11443:11443"
+    volumes:
+      - ./state/hosts/wv-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/wv-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/users/Admin@orderer.wv.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin

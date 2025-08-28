@@ -1,0 +1,64 @@
+networks:
+  proof:
+
+name: proof-use-case
+services:
+  al-orderer-1:
+    container_name: al-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7650:7650"
+      - "12443:12443"
+    volumes:
+      - ./state/hosts/al-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/al-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/users/Admin@orderer.alabama.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+
+  ga-orderer-1:
+    container_name: ga-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7750:7750"
+      - "13443:13443"
+    volumes:
+      - ./state/hosts/ga-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/ga-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/users/Admin@orderer.georgia.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+
+  nd-orderer-1:
+    container_name: nd-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7850:7850"
+      - "14443:14443"
+    volumes:
+      - ./state/hosts/nd-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/nd-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/users/Admin@orderer.nd.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
