@@ -277,7 +277,7 @@ Metrics:
 ################################################################################
 Admin:
   # host and port for the admin server
-  ListenAddress: 0.0.0.0:7553
+  ListenAddress: 0.0.0.0:7753
 
   # TLS configuration for the admin endpoint
   TLS:

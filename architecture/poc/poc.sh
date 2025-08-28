@@ -253,6 +253,24 @@ function joinFederalOrderersToChannels() {
   joinOrdererToChannel dot-orderer-1 vehicle 7053
 }
 
+function joinLicensingOrderersToChannel() {
+  joinOrdererToChannel fl-orderer-1 licensing 7353
+  joinOrdererToChannel sd-orderer-1 licensing 7453
+  joinOrdererToChannel wv-orderer-1 licensing 7553
+}
+
+function joinProofOfFinancialResponsibilityOrderersToChannel() {
+  joinOrdererToChannel al-orderer-1 proof 7653
+  joinOrdererToChannel ga-orderer-1 proof 7753
+  joinOrdererToChannel nd-orderer-1 proof 7853
+}
+
+function joinRegistrationOrderersToChannel() {
+  joinOrdererToChannel az-orderer-1 registration 7953
+  joinOrdererToChannel pa-orderer-1 registration 8053
+  joinOrdererToChannel sd-orderer-1 registration 7453
+}
+
 function joinPeerToChannel() {
   echo "Joining ${1} to the ${2} channel..."
 
@@ -413,10 +431,13 @@ function start() {
       installFederalChaincode
       ;;
     licensing)
+      joinLicensingOrderersToChannel
       ;;
     pofr)
+      joinProofOfFinancialResponsibilityOrderersToChannel
       ;;
     registration)
+      joinRegistrationOrderersToChannel
       ;;
   esac
 
