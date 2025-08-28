@@ -60,14 +60,26 @@ function deleteStateCryptography() {
 
 function deleteLicensingNetwork() {
   deleteStateCryptography
+  rm -rf ../code/licensing/Licensing/build
+  rm -f state/hosts/fl-orderer-1/etc/licensing.pb
+  rm -f state/hosts/sd-orderer-1/etc/licensing.pb
+  rm -f state/hosts/wv-orderer-1/etc/licensing.pb
 }
 
 function deleteProofOfFinancialResponsibilityNetwork() {
   deleteStateCryptography
+  rm -rf ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build
+  rm -f state/hosts/al-orderer-1/etc/proof.pb
+  rm -f state/hosts/ga-orderer-1/etc/proof.pb
+  rm -f state/hosts/nd-orderer-1/etc/proof.pb
 }
 
 function deleteRegistrationNetwork() {
   deleteStateCryptography
+  rm -fr ../code/registration/Registration/build
+  rm -f state/hosts/az-orderer-1/etc/registration.pb
+  rm -f state/hosts/pa-orderer-1/etc/registration.pb
+  rm -f state/hosts/sd-orderer-1/etc/registration.pb
 }
 
 function delete() {
@@ -167,17 +179,47 @@ function buildFederalChaincode() {
   buildChaincode "Vehicle State" ../code/vehicle_state/VehicleState/
 }
 
+function buildLicensingChaincode() {
+  buildChaincode "Licensing" ../code/licensing/Licensing/
+}
+
+function buildProofOfFinancialResponsibilityChaincode() {
+  buildChaincode "Proof of Financial Responsibility" ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/
+}
+
+function buildRegistrationChaincode() {
+  buildChaincode "Registration" ../code/registration/Registration/
+}
+
 function generateGenesisBlock() {
   echo "Generating genesis block for $1 channel..."
-  $binDirectory/configtxgen -configPath $2 -profile $3 -outputBlock federal/hosts/dot-orderer-1/etc/$4 -channelID $5
+  $binDirectory/configtxgen -configPath $2 -profile $3 -outputBlock "$4" -channelID $5
   echo "Generated genesis block for $1 channel."
 }
 
 function generateFederalGenesisBlocks() {
-  generateGenesisBlock firmware federal/config/ firmware firmware.pb firmware
-  generateGenesisBlock fmvss federal/config/ fmvss fmvss.pb fmvss
-  generateGenesisBlock recall federal/config/ recall recall.pb recall
-  generateGenesisBlock vehicle federal/config/ vehicle vehicle.pb vehicle
+  generateGenesisBlock firmware federal/config/ firmware federal/hosts/dot-orderer-1/etc/firmware.pb firmware
+  generateGenesisBlock fmvss federal/config/ fmvss federal/hosts/dot-orderer-1/etc/fmvss.pb fmvss
+  generateGenesisBlock recall federal/config/ recall federal/hosts/dot-orderer-1/etc/recall.pb recall
+  generateGenesisBlock vehicle federal/config/ vehicle federal/hosts/dot-orderer-1/etc/vehicle.pb vehicle
+}
+
+function generateLicensingGenesisBlocks() {
+  generateGenesisBlock licensing state/config/florida/ licensing state/hosts/fl-orderer-1/etc/licensing.pb licensing
+  generateGenesisBlock licensing state/config/south-dakota/ licensing state/hosts/sd-orderer-1/etc/licensing.pb licensing
+  generateGenesisBlock licensing state/config/west-virginia/ licensing state/hosts/wv-orderer-1/etc/licensing.pb licensing
+}
+
+function generateProofOfFinancialResponsibilityGenesisBlocks() {
+  generateGenesisBlock proof state/config/alabama/ proof state/hosts/al-orderer-1/etc/proof.pb proof
+  generateGenesisBlock proof state/config/georgia/ proof state/hosts/ga-orderer-1/etc/proof.pb proof
+  generateGenesisBlock proof state/config/north-dakota/ proof state/hosts/nd-orderer-1/etc/proof.pb proof
+}
+
+function generateRegistrationGenesisBlocks() {
+  generateGenesisBlock registration state/config/arizona/ registration state/hosts/az-orderer-1/etc/registration.pb registration
+  generateGenesisBlock registration state/config/pennsylvania/ registration state/hosts/pa-orderer-1/etc/registration.pb registration
+  generateGenesisBlock registration state/config/south-dakota/ registration state/hosts/sd-orderer-1/etc/registration.pb registration
 }
 
 function joinOrdererToChannel() {
@@ -307,14 +349,20 @@ function start() {
       buildFederalChaincode
       generateFederalGenesisBlocks
       ;;
-    pofr)
-      generateProofOfFinancialResponsibilityCryptography
-      ;;
     licensing)
       generateLicensingCryptography
+      buildLicensingChaincode
+      generateLicensingGenesisBlocks
+      ;;
+    pofr)
+      generateProofOfFinancialResponsibilityCryptography
+      buildProofOfFinancialResponsibilityChaincode
+      generateProofOfFinancialResponsibilityGenesisBlocks
       ;;
     registration)
       generateRegistrationCryptography
+      buildRegistrationChaincode
+      generateRegistrationGenesisBlocks
       ;;
   esac
 

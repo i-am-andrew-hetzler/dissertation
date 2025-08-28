@@ -1054,7 +1054,7 @@ class RegistrationChaincodeTest {
         ).putPrivateData(
                 STATE_COLLECTION,
                 "OH-HETZLER",
-                objectMapper.writeValueAsString(
+                objectMapper.writeValueAsBytes(
                         new PersistedRegistrationSchema(
                                 other,
                                 List.of(
@@ -1191,7 +1191,7 @@ class RegistrationChaincodeTest {
         ).putPrivateData(
                 STATE_COLLECTION,
                 "OH-HETZLER",
-                objectMapper.writeValueAsString(
+                objectMapper.writeValueAsBytes(
                         new PersistedRegistrationSchema(
                                 other,
                                 List.of(

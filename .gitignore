@@ -46,3 +46,22 @@ architecture/poc/federal/hosts/dot-orderer-1/etc/recall.pb
 architecture/poc/federal/hosts/dot-orderer-1/etc/vehicle.pb
 
 architecture/poc/state/cryptography/certs
+
+architecture/poc/state/hosts/al-orderer-1/etc/proof.pb
+architecture/poc/state/hosts/az-orderer-1/etc/registration.pb
+architecture/poc/state/hosts/fl-orderer-1/etc/licensing.pb
+architecture/poc/state/hosts/ga-orderer-1/etc/proof.pb
+architecture/poc/state/hosts/nd-orderer-1/etc/proof.pb
+architecture/poc/state/hosts/pa-orderer-1/etc/registration.pb
+architecture/poc/state/hosts/sd-orderer-1/etc/licensing.pb
+architecture/poc/state/hosts/sd-orderer-1/etc/registration.pb
+architecture/poc/state/hosts/wv-orderer-1/etc/licensing.pb
+
+architecture/poc/state/hosts/al-orderer-1/var/*
+architecture/poc/state/hosts/az-orderer-1/var/*
+architecture/poc/state/hosts/fl-orderer-1/var/*
+architecture/poc/state/hosts/ga-orderer-1/var/*
+architecture/poc/state/hosts/nd-orderer-1/var/*
+architecture/poc/state/hosts/pa-orderer-1/var/*
+architecture/poc/state/hosts/sd-orderer-1/var/*
+architecture/poc/state/hosts/wv-orderer-1/var/*
