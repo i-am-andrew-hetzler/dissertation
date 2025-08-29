@@ -34,7 +34,7 @@ services:
       - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
       - CORE_PEER_TLS_ENABLED=true
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=state-use-case_licensing
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - ORDERER_ADDRESS=fl-orderer-1
       - ORDERER_PORT=7350
@@ -47,6 +47,8 @@ services:
       - STATE_DMV_MSP_ID=FloridaDmvMSP
       - STATE_DMV_LICENSEE_MSP_ID=FloridaDmvLicenseeMSP
       - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-fl-peer0
+      - INSURER_CO_PEER_PORT=2351
     networks:
       - licensing
     ports:
@@ -60,6 +62,7 @@ services:
       - ./state/cryptography/certs/peerOrganizations/dmv.florida.gov/users/Admin@dmv.florida.gov:/etc/hyperledger/fabric/admin
       - ./state/hosts/fl-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./state/hosts/fl-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
       - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
@@ -124,6 +127,7 @@ services:
       - ./state/cryptography/certs/peerOrganizations/dmv.sd.gov/users/Admin@dmv.sd.gov:/etc/hyperledger/fabric/admin
       - ./state/hosts/sd-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./state/hosts/sd-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
       - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
@@ -188,6 +192,51 @@ services:
       - ./state/cryptography/certs/peerOrganizations/dmv.wv.gov/users/Admin@dmv.wv.gov:/etc/hyperledger/fabric/admin
       - ./state/hosts/wv-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
       - ./state/hosts/wv-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/X64/discover:/usr/local/bin/discover
+
+  insurer-co-fl-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-fl-peer0
+    depends_on:
+      - fl-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=fl-orderer-1
+      - ORDERER_PORT=7350
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-fl-peer0
+      - PEER_PORT=2351
+      - PEER_MSP=InsurerCoMSP
+      - STATE_LICENSE_COLLECTION=Florida_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=FloridaMSP
+      - STATE_DMV_MSP_ID=FloridaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=FloridaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "2351:2351"
+      - "2352:2352"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/florida_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-fl-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-fl-peer0/hyperledger:/var/hyperledger/production
       - ./scripts:/scripts
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock

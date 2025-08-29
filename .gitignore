@@ -74,3 +74,12 @@ architecture/poc/state/hosts/nd-dmv-peer0/hyperledger
 architecture/poc/state/hosts/pa-dmv-peer0/hyperledger
 architecture/poc/state/hosts/sd-dmv-peer0/hyperledger
 architecture/poc/state/hosts/wv-dmv-peer0/hyperledger
+
+architecture/poc/state/hosts/insurer-co-al-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-az-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-fl-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-ga-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-nd-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-pa-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-sd-peer0/hyperledger
+architecture/poc/state/hosts/insurer-co-wv-peer0/hyperledger

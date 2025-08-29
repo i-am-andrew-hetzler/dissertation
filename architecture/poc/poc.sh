@@ -74,6 +74,10 @@ function deleteLicensingNetwork() {
   rm -rf state/hosts/fl-dmv-peer0/hyperledger
   rm -rf state/hosts/sd-dmv-peer0/hyperledger
   rm -rf state/hosts/wv-dmv-peer0/hyperledger
+
+  rm -rf state/hosts/insurer-co-fl-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-sd-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-wv-peer0/hyperledger
 }
 
 function deleteProofOfFinancialResponsibilityNetwork() {
@@ -92,6 +96,10 @@ function deleteProofOfFinancialResponsibilityNetwork() {
   rm -rf state/hosts/al-dmv-peer0/hyperledger
   rm -rf state/hosts/ga-dmv-peer0/hyperledger
   rm -rf state/hosts/nd-dmv-peer0/hyperledger
+
+  rm -rf state/hosts/insurer-co-al-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-ga-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-nd-peer0/hyperledger
 }
 
 function deleteRegistrationNetwork() {
@@ -110,6 +118,10 @@ function deleteRegistrationNetwork() {
   rm -rf state/hosts/az-dmv-peer0/hyperledger
   rm -rf state/hosts/pa-dmv-peer0/hyperledger
   rm -rf state/hosts/sd-dmv-peer0/hyperledger
+
+  rm -rf state/hosts/insurer-co-az-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-pa-peer0/hyperledger
+  rm -rf state/hosts/insurer-co-sd-peer0/hyperledger
 }
 
 function delete() {
@@ -322,6 +334,7 @@ function joinLicensingPeersToChannel() {
   joinPeerToChannel fl-dmv-peer0 licensing fl-orderer-1:7350
   joinPeerToChannel sd-dmv-peer0 licensing sd-orderer-1:7450
   joinPeerToChannel wv-dmv-peer0 licensing wv-orderer-1:7550
+  joinPeerToChannel insurer-co-fl-peer0 licensing fl-orderer-1:7350
 }
 
 function updateAnchorPeers() {
@@ -348,6 +361,7 @@ function updateLicensingAnchorPeers() {
   updateAnchorPeers "Florida DMV" fl-dmv-peer0 licensing
   updateAnchorPeers "South Dakota DMV" sd-dmv-peer0 licensing
   updateAnchorPeers "West Virginia DMV" wv-dmv-peer0 licensing
+  updateAnchorPeers "Insurer Co" insurer-co-fl-peer0 licensing
 }
 
 function deployChaincode() {
@@ -410,15 +424,23 @@ function installFederalChaincode() {
 function installLicensingChaincode() {
   deployChaincode fl-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode fl-dmv-peer0 "licensing-1.0.0"
+  deployChaincode insurer-co-fl-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode insurer-co-fl-peer0 "licensing-1.0.0"
+
+#  deployChaincode sd-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+#  installChaincode sd-dmv-peer0 "licensing-1.0.0"
+#  approveChaincode sd-dmv-peer0 approveLicensingChaincode
+#
+#  deployChaincode wv-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+#  installChaincode wv-dmv-peer0 "licensing-1.0.0"
+#  approveChaincode wv-dmv-peer0 approveLicensingChaincode
+
   approveChaincode fl-dmv-peer0 approveLicensingChaincode
+  approveChaincode insurer-co-fl-peer0 approveLicensingChaincode
 
-  deployChaincode sd-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
-  installChaincode sd-dmv-peer0 "licensing-1.0.0"
-  approveChaincode sd-dmv-peer0 approveLicensingChaincode
-
-  deployChaincode wv-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
-  installChaincode wv-dmv-peer0 "licensing-1.0.0"
-  approveChaincode wv-dmv-peer0 approveLicensingChaincode
+  commitChaincode fl-dmv-peer0 commitLicensingChaincode "insurer-co-fl-peer0:23551"
+#  commitChaincode sd-dmv-peer0 commitLicensingChaincode "insurer-co-sd-peer0:27551"
+#  commitChaincode wv-dmv-peer0 commitLicensingChaincode "insurer-co-wv-peer0:28551"
 }
 
 function start() {
