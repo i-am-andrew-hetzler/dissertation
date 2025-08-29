@@ -38,30 +38,29 @@ Organizations:
         Rule: "OR('SouthDakotaOrdererMSP.admin')"
     OrdererEndpoints:
       - sd-orderer-1:7450
-  - &SouthDakotaPeer
+  - &SouthDakotaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: SouthDakotaPeerMSP
+    Name: SouthDakotaDmvMSP
     # ID to load the MSP definition as
-    ID: SouthDakotaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/sd.gov/msp
+    ID: SouthDakotaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.sd.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('SouthDakotaPeerMSP.admin', 'SouthDakotaPeerMSP.peer', 'SouthDakotaPeerMSP.client')"
+        Rule: "OR('SouthDakotaDmvMSP.admin', 'SouthDakotaDmvMSP.peer', 'SouthDakotaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('SouthDakotaPeerMSP.admin', 'SouthDakotaPeerMSP.client')"
+        Rule: "OR('SouthDakotaDmvMSP.admin', 'SouthDakotaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('SouthDakotaPeerMSP.admin')"
+        Rule: "OR('SouthDakotaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('SouthDakotaPeerMSP.peer', 'SouthDakotaPeerMSP.admin')"
-
+        Rule: "OR('SouthDakotaDmvMSP.peer', 'SouthDakotaDmvMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -261,41 +260,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *SouthDakotaPeer
-      Capabilities: *ApplicationCapabilities
-
-  registration:
-    <<: *ChannelDefaults
-    Orderer:
-      <<: *OrdererDefaults
-      Organizations:
-        - *SouthDakotaOrderer
-      Capabilities: *OrdererCapabilities
-      OrdererType: BFT
-      SmartBFT:
-        RequestBatchMaxCount: 100
-        RequestBatchMaxInterval: 50ms
-        RequestForwardTimeout: 2s
-        RequestComplainTimeout: 20s
-        RequestAutoRemoveTimeout: 3m0s
-        ViewChangeResendInterval: 5s
-        ViewChangeTimeout: 20s
-        LeaderHeartbeatTimeout: 1m0s
-        CollectTimeout: 1s
-        RequestBatchMaxBytes: 10485760
-        IncomingMessageBufferSize: 200
-        RequestPoolSize: 100000
-        LeaderHeartbeatCount: 10
-      ConsenterMapping:
-        - ID: 1
-          Host: sd-orderer-1
-          Port: 7450
-          MSPID: SouthDakotaOrdererMSP
-          Identity: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp/signcerts/sd-orderer-1.orderer.sd.gov-cert.pem
-          ClientTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls/server.crt
-          ServerTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls/server.crt
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *SouthDakotaPeer
+        - *SouthDakotaDmv
       Capabilities: *ApplicationCapabilities

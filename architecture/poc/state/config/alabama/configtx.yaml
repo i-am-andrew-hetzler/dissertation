@@ -38,29 +38,29 @@ Organizations:
         Rule: "OR('AlabamaOrdererMSP.admin')"
     OrdererEndpoints:
       - al-orderer-1:7650
-  - &AlabamaPeer
+  - &AlabamaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: AlabamaPeerMSP
+    Name: AlabamaDmvMSP
     # ID to load the MSP definition as
-    ID: AlabamaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/alabama.gov/msp
+    ID: AlabamaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.alabama.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('AlabamaPeerMSP.admin', 'AlabamaPeerMSP.peer', 'AlabamaPeerMSP.client')"
+        Rule: "OR('AlabamaDmvMSP.admin', 'AlabamaDmvMSP.peer', 'AlabamaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('AlabamaPeerMSP.admin', 'AlabamaPeerMSP.client')"
+        Rule: "OR('AlabamaDmvMSP.admin', 'AlabamaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('AlabamaPeerMSP.admin')"
+        Rule: "OR('AlabamaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('AlabamaPeerMSP.peer', 'AlabamaPeerMSP.admin')"
+        Rule: "OR('AlabamaDmvMSP.peer', 'AlabamaDmvMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +261,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *AlabamaPeer
+        - *AlabamaDmv
       Capabilities: *ApplicationCapabilities

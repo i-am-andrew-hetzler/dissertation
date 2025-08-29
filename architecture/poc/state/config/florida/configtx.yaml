@@ -38,29 +38,52 @@ Organizations:
         Rule: "OR('FloridaOrdererMSP.admin')"
     OrdererEndpoints:
       - fl-orderer-1:7350
-  - &FloridaPeer
+  - &FloridaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: FloridaPeerMSP
+    Name: FloridaDmvMSP
     # ID to load the MSP definition as
-    ID: FloridaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/florida.gov/msp
+    ID: FloridaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.florida.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('FloridaPeerMSP.admin', 'FloridaPeerMSP.peer', 'FloridaPeerMSP.client')"
+        Rule: "OR('FloridaDmvMSP.admin', 'FloridaDmvMSP.peer', 'FloridaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('FloridaPeerMSP.admin', 'FloridaPeerMSP.client')"
+        Rule: "OR('FloridaDmvMSP.admin', 'FloridaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('FloridaPeerMSP.admin')"
+        Rule: "OR('FloridaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('FloridaPeerMSP.peer', 'FloridaPeerMSP.admin')"
+        Rule: "OR('FloridaDmvMSP.peer', 'FloridaDmvMSP.admin')"
+#  - &InsurerCo
+#    # DefaultOrg defines the organization which is used in the sampleconfig
+#    # of the fabric.git development environment
+#    Name: InsurerCoMSP
+#    # ID to load the MSP definition as
+#    ID: InsurerCoMSP
+#    MSPDir: ../../cryptography/certs/peerOrganizations/insurer-co.com/msp
+#    # Policies defines the set of policies at this level of the config tree
+#    # For organization policies, their canonical path is usually
+#    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+#    Policies:
+#      Readers:
+#        Type: Signature
+#        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.peer', 'InsurerCoMSP.client')"
+#      Writers:
+#        Type: Signature
+#        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.client')"
+#      Admins:
+#        Type: Signature
+#        Rule: "OR('InsurerCoMSP.admin')"
+#      Endorsement:
+#        Type: Signature
+#        Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +284,6 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *FloridaPeer
+        - *FloridaDmv
+#        - *InsurerCo
       Capabilities: *ApplicationCapabilities

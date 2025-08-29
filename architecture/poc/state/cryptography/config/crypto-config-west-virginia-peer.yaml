@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: WestVirginiaDMV
-    Domain: wv.gov
+  - Name: WestVirginiaDmv
+    Domain: dmv.wv.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - wv-peer0
-        - peer0.wv.gov
+        - wv-dmv-peer0
+        - peer0.dmv.wv.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

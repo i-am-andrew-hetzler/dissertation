@@ -38,29 +38,29 @@ Organizations:
         Rule: "OR('NorthDakotaOrdererMSP.admin')"
     OrdererEndpoints:
       - nd-orderer-1:7850
-  - &NorthDakotaPeer
+  - &NorthDakotaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: NorthDakotaPeerMSP
+    Name: NorthDakotaDmvMSP
     # ID to load the MSP definition as
-    ID: NorthDakotaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/nd.gov/msp
+    ID: NorthDakotaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.nd.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('NorthDakotaPeerMSP.admin', 'NorthDakotaPeerMSP.peer', 'NorthDakotaPeerMSP.client')"
+        Rule: "OR('NorthDakotaDmvMSP.admin', 'NorthDakotaDmvMSP.peer', 'NorthDakotaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('NorthDakotaPeerMSP.admin', 'NorthDakotaPeerMSP.client')"
+        Rule: "OR('NorthDakotaDmvMSP.admin', 'NorthDakotaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('NorthDakotaPeerMSP.admin')"
+        Rule: "OR('NorthDakotaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('NorthDakotaPeerMSP.peer', 'NorthDakotaPeerMSP.admin')"
+        Rule: "OR('NorthDakotaDmvMSP.peer', 'NorthDakotaDmvMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +261,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *NorthDakotaPeer
+        - *NorthDakotaDmv
       Capabilities: *ApplicationCapabilities

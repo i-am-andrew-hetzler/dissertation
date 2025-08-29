@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: FloridaDMV
-    Domain: florida.gov
+  - Name: FloridaDmv
+    Domain: dmv.florida.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - fl-peer0
-        - peer0.florida.gov
+        - fl-dmv-peer0
+        - peer0.dmv.florida.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

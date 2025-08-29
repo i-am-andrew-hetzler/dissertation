@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: AlabamaGov
-    Domain: alabama.gov
+  - Name: AlabamaDMV
+    Domain: dmv.alabama.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - al-peer0
-        - peer0.alabama.gov
+        - al-dmv-peer0
+        - peer0.dmv.alabama.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

@@ -70,6 +70,10 @@ function deleteLicensingNetwork() {
   rm -rf state/hosts/sd-orderer-1/var/production
   rm -rf state/hosts/wv-orderer-1/var/orderer
   rm -rf state/hosts/wv-orderer-1/var/production
+
+  rm -rf state/hosts/fl-dmv-peer0/hyperledger
+  rm -rf state/hosts/sd-dmv-peer0/hyperledger
+  rm -rf state/hosts/wv-dmv-peer0/hyperledger
 }
 
 function deleteProofOfFinancialResponsibilityNetwork() {
@@ -84,6 +88,10 @@ function deleteProofOfFinancialResponsibilityNetwork() {
   rm -rf state/hosts/ga-orderer-1/var/production
   rm -rf state/hosts/nd-orderer-1/var/orderer
   rm -rf state/hosts/nd-orderer-1/var/production
+
+  rm -rf state/hosts/al-dmv-peer0/hyperledger
+  rm -rf state/hosts/ga-dmv-peer0/hyperledger
+  rm -rf state/hosts/nd-dmv-peer0/hyperledger
 }
 
 function deleteRegistrationNetwork() {
@@ -98,6 +106,10 @@ function deleteRegistrationNetwork() {
   rm -rf state/hosts/pa-orderer-1/var/production
   rm -rf state/hosts/sd-orderer-1/var/orderer
   rm -rf state/hosts/sd-orderer-1/var/production
+
+  rm -rf state/hosts/az-dmv-peer0/hyperledger
+  rm -rf state/hosts/pa-dmv-peer0/hyperledger
+  rm -rf state/hosts/sd-dmv-peer0/hyperledger
 }
 
 function delete() {
@@ -160,28 +172,40 @@ function generateLicensingCryptography() {
 
   generateCryptography "West Virginia DMV Orderer" state/cryptography/config/crypto-config-west-virginia-orderer.yaml state
   generateCryptography "West Virginia DMV" state/cryptography/config/crypto-config-west-virginia-peer.yaml state
+#
+#  generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
 
 function generateProofOfFinancialResponsibilityCryptography() {
-  generateCryptography "Alabama DMV Orderer" state/cryptography/config/crypto-config-alabama-orderer.yaml state
-  generateCryptography "Alabama DMV" state/cryptography/config/crypto-config-alabama-peer.yaml state
+  generateCryptography "Alabama Gov Orderer" state/cryptography/config/crypto-config-alabama-orderer.yaml state
+  generateCryptography "Alabama Gov" state/cryptography/config/crypto-config-alabama-peer.yaml state
+  generateCryptography "Alabama DMV" state/cryptography/config/crypto-config-alabama-dmv.yaml state
 
-  generateCryptography "Georgia DMV Orderer" state/cryptography/config/crypto-config-georgia-orderer.yaml state
-  generateCryptography "Georgia DMV" state/cryptography/config/crypto-config-georgia-peer.yaml state
+  generateCryptography "Georgia Gov Orderer" state/cryptography/config/crypto-config-georgia-orderer.yaml state
+  generateCryptography "Georgia Gov" state/cryptography/config/crypto-config-georgia-peer.yaml state
+  generateCryptography "Georgia DMV" state/cryptography/config/crypto-config-georgia-dmv.yaml state
 
-  generateCryptography "North Dakota DMV Orderer" state/cryptography/config/crypto-config-north-dakota-orderer.yaml state
-  generateCryptography "North Dakota DMV" state/cryptography/config/crypto-config-north-dakota-peer.yaml state
+  generateCryptography "North Dakota Gov Orderer" state/cryptography/config/crypto-config-north-dakota-orderer.yaml state
+  generateCryptography "North Dakota Gov" state/cryptography/config/crypto-config-north-dakota-peer.yaml state
+  generateCryptography "North Dakota DMV" state/cryptography/config/crypto-config-north-dakota-dmv.yaml state
+
+  generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
 
 function generateRegistrationCryptography() {
-  generateCryptography "Arizona DMV Orderer" state/cryptography/config/crypto-config-arizona-orderer.yaml state
-  generateCryptography "Arizona DMV" state/cryptography/config/crypto-config-arizona-peer.yaml state
+  generateCryptography "Arizona Gov Orderer" state/cryptography/config/crypto-config-arizona-orderer.yaml state
+  generateCryptography "Arizona Gov" state/cryptography/config/crypto-config-arizona-peer.yaml state
+  generateCryptography "Arizona DMV" state/cryptography/config/crypto-config-arizona-dmv.yaml state
 
-  generateCryptography "South Dakota DMV Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
-  generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
+  generateCryptography "South Dakota Gov Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
+  generateCryptography "South Dakota Gov" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
+  generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-dmv.yaml state
 
-  generateCryptography "Pennsylvania DMV Orderer" state/cryptography/config/crypto-config-pennsylvania-orderer.yaml state
-  generateCryptography "Pennsylvania DMV" state/cryptography/config/crypto-config-pennsylvania-peer.yaml state
+  generateCryptography "Pennsylvania Gov Orderer" state/cryptography/config/crypto-config-pennsylvania-orderer.yaml state
+  generateCryptography "Pennsylvania Gov" state/cryptography/config/crypto-config-pennsylvania-peer.yaml state
+  generateCryptography "Pennsylvania DMV" state/cryptography/config/crypto-config-pennsylvania-dmv.yaml state
+
+  generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
 
 function buildChaincode() {
@@ -294,6 +318,12 @@ function joinFederalPeersToChannels() {
   joinPeerToChannel bess-leasing-company-peer0 recall dot-orderer-1:7050
 }
 
+function joinLicensingPeersToChannel() {
+  joinPeerToChannel fl-dmv-peer0 licensing fl-orderer-1:7350
+  joinPeerToChannel sd-dmv-peer0 licensing sd-orderer-1:7450
+  joinPeerToChannel wv-dmv-peer0 licensing wv-orderer-1:7550
+}
+
 function updateAnchorPeers() {
   echo "Updating ${1} anchor peers..."
   docker exec $2 ./scripts/updateAnchorPeers.sh $3
@@ -312,6 +342,12 @@ function updateFederalAnchorPeers() {
   updateAnchorPeers "Purdue Motor Company" purdue-motor-company-peer0 vehicle
 
   updateAnchorPeers "Bess's Leasing Company" bess-leasing-company-peer0 recall
+}
+
+function updateLicensingAnchorPeers() {
+  updateAnchorPeers "Florida DMV" fl-dmv-peer0 licensing
+  updateAnchorPeers "South Dakota DMV" sd-dmv-peer0 licensing
+  updateAnchorPeers "West Virginia DMV" wv-dmv-peer0 licensing
 }
 
 function deployChaincode() {
@@ -369,6 +405,17 @@ function installFederalChaincode() {
   approveChaincode bess-leasing-company-peer0 approveFederalChaincode
 
   commitChaincode nhtsa-peer0 commitFederalChaincode
+}
+
+function installLicensingChaincode() {
+  deployChaincode fl-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode fl-dmv-peer0 "licensing-1.0.0"
+
+  deployChaincode sd-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode sd-dmv-peer0 "licensing-1.0.0"
+
+  deployChaincode wv-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode wv-dmv-peer0 "licensing-1.0.0"
 }
 
 function start() {
@@ -432,6 +479,9 @@ function start() {
       ;;
     licensing)
       joinLicensingOrderersToChannel
+      joinLicensingPeersToChannel
+      updateLicensingAnchorPeers
+      installLicensingChaincode
       ;;
     pofr)
       joinProofOfFinancialResponsibilityOrderersToChannel

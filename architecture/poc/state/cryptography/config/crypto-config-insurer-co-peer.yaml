@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: AlabamaGov
-    Domain: alabama.gov
+  - Name: InsurerCo
+    Domain: insurer-co.com
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,16 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - al-peer0
-        - peer0.alabama.gov
+        - insurer-co-peer0
+        - insurer-co-al-peer0
+        - insurer-co-az-peer0
+        - insurer-co-fl-peer0
+        - insurer-co-ga-peer0
+        - insurer-co-nd-peer0
+        - insurer-co-pa-peer0
+        - insurer-co-sd-peer0
+        - insurer-co-wv-peer0
+        - peer0.insurer-co.com
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

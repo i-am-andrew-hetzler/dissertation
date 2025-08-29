@@ -10,7 +10,7 @@ OrdererOrgs:
   # ---------------------------------------------------------------------------
   # Orderer
   # ---------------------------------------------------------------------------
-  - Name: SouthDakotaDepartmentOfTransportationOrderer
+  - Name: SouthDakotaDmvOrderer
     Domain: orderer.sd.gov
     EnableNodeOUs: true
 
@@ -22,4 +22,4 @@ OrdererOrgs:
       - Hostname: sd-orderer-1
         SANS:
           - localhost
-          - sd-orderer
+          - dot-orderer

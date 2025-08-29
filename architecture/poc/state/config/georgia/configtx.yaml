@@ -38,29 +38,29 @@ Organizations:
         Rule: "OR('GeorgiaOrdererMSP.admin')"
     OrdererEndpoints:
       - ga-orderer-1:7750
-  - &GeorgiaPeer
+  - &GeorgiaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: GeorgiaPeerMSP
+    Name: GeorgiaDmvMSP
     # ID to load the MSP definition as
-    ID: GeorgiaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/georgia.gov/msp
+    ID: GeorgiaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.georgia.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('GeorgiaPeerMSP.admin', 'GeorgiaPeerMSP.peer', 'GeorgiaPeerMSP.client')"
+        Rule: "OR('GeorgiaDmvMSP.admin', 'GeorgiaDmvMSP.peer', 'GeorgiaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('GeorgiaPeerMSP.admin', 'GeorgiaPeerMSP.client')"
+        Rule: "OR('GeorgiaDmvMSP.admin', 'GeorgiaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('GeorgiaPeerMSP.admin')"
+        Rule: "OR('GeorgiaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('GeorgiaPeerMSP.peer', 'GeorgiaPeerMSP.admin')"
+        Rule: "OR('GeorgiaDmvMSP.peer', 'GeorgiaDmvMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +261,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *GeorgiaPeer
+        - *GeorgiaDmv
       Capabilities: *ApplicationCapabilities

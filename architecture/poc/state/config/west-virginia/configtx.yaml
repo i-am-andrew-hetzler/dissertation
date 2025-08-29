@@ -38,29 +38,29 @@ Organizations:
         Rule: "OR('WestVirginiaOrdererMSP.admin')"
     OrdererEndpoints:
       - wv-orderer-1:7550
-  - &WestVirginiaPeer
+  - &WestVirginiaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: WestVirginiaPeerMSP
+    Name: WestVirginiaDmvMSP
     # ID to load the MSP definition as
-    ID: WestVirginiaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/wv.gov/msp
+    ID: WestVirginiaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.wv.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('WestVirginiaPeerMSP.admin', 'WestVirginiaPeerMSP.peer', 'WestVirginiaPeerMSP.client')"
+        Rule: "OR('WestVirginiaDmvMSP.admin', 'WestVirginiaDmvMSP.peer', 'WestVirginiaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('WestVirginiaPeerMSP.admin', 'WestVirginiaPeerMSP.client')"
+        Rule: "OR('WestVirginiaDmvMSP.admin', 'WestVirginiaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('WestVirginiaPeerMSP.admin')"
+        Rule: "OR('WestVirginiaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('WestVirginiaPeerMSP.peer', 'WestVirginiaPeerMSP.admin')"
+        Rule: "OR('WestVirginiaDmvMSP.peer', 'WestVirginiaDmvMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +261,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *WestVirginiaPeer
+        - *WestVirginiaDmv
       Capabilities: *ApplicationCapabilities

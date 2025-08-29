@@ -38,29 +38,29 @@ Organizations:
         Rule: "OR('ArizonaOrdererMSP.admin')"
     OrdererEndpoints:
       - az-orderer-1:7950
-  - &ArizonaPeer
+  - &ArizonaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: ArizonaPeerMSP
+    Name: ArizonaDmvMSP
     # ID to load the MSP definition as
-    ID: ArizonaPeerMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/azdot.gov/msp
+    ID: ArizonaDmvMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.azdot.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('ArizonaPeerMSP.admin', 'ArizonaPeerMSP.peer', 'ArizonaPeerMSP.client')"
+        Rule: "OR('ArizonaDmvMSP.admin', 'ArizonaDmvMSP.peer', 'ArizonaDmvMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('ArizonaPeerMSP.admin', 'ArizonaPeerMSP.client')"
+        Rule: "OR('ArizonaDmvMSP.admin', 'ArizonaDmvMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('ArizonaPeerMSP.admin')"
+        Rule: "OR('ArizonaDmvMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('ArizonaPeerMSP.peer', 'ArizonaPeerMSP.admin')"
+        Rule: "OR('ArizonaDmvMSP.peer', 'ArizonaDmvMSP.admin')"
 
 ################################################################################
 #
@@ -261,5 +261,5 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *ArizonaPeer
+        - *ArizonaDmv
       Capabilities: *ApplicationCapabilities
