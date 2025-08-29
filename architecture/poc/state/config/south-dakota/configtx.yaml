@@ -84,6 +84,29 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
+  - &SouthDakotaDmvLicensee
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: SouthDakotaDmvLicenseeMSP
+    # ID to load the MSP definition as
+    ID: SouthDakotaDmvLicenseeMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/licensee.dmv.sd.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvLicenseeMSP.admin', 'SouthDakotaDmvLicenseeMSP.peer', 'SouthDakotaDmvLicenseeMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvLicenseeMSP.admin', 'SouthDakotaDmvLicenseeMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvLicenseeMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvLicenseeMSP.peer', 'SouthDakotaDmvLicenseeMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -285,4 +308,5 @@ Profiles:
       Organizations:
         - *SouthDakotaDmv
         - *InsurerCo
+        - *SouthDakotaDmvLicensee
       Capabilities: *ApplicationCapabilities

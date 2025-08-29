@@ -84,6 +84,29 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
+  - &FloridaDmvLicensee
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: FloridaDmvLicenseeMSP
+    # ID to load the MSP definition as
+    ID: FloridaDmvLicenseeMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/licensee.dmv.florida.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('FloridaDmvLicenseeMSP.admin', 'FloridaDmvLicenseeMSP.peer', 'FloridaDmvLicenseeMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('FloridaDmvLicenseeMSP.admin', 'FloridaDmvLicenseeMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('FloridaDmvLicenseeMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('FloridaDmvLicenseeMSP.peer', 'FloridaDmvLicenseeMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -285,4 +308,5 @@ Profiles:
       Organizations:
         - *FloridaDmv
         - *InsurerCo
+        - *FloridaDmvLicensee
       Capabilities: *ApplicationCapabilities

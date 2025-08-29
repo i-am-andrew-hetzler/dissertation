@@ -78,6 +78,10 @@ function deleteLicensingNetwork() {
   rm -rf state/hosts/insurer-co-fl-peer0/hyperledger
   rm -rf state/hosts/insurer-co-sd-peer0/hyperledger
   rm -rf state/hosts/insurer-co-wv-peer0/hyperledger
+
+  rm -rf state/hosts/fl-dmv-licensee-peer0/hyperledger
+  rm -rf state/hosts/sd-dmv-licensee-peer0/hyperledger
+  rm -rf state/hosts/wv-dmv-licensee-peer0/hyperledger
 }
 
 function deleteProofOfFinancialResponsibilityNetwork() {
@@ -178,12 +182,15 @@ function generateFederalCryptography() {
 function generateLicensingCryptography() {
   generateCryptography "Florida DMV Orderer" state/cryptography/config/crypto-config-florida-orderer.yaml state
   generateCryptography "Florida DMV" state/cryptography/config/crypto-config-florida-peer.yaml state
+  generateCryptography "Florida DMV Licensee" state/cryptography/config/crypto-config-florida-licensee.yaml state
 
   generateCryptography "South Dakota DMV Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
   generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
+  generateCryptography "South Dakota DMV Licensee" state/cryptography/config/crypto-config-south-dakota-licensee.yaml state
 
   generateCryptography "West Virginia DMV Orderer" state/cryptography/config/crypto-config-west-virginia-orderer.yaml state
   generateCryptography "West Virginia DMV" state/cryptography/config/crypto-config-west-virginia-peer.yaml state
+  generateCryptography "West Virginia DMV Licensee" state/cryptography/config/crypto-config-west-virginia-licensee.yaml state
 #
   generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
@@ -337,6 +344,9 @@ function joinLicensingPeersToChannel() {
   joinPeerToChannel insurer-co-fl-peer0 licensing fl-orderer-1:7350
   joinPeerToChannel insurer-co-sd-peer0 licensing sd-orderer-1:7450
   joinPeerToChannel insurer-co-wv-peer0 licensing wv-orderer-1:7550
+  joinPeerToChannel fl-dmv-licensee-peer0 licensing fl-orderer-1:7350
+  joinPeerToChannel sd-dmv-licensee-peer0 licensing sd-orderer-1:7450
+  joinPeerToChannel wv-dmv-licensee-peer0 licensing wv-orderer-1:7550
 }
 
 function updateAnchorPeers() {
@@ -366,6 +376,9 @@ function updateLicensingAnchorPeers() {
   updateAnchorPeers "Insurer Co" insurer-co-fl-peer0 licensing
   updateAnchorPeers "Insurer Co" insurer-co-sd-peer0 licensing
   updateAnchorPeers "Insurer Co" insurer-co-wv-peer0 licensing
+  updateAnchorPeers "Florida DMV Licensee" fl-dmv-licensee-peer0 licensing
+  updateAnchorPeers "South Dakota DMV Licensee" sd-dmv-licensee-peer0 licensing
+  updateAnchorPeers "West Virginia DMV Licensee" wv-dmv-licensee-peer0 licensing
 }
 
 function deployChaincode() {
@@ -430,23 +443,34 @@ function installLicensingChaincode() {
   installChaincode fl-dmv-peer0 "licensing-1.0.0"
   deployChaincode insurer-co-fl-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode insurer-co-fl-peer0 "licensing-1.0.0"
+  deployChaincode fl-dmv-licensee-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode fl-dmv-licensee-peer0 "licensing-1.0.0"
 
   deployChaincode sd-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode sd-dmv-peer0 "licensing-1.0.0"
   deployChaincode insurer-co-sd-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode insurer-co-sd-peer0 "licensing-1.0.0"
+  deployChaincode sd-dmv-licensee-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode sd-dmv-licensee-peer0 "licensing-1.0.0"
 
   deployChaincode wv-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode wv-dmv-peer0 "licensing-1.0.0"
   deployChaincode insurer-co-wv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode insurer-co-wv-peer0 "licensing-1.0.0"
+  deployChaincode wv-dmv-licensee-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
+  installChaincode wv-dmv-licensee-peer0 "licensing-1.0.0"
 
   approveChaincode fl-dmv-peer0 approveLicensingChaincode
   approveChaincode insurer-co-fl-peer0 approveLicensingChaincode
+  approveChaincode fl-dmv-licensee-peer0 approveLicensingChaincode
+
   approveChaincode sd-dmv-peer0 approveLicensingChaincode
   approveChaincode insurer-co-sd-peer0 approveLicensingChaincode
+  approveChaincode sd-dmv-licensee-peer0 approveLicensingChaincode
+
   approveChaincode wv-dmv-peer0 approveLicensingChaincode
   approveChaincode insurer-co-wv-peer0 approveLicensingChaincode
+  approveChaincode wv-dmv-licensee-peer0 approveLicensingChaincode
 
   commitChaincode fl-dmv-peer0 commitLicensingChaincode "insurer-co-fl-peer0:2351"
   commitChaincode sd-dmv-peer0 commitLicensingChaincode "insurer-co-sd-peer0:2751"
