@@ -65,3 +65,12 @@ architecture/poc/state/hosts/nd-orderer-1/var/*
 architecture/poc/state/hosts/pa-orderer-1/var/*
 architecture/poc/state/hosts/sd-orderer-1/var/*
 architecture/poc/state/hosts/wv-orderer-1/var/*
+
+architecture/poc/state/hosts/al-dmv-peer0/hyperledger
+architecture/poc/state/hosts/az-dmv-peer0/hyperledger
+architecture/poc/state/hosts/fl-dmv-peer0/hyperledger
+architecture/poc/state/hosts/ga-dmv-peer0/hyperledger
+architecture/poc/state/hosts/nd-dmv-peer0/hyperledger
+architecture/poc/state/hosts/pa-dmv-peer0/hyperledger
+architecture/poc/state/hosts/sd-dmv-peer0/hyperledger
+architecture/poc/state/hosts/wv-dmv-peer0/hyperledger

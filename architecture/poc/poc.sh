@@ -173,7 +173,7 @@ function generateLicensingCryptography() {
   generateCryptography "West Virginia DMV Orderer" state/cryptography/config/crypto-config-west-virginia-orderer.yaml state
   generateCryptography "West Virginia DMV" state/cryptography/config/crypto-config-west-virginia-peer.yaml state
 #
-#  generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
+  generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
 
 function generateProofOfFinancialResponsibilityCryptography() {
@@ -410,12 +410,15 @@ function installFederalChaincode() {
 function installLicensingChaincode() {
   deployChaincode fl-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode fl-dmv-peer0 "licensing-1.0.0"
+  approveChaincode fl-dmv-peer0 approveLicensingChaincode
 
   deployChaincode sd-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode sd-dmv-peer0 "licensing-1.0.0"
+  approveChaincode sd-dmv-peer0 approveLicensingChaincode
 
   deployChaincode wv-dmv-peer0 "licensing-1.0.0" /chaincode/licensing/Licensing
   installChaincode wv-dmv-peer0 "licensing-1.0.0"
+  approveChaincode wv-dmv-peer0 approveLicensingChaincode
 }
 
 function start() {
