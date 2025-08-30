@@ -21,7 +21,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.azdot.gov/orderers/az-orderer-1.orderer.azdot.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.azdot.gov/orderers/az-orderer-1.orderer.azdot.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   pa-orderer-1:
     container_name: pa-orderer-1
@@ -41,7 +41,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   sd-orderer-1:
     container_name: sd-orderer-1
@@ -61,4 +61,4 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin

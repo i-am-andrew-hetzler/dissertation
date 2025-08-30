@@ -21,7 +21,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   ga-orderer-1:
     container_name: ga-orderer-1
@@ -41,7 +41,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   nd-orderer-1:
     container_name: nd-orderer-1
@@ -61,4 +61,4 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin

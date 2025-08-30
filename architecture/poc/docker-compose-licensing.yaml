@@ -21,7 +21,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   fl-dmv-peer0:
     build:
@@ -70,8 +70,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
   fl-dmv-licensee-peer0:
     build:
       context: .
@@ -113,8 +113,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   sd-orderer-1:
     container_name: sd-orderer-1
@@ -134,7 +134,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   sd-dmv-peer0:
     build:
@@ -183,8 +183,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   sd-dmv-licensee-peer0:
     build:
@@ -227,8 +227,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   wv-orderer-1:
     container_name: wv-orderer-1
@@ -248,7 +248,7 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/msp:/var/hyperledger/orderer/msp
       - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   wv-dmv-peer0:
     build:
@@ -297,8 +297,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   wv-dmv-licensee-peer0:
     build:
@@ -341,8 +341,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   insurer-co-fl-peer0:
     build:
@@ -385,8 +385,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
 
   insurer-co-sd-peer0:
@@ -430,8 +430,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   insurer-co-wv-peer0:
     build:
@@ -474,5 +474,5 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
