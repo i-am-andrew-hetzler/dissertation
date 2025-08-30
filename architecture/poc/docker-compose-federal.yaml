@@ -21,7 +21,7 @@ services:
       - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/msp:/var/hyperledger/orderer/msp
       - ./federal/cryptography/certs/ordererOrganizations/orderer.transportation.gov/orderers/dot-orderer-1.orderer.transportation.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/osnadmin:/usr/local/bin/osnadmin
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
 
   nhtsa-peer0:
     build:
@@ -65,8 +65,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   purdue-motor-company-peer0:
     build:
@@ -112,8 +112,8 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
 
   bess-leasing-company-peer0:
     build:
@@ -151,5 +151,5 @@ services:
       # Docker socket -- on Mac you MUST enable the default builder
       - /var/run/docker.sock:/host/var/run/docker.sock
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
-      - ./bin/linux/X64/configtxlator:/usr/local/bin/configtxlator
-      - ./bin/linux/X64/discover:/usr/local/bin/discover
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
