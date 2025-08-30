@@ -61,7 +61,52 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('GeorgiaDmvMSP.peer', 'GeorgiaDmvMSP.admin')"
-
+  - &InsurerCo
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: InsurerCoMSP
+    # ID to load the MSP definition as
+    ID: InsurerCoMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/insurer-co.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.peer', 'InsurerCoMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
+  - &GeorgiaDmvInsured
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: GeorgiaDmvInsuredMSP
+    # ID to load the MSP definition as
+    ID: GeorgiaDmvInsuredMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/insured.dmv.georgia.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('GeorgiaDmvInsuredMSP.admin', 'GeorgiaDmvInsuredMSP.peer', 'GeorgiaDmvInsuredMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('GeorgiaDmvInsuredMSP.admin', 'GeorgiaDmvInsuredMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('GeorgiaDmvInsuredMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('GeorgiaDmvInsuredMSP.peer', 'GeorgiaDmvInsuredMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -262,4 +307,6 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *GeorgiaDmv
+        - *InsurerCo
+        - *GeorgiaDmvInsured
       Capabilities: *ApplicationCapabilities

@@ -135,7 +135,7 @@ General:
   # LocalMSPID is the identity to register the local MSP material with the MSP
   # manager. The sample organization defined in the
   # sample configuration provided has an MSP ID of "SampleOrg".
-  LocalMSPID: GeorgiaOrdererMSP
+  LocalMSPID: GeorigaOrdererMSP
 
   # Enable an HTTP service for Go "pprof" profiling as documented at:
   # https://golang.org/pkg/net/http/pprof
@@ -277,7 +277,7 @@ Metrics:
 ################################################################################
 Admin:
   # host and port for the admin server
-  ListenAddress: 0.0.0.0:7553
+  ListenAddress: 0.0.0.0:7753
 
   # TLS configuration for the admin endpoint
   TLS:

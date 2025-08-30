@@ -108,6 +108,10 @@ function deleteProofOfFinancialResponsibilityNetwork() {
   rm -rf state/hosts/al-dmv-insured-peer0/hyperledger
   rm -rf state/hosts/ga-dmv-insured-peer0/hyperledger
   rm -rf state/hosts/nd-dmv-insured-peer0/hyperledger
+
+  rm -rf state/hosts/al-dmv-insured-peer0/hyperledger
+  rm -rf state/hosts/ga-dmv-insured-peer0/hyperledger
+  rm -rf state/hosts/nd-dmv-insured-peer0/hyperledger
 }
 
 function deleteRegistrationNetwork() {
@@ -205,16 +209,16 @@ function generateLicensingCryptography() {
 
 function generateProofOfFinancialResponsibilityCryptography() {
   generateCryptography "Alabama Gov Orderer" state/cryptography/config/crypto-config-alabama-orderer.yaml state
-  generateCryptography "Alabama Gov" state/cryptography/config/crypto-config-alabama-peer.yaml state
-  generateCryptography "Alabama DMV" state/cryptography/config/crypto-config-alabama-insured.yaml state
+  generateCryptography "Alabama DMV" state/cryptography/config/crypto-config-alabama-peer.yaml state
+  generateCryptography "Alabama DMV Insured" state/cryptography/config/crypto-config-alabama-insured.yaml state
 
   generateCryptography "Georgia Gov Orderer" state/cryptography/config/crypto-config-georgia-orderer.yaml state
-  generateCryptography "Georgia Gov" state/cryptography/config/crypto-config-georgia-peer.yaml state
-  generateCryptography "Georgia DMV" state/cryptography/config/crypto-config-georgia-dmv.yaml state
+  generateCryptography "Georgia DMV" state/cryptography/config/crypto-config-georgia-peer.yaml state
+  generateCryptography "Georgia DMV Insured" state/cryptography/config/crypto-config-georgia-insured.yaml state
 
   generateCryptography "North Dakota Gov Orderer" state/cryptography/config/crypto-config-north-dakota-orderer.yaml state
-  generateCryptography "North Dakota Gov" state/cryptography/config/crypto-config-north-dakota-peer.yaml state
-  generateCryptography "North Dakota DMV" state/cryptography/config/crypto-config-north-dakota-dmv.yaml state
+  generateCryptography "North Dakota DMV" state/cryptography/config/crypto-config-north-dakota-peer.yaml state
+  generateCryptography "North Dakota DMV Insured" state/cryptography/config/crypto-config-north-dakota-insured.yaml state
 
   generateCryptography "Insurer Co" state/cryptography/config/crypto-config-insurer-co-peer.yaml state
 }
@@ -358,9 +362,12 @@ function joinLicensingPeersToChannel() {
 }
 
 function joinProofOfFinancialResponsibilityPeersToChannel() {
-  joinPeerToChannel al-dmv-peer0 proof al-orderer-1:7650
-  joinPeerToChannel al-dmv-insured-peer0 proof al-orderer-1:7650
-  joinPeerToChannel insurer-co-al-peer0 proof al-orderer-1:7650
+#  joinPeerToChannel al-dmv-peer0 proof al-orderer-1:7650
+#  joinPeerToChannel al-dmv-insured-peer0 proof al-orderer-1:7650
+#  joinPeerToChannel insurer-co-al-peer0 proof al-orderer-1:7650
+  joinPeerToChannel ga-dmv-peer0 proof ga-orderer-1:7750
+  joinPeerToChannel ga-dmv-insured-peer0 proof ga-orderer-1:7750
+  joinPeerToChannel insurer-co-ga-peer0 proof ga-orderer-1:7750
 }
 
 function joinRegistrationPeersToChannel() {
@@ -408,9 +415,12 @@ function updateLicensingAnchorPeers() {
 }
 
 function updateProofOfFinancialResponsibilityAnchorPeers() {
-  updateAnchorPeers "Alabama DMV" al-dmv-peer0 proof
-  updateAnchorPeers "Alabama DMV Insured" al-dmv-insured-peer0 proof
-  updateAnchorPeers "Insurer Co" insurer-co-al-peer0 proof
+#  updateAnchorPeers "Alabama DMV" al-dmv-peer0 proof
+#  updateAnchorPeers "Alabama DMV Insured" al-dmv-insured-peer0 proof
+#  updateAnchorPeers "Insurer Co" insurer-co-al-peer0 proof
+  updateAnchorPeers "Georgia DMV" ga-dmv-peer0 proof
+  updateAnchorPeers "Georgia DMV Insured" ga-dmv-insured-peer0 proof
+  updateAnchorPeers "Insurer Co" insurer-co-ga-peer0 proof
 }
 
 function updateRegistrationAnchorPeers() {
@@ -522,18 +532,19 @@ function installLicensingChaincode() {
 }
 
 function installProofOfFinancialResponsibilityChaincode() {
-  deployChaincode al-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-  installChaincode al-dmv-peer0 "proof-1.0.0"
-  deployChaincode insurer-co-al-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-  installChaincode insurer-co-al-peer0 "proof-1.0.0"
-  deployChaincode al-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-  installChaincode al-dmv-insured-peer0 "proof-1.0.0"
-
-  approveChaincode al-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
-  approveChaincode insurer-co-al-peer0 approveProofOfFinancialResponsibilityChaincode
-  approveChaincode al-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
-
-  commitChaincode al-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-al-peer0:2151"
+  echo "here"
+#  deployChaincode al-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+#  installChaincode al-dmv-peer0 "proof-1.0.0"
+#  deployChaincode insurer-co-al-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+#  installChaincode insurer-co-al-peer0 "proof-1.0.0"
+#  deployChaincode al-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+#  installChaincode al-dmv-insured-peer0 "proof-1.0.0"
+#
+#  approveChaincode al-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
+#  approveChaincode insurer-co-al-peer0 approveProofOfFinancialResponsibilityChaincode
+#  approveChaincode al-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
+#
+#  commitChaincode al-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-al-peer0:2151"
 }
 
 function installRegistrationChaincode() {
