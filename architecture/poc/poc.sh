@@ -220,13 +220,13 @@ function generateProofOfFinancialResponsibilityCryptography() {
 }
 
 function generateRegistrationCryptography() {
-#  generateCryptography "Arizona Gov Orderer" state/cryptography/config/crypto-config-arizona-orderer.yaml state
-#  generateCryptography "Arizona DMV" state/cryptography/config/crypto-config-arizona-peer.yaml state
-#  generateCryptography "Arizona DMV Registrant" state/cryptography/config/crypto-config-arizona-registrant.yaml state
+  generateCryptography "Arizona Gov Orderer" state/cryptography/config/crypto-config-arizona-orderer.yaml state
+  generateCryptography "Arizona DMV" state/cryptography/config/crypto-config-arizona-peer.yaml state
+  generateCryptography "Arizona DMV Registrant" state/cryptography/config/crypto-config-arizona-registrant.yaml state
 
-#  generateCryptography "Pennsylvania Gov Orderer" state/cryptography/config/crypto-config-pennsylvania-orderer.yaml state
-#  generateCryptography "Pennsylvania DMV" state/cryptography/config/crypto-config-pennsylvania-peer.yaml state
-#  generateCryptography "Pennsylvania DMV Registrant" state/cryptography/config/crypto-config-pennsylvania-registrant.yaml state
+  generateCryptography "Pennsylvania Gov Orderer" state/cryptography/config/crypto-config-pennsylvania-orderer.yaml state
+  generateCryptography "Pennsylvania DMV" state/cryptography/config/crypto-config-pennsylvania-peer.yaml state
+  generateCryptography "Pennsylvania DMV Registrant" state/cryptography/config/crypto-config-pennsylvania-registrant.yaml state
 
   generateCryptography "South Dakota Gov Orderer" state/cryptography/config/crypto-config-south-dakota-orderer.yaml state
   generateCryptography "South Dakota DMV" state/cryptography/config/crypto-config-south-dakota-peer.yaml state
@@ -286,8 +286,8 @@ function generateProofOfFinancialResponsibilityGenesisBlocks() {
 }
 
 function generateRegistrationGenesisBlocks() {
-#  generateGenesisBlock registration state/config/arizona/ registration state/hosts/az-orderer-1/etc/registration.pb registration
-#  generateGenesisBlock registration state/config/pennsylvania/ registration state/hosts/pa-orderer-1/etc/registration.pb registration
+  generateGenesisBlock registration state/config/arizona/ registration state/hosts/az-orderer-1/etc/registration.pb registration
+  generateGenesisBlock registration state/config/pennsylvania/ registration state/hosts/pa-orderer-1/etc/registration.pb registration
   generateGenesisBlock registration state/config/south-dakota/ registration state/hosts/sd-orderer-1/etc/registration.pb registration
 }
 
@@ -317,8 +317,8 @@ function joinProofOfFinancialResponsibilityOrderersToChannel() {
 }
 
 function joinRegistrationOrderersToChannel() {
-#  joinOrdererToChannel az-orderer-1 registration 7953
-#  joinOrdererToChannel pa-orderer-1 registration 8053
+  joinOrdererToChannel az-orderer-1 registration 7953
+  joinOrdererToChannel pa-orderer-1 registration 8053
   joinOrdererToChannel sd-orderer-1 registration 7453
 }
 
@@ -363,14 +363,14 @@ function joinProofOfFinancialResponsibilityPeersToChannel() {
 
 function joinRegistrationPeersToChannel() {
   echo "here"
-#  joinPeerToChannel az-dmv-peer0 registration az-orderer-1:7950
-#  joinPeerToChannel pa-dmv-peer0 registration pa-orderer-1:8050
+  joinPeerToChannel az-dmv-peer0 registration az-orderer-1:7950
+  joinPeerToChannel pa-dmv-peer0 registration pa-orderer-1:8050
   joinPeerToChannel sd-dmv-peer0 registration sd-orderer-1:7450
-#  joinPeerToChannel insurer-co-az-peer0 registration az-orderer-1:7950
-#  joinPeerToChannel insurer-co-pa-peer0 registration pa-orderer-1:8050
+  joinPeerToChannel insurer-co-az-peer0 registration az-orderer-1:7950
+  joinPeerToChannel insurer-co-pa-peer0 registration pa-orderer-1:8050
   joinPeerToChannel insurer-co-sd-peer0 registration sd-orderer-1:7450
-#  joinPeerToChannel az-dmv-registrant-peer0 registration az-orderer-1:7950
-#  joinPeerToChannel pa-dmv-registrant-peer0 registration pa-orderer-1:8050
+  joinPeerToChannel az-dmv-registrant-peer0 registration az-orderer-1:7950
+  joinPeerToChannel pa-dmv-registrant-peer0 registration pa-orderer-1:8050
   joinPeerToChannel sd-dmv-registrant-peer0 registration sd-orderer-1:7450
 }
 
@@ -412,14 +412,14 @@ function updateProofOfFinancialResponsibilityAnchorPeers() {
 
 function updateRegistrationAnchorPeers() {
   echo "jere"
-#  updateAnchorPeers "Arizona DMV" az-dmv-peer0 registration
-#  updateAnchorPeers "Pennsylvania DMV" pa-dmv-peer0 registration
+  updateAnchorPeers "Arizona DMV" az-dmv-peer0 registration
+  updateAnchorPeers "Pennsylvania DMV" pa-dmv-peer0 registration
   updateAnchorPeers "South Dakota DMV" sd-dmv-peer0 registration
-#  updateAnchorPeers "Insurer Co" insurer-co-az-peer0 registration
-#  updateAnchorPeers "Insurer Co" insurer-co-pa-peer0 registration
+  updateAnchorPeers "Insurer Co" insurer-co-az-peer0 registration
+  updateAnchorPeers "Insurer Co" insurer-co-pa-peer0 registration
   updateAnchorPeers "Insurer Co" insurer-co-sd-peer0 registration
-#  updateAnchorPeers "Arizona DMV Registrant" az-dmv-registrant-peer0 registration
-#  updateAnchorPeers "Pennsylvania DMV Registrant" pa-dmv-registrant-peer0 registration
+  updateAnchorPeers "Arizona DMV Registrant" az-dmv-registrant-peer0 registration
+  updateAnchorPeers "Pennsylvania DMV Registrant" pa-dmv-registrant-peer0 registration
   updateAnchorPeers "South Dakota DMV Registrant" sd-dmv-registrant-peer0 registration
 }
 
@@ -524,6 +524,33 @@ function installProofOfFinancialResponsibilityChaincode() {
 }
 
 function installRegistrationChaincode() {
+  echo "here"
+    deployChaincode az-dmv-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode az-dmv-peer0 "registration-1.0.0"
+    deployChaincode insurer-co-az-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode insurer-co-az-peer0 "registration-1.0.0"
+    deployChaincode az-dmv-registrant-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode az-dmv-registrant-peer0 "registration-1.0.0"
+
+    approveChaincode az-dmv-peer0 approveRegistrationChaincode
+    approveChaincode insurer-co-az-peer0 approveRegistrationChaincode
+    approveChaincode az-dmv-registrant-peer0 approveRegistrationChaincode
+
+    commitChaincode az-dmv-peer0 commitRegistrationChaincode "insurer-co-az-peer0:2751"
+
+    deployChaincode pa-dmv-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode pa-dmv-peer0 "registration-1.0.0"
+    deployChaincode insurer-co-pa-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode insurer-co-pa-peer0 "registration-1.0.0"
+    deployChaincode pa-dmv-registrant-peer0 "registration-1.0.0" /chaincode/registration/Registration
+    installChaincode pa-dmv-registrant-peer0 "registration-1.0.0"
+
+    approveChaincode pa-dmv-peer0 approveRegistrationChaincode
+    approveChaincode insurer-co-pa-peer0 approveRegistrationChaincode
+    approveChaincode pa-dmv-registrant-peer0 approveRegistrationChaincode
+
+    commitChaincode pa-dmv-peer0 commitRegistrationChaincode "insurer-co-pa-peer0:2751"
+
   deployChaincode sd-dmv-peer0 "registration-1.0.0" /chaincode/registration/Registration
   installChaincode sd-dmv-peer0 "registration-1.0.0"
   deployChaincode insurer-co-sd-peer0 "registration-1.0.0" /chaincode/registration/Registration

@@ -10,8 +10,8 @@ OrdererOrgs:
   # ---------------------------------------------------------------------------
   # Orderer
   # ---------------------------------------------------------------------------
-  - Name: SouthDakotaDmvOrderer
-    Domain: orderer.sd.gov
+  - Name: ArizonaDmvOrderer
+    Domain: orderer.az.gov
     EnableNodeOUs: true
 
 
@@ -19,7 +19,7 @@ OrdererOrgs:
     # "Specs" - See PeerOrgs for complete description
     # ---------------------------------------------------------------------------
     Specs:
-      - Hostname: sd-orderer-1
+      - Hostname: az-orderer-1
         SANS:
           - localhost
-          - sd-orderer
+          - az-orderer
