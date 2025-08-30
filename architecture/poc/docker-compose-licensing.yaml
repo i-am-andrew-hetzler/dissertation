@@ -388,7 +388,6 @@ services:
       - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
       - ./bin/linux/arm/discover:/usr/local/bin/discover
 
-
   insurer-co-sd-peer0:
     build:
       context: .

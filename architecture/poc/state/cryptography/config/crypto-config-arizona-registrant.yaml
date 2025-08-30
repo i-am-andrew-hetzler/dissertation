@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: AlabamaDMV
-    Domain: dmv.alabama.gov
+  - Name: ArizonaDmvRegistrant
+    Domain: registrant.dmv.az.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - al-dmv-peer0
-        - peer0.dmv.alabama.gov
+        - az-dmv-registrant-peer0
+        - peer0.registrant.dmv.az.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

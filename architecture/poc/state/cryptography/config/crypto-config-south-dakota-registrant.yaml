@@ -9,10 +9,10 @@
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  #
+  # DMV
   # ---------------------------------------------------------------------------
-  - Name: PennsylvaniaDmv
-    Domain: dmv.pa.gov
+  - Name: SouthDakotaDMVRegistrant
+    Domain: registrant.dmv.sd.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - pa-dmv-peer0
-        - peer0.dmv.pa.gov
+        - sd-dmv-registrant-peer0
+        - peer0.registrant.dmv.sd.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

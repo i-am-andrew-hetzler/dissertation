@@ -107,6 +107,29 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('SouthDakotaDmvLicenseeMSP.peer', 'SouthDakotaDmvLicenseeMSP.admin')"
+  - &SouthDakotaDmvRegistrant
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: SouthDakotaDmvRegistrantMSP
+    # ID to load the MSP definition as
+    ID: SouthDakotaDmvRegistrantMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/registrant.dmv.sd.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvRegistrantMSP.admin', 'SouthDakotaDmvRegistrantMSP.peer', 'SouthDakotaDmvRegistrantMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvRegistrantMSP.admin', 'SouthDakotaDmvRegistrantMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvRegistrantMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('SouthDakotaDmvRegistrantMSP.peer', 'SouthDakotaDmvRegistrantMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -309,4 +332,42 @@ Profiles:
         - *SouthDakotaDmv
         - *InsurerCo
         - *SouthDakotaDmvLicensee
+      Capabilities: *ApplicationCapabilities
+
+  registration:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *SouthDakotaOrderer
+      Capabilities: *OrdererCapabilities
+      OrdererType: BFT
+      SmartBFT:
+        RequestBatchMaxCount: 100
+        RequestBatchMaxInterval: 50ms
+        RequestForwardTimeout: 2s
+        RequestComplainTimeout: 20s
+        RequestAutoRemoveTimeout: 3m0s
+        ViewChangeResendInterval: 5s
+        ViewChangeTimeout: 20s
+        LeaderHeartbeatTimeout: 1m0s
+        CollectTimeout: 1s
+        RequestBatchMaxBytes: 10485760
+        IncomingMessageBufferSize: 200
+        RequestPoolSize: 100000
+        LeaderHeartbeatCount: 10
+      ConsenterMapping:
+        - ID: 1
+          Host: sd-orderer-1
+          Port: 7450
+          MSPID: SouthDakotaOrdererMSP
+          Identity: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp/signcerts/sd-orderer-1.orderer.sd.gov-cert.pem
+          ClientTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls/server.crt
+          ServerTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls/server.crt
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *SouthDakotaDmv
+        - *InsurerCo
+        - *SouthDakotaDmvRegistrant
       Capabilities: *ApplicationCapabilities

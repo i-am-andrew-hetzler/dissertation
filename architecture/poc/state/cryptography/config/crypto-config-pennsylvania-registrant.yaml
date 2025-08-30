@@ -9,10 +9,10 @@
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  #
+  # DMV
   # ---------------------------------------------------------------------------
-  - Name: ArizonaDMV
-    Domain: dmv.azdot.gov
+  - Name: PennsylvaniaDMVRegistrant
+    Domain: registrant.dmv.pa.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - az-dmv-peer0
-        - peer0.dmv.azdot.gov
+        - pa-dmv-registrant-peer0
+        - peer0.registrant.dmv.pa.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

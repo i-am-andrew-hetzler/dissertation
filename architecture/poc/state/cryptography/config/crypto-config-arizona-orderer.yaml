@@ -11,7 +11,7 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: ArizonaDepartmentOfTransportationOrderer
-    Domain: orderer.azdot.gov
+    Domain: orderer.az.gov
     EnableNodeOUs: true
 
 
@@ -23,3 +23,4 @@ OrdererOrgs:
         SANS:
           - localhost
           - az-orderer
+          - orderer.az.gov

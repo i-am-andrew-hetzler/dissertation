@@ -22,7 +22,7 @@ Organizations:
     # ID to load the MSP definition as
     ID: ArizonaOrdererMSP
     # MSPDir is the filesystem path which contains the MSP configuration
-    MSPDir: ../../cryptography/certs/ordererOrganizations/orderer.azdot.gov/msp
+    MSPDir: ../../cryptography/certs/ordererOrganizations/orderer.az.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
@@ -44,7 +44,7 @@ Organizations:
     Name: ArizonaDmvMSP
     # ID to load the MSP definition as
     ID: ArizonaDmvMSP
-    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.azdot.gov/msp
+    MSPDir: ../../cryptography/certs/peerOrganizations/dmv.az.gov/msp
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
@@ -61,7 +61,52 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('ArizonaDmvMSP.peer', 'ArizonaDmvMSP.admin')"
-
+  - &InsurerCo
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: InsurerCoMSP
+    # ID to load the MSP definition as
+    ID: InsurerCoMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/insurer-co.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.peer', 'InsurerCoMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
+  - &ArizonaDmvRegistrant
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: ArizonaDmvRegistrantMSP
+    # ID to load the MSP definition as
+    ID: ArizonaDmvRegistrantMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/registrant.dmv.az.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ArizonaDmvRegistrantMSP.admin', 'ArizonaDmvRegistrantMSP.peer', 'ArizonaDmvRegistrantMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ArizonaDmvRegistrantMSP.admin', 'ArizonaDmvRegistrantMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ArizonaDmvRegistrantMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ArizonaDmvRegistrantMSP.peer', 'ArizonaDmvRegistrantMSP.admin')"
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -255,11 +300,13 @@ Profiles:
           Host: az-orderer-1
           Port: 7950
           MSPID: ArizonaOrdererMSP
-          Identity: ../../cryptography/certs/ordererOrganizations/orderer.azdot.gov/orderers/az-orderer-1.orderer.azdot.gov/msp/signcerts/az-orderer-1.orderer.azdot.gov-cert.pem
-          ClientTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.azdot.gov/orderers/az-orderer-1.orderer.azdot.gov/tls/server.crt
-          ServerTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.azdot.gov/orderers/az-orderer-1.orderer.azdot.gov/tls/server.crt
+          Identity: ../../cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/msp/signcerts/az-orderer-1.orderer.az.gov-cert.pem
+          ClientTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls/server.crt
+          ServerTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls/server.crt
     Application:
       <<: *ApplicationDefaults
       Organizations:
         - *ArizonaDmv
+#        - *InsurerCo
+        - *ArizonaDmvRegistrant
       Capabilities: *ApplicationCapabilities

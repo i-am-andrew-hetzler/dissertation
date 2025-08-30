@@ -38,6 +38,29 @@ Organizations:
         Rule: "OR('PennsylvaniaOrdererMSP.admin')"
     OrdererEndpoints:
       - pa-orderer-1:8050
+  - &InsurerCo
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: InsurerCoMSP
+    # ID to load the MSP definition as
+    ID: InsurerCoMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/insurer-co.com/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.peer', 'InsurerCoMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin', 'InsurerCoMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('InsurerCoMSP.peer', 'InsurerCoMSP.admin')"
   - &PennsylvaniaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
@@ -61,6 +84,29 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('PennsylvaniaDmvMSP.peer', 'PennsylvaniaDmvMSP.admin')"
+  - &PennsylvaniaDmvRegistrant
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: PennsylvaniaDmvRegistrantMSP
+    # ID to load the MSP definition as
+    ID: PennsylvaniaDmvRegistrantMSP
+    MSPDir: ../../cryptography/certs/peerOrganizations/registrant.dmv.pa.gov/msp
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PennsylvaniaDmvRegistrantMSP.admin', 'PennsylvaniaDmvRegistrantMSP.peer', 'PennsylvaniaDmvRegistrantMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PennsylvaniaDmvRegistrantMSP.admin', 'PennsylvaniaDmvRegistrantMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PennsylvaniaDmvRegistrantMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('PennsylvaniaDmvRegistrantMSP.peer', 'PennsylvaniaDmvRegistrantMSP.admin')"
 
 ################################################################################
 #
@@ -262,4 +308,6 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *PennsylvaniaDmv
+        - *InsurerCo
+        - *PennsylvaniaDmvRegistrant
       Capabilities: *ApplicationCapabilities
