@@ -16,16 +16,16 @@ peer:
 
     # The networkId allows for logical separation of networks and is used when
     # naming docker resources.
-    networkId: registration
+    networkId: licensing
 
     # The Address at local network interface this Peer will listen on.
     # By default, it will listen on all network interfaces
-    listenAddress: sd-dmv-registrant-peer0:9451
+    listenAddress: sd-dmv-registrant-peer0:8451
 
     # The endpoint this peer uses to listen for inbound chaincode connections.
     # If this is commented-out, the listen address is selected to be
     # the peer's address (see below) with port 7052
-    chaincodeListenAddress: 0.0.0.0:9452
+    chaincodeListenAddress: 0.0.0.0:8452
 
     # The endpoint the chaincode for this peer uses to connect to the peer.
     # If this is not specified, the chaincodeListenAddress address is selected.
@@ -39,7 +39,7 @@ peer:
     # in the same organization. For peers in other organization, see
     # gossip.externalEndpoint for more info.
     # When used as CLI config, this means the peer's endpoint to interact with
-    address: sd-dmv-registrant-peer0:9451
+    address: sd-dmv-registrant-peer0:8451
 
     # Whether the Peer should programmatically determine its address
     # This case is useful for docker containers.
@@ -101,7 +101,7 @@ peer:
         # Important: The endpoints here have to be endpoints of peers in the same
         # organization, because the peer would refuse connecting to these endpoints
         # unless they are in the same organization as the peer.
-        bootstrap: sd-dmv-registrant-peer0:9451
+        bootstrap: sd-dmv-registrant-peer0:8451
 
         # NOTE: orgLeader and useLeaderElection parameters are mutual exclusive.
         # Setting both to true would result in the termination of the peer
@@ -182,7 +182,7 @@ peer:
         msgExpirationFactor: 20
         # This is an endpoint that is published to peers outside of the organization.
         # If this isn't set, the peer will not be known to other organizations and will not be exposed via service discovery.
-        externalEndpoint: sd-dmv-registrant-peer0:9451
+        externalEndpoint: sd-dmv-registrant-peer0:8451
         # Leader election service configuration
         election:
             # Longest time peer waits for stable membership during leader election startup (unit: second)
