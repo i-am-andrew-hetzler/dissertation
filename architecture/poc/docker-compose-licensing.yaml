@@ -1,0 +1,477 @@
+networks:
+  licensing:
+
+name: licensing-use-case
+services:
+  fl-orderer-1:
+    container_name: fl-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7350:7350"
+      - "9443:9443"
+    volumes:
+      - ./state/hosts/fl-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/fl-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/users/Admin@orderer.florida.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  fl-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: fl-dmv-peer0
+    depends_on:
+      - fl-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=fl-orderer-1
+      - ORDERER_PORT=7350
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=fl-dmv-peer0
+      - PEER_PORT=7351
+      - PEER_MSP=FloridaDmvMSP
+      - STATE_LICENSE_COLLECTION=Florida_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=FloridaMSP
+      - STATE_DMV_MSP_ID=FloridaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=FloridaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-fl-peer0
+      - INSURER_CO_PEER_PORT=2351
+      - LICENSEE_PEER=fl-dmv-licensee-peer0
+      - LICENSEE_PEER_PORT=8351
+    networks:
+      - licensing
+    ports:
+      - "7351:7351"
+      - "7352:7352"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/florida_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.florida.gov/peers/peer0.dmv.florida.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.florida.gov/users/Admin@dmv.florida.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/fl-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/fl-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.florida.gov/peers/peer0.licensee.dmv.florida.gov/tls/ca.crt:/etc/hyperledger/fabric/licensee/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+  fl-dmv-licensee-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: fl-dmv-licensee-peer0
+    depends_on:
+      - fl-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=fl-orderer-1
+      - ORDERER_PORT=7350
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=fl-dmv-licensee-peer0
+      - PEER_PORT=8351
+      - PEER_MSP=FloridaDmvLicenseeMSP
+      - STATE_LICENSE_COLLECTION=Florida_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=FloridaMSP
+      - STATE_DMV_MSP_ID=FloridaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=FloridaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "8351:8351"
+      - "8352:8352"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/florida_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.florida.gov/peers/peer0.licensee.dmv.florida.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.florida.gov/users/Admin@licensee.dmv.florida.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/fl-dmv-licensee-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/fl-dmv-licensee-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  sd-orderer-1:
+    container_name: sd-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7450:7450"
+      - "10443:10443"
+    volumes:
+      - ./state/hosts/sd-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/sd-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/users/Admin@orderer.sd.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  sd-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: sd-dmv-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=sd-dmv-peer0
+      - PEER_PORT=7451
+      - PEER_MSP=SouthDakotaDmvMSP
+      - STATE_LICENSE_COLLECTION=SouthDakota_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=SouthDakotaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-sd-peer0
+      - INSURER_CO_PEER_PORT=2751
+      - LICENSEE_PEER=sd-dmv-licensee-peer0
+      - LICENSEE_PEER_PORT=8451
+    networks:
+      - licensing
+    ports:
+      - "7451:7451"
+      - "7452:7452"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/south_dakota_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.sd.gov/peers/peer0.dmv.sd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.sd.gov/users/Admin@dmv.sd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/sd-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/sd-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.sd.gov/peers/peer0.licensee.dmv.sd.gov/tls/ca.crt:/etc/hyperledger/fabric/licensee/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  sd-dmv-licensee-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: sd-dmv-licensee-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=sd-dmv-licensee-peer0
+      - PEER_PORT=8451
+      - PEER_MSP=SouthDakotaDmvLicenseeMSP
+      - STATE_LICENSE_COLLECTION=SouthDakota_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=SouthDakotaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "8451:8451"
+      - "8452:8452"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/south_dakota_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.sd.gov/peers/peer0.licensee.dmv.sd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.sd.gov/users/Admin@licensee.dmv.sd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/sd-dmv-licensee-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/sd-dmv-licensee-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  wv-orderer-1:
+    container_name: wv-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - licensing
+    ports:
+      - "7550:7550"
+      - "11443:11443"
+    volumes:
+      - ./state/hosts/wv-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/wv-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/users/Admin@orderer.wv.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  wv-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: wv-dmv-peer0
+    depends_on:
+      - wv-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=wv-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=wv-dmv-peer0
+      - PEER_PORT=7551
+      - PEER_MSP=WestVirginiaDmvMSP
+      - STATE_LICENSE_COLLECTION=WestVirginia_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=WestVirginiaMSP
+      - STATE_DMV_MSP_ID=WestVirginiaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=WestVirginiaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-wv-peer0
+      - INSURER_CO_PEER_PORT=2851
+      - LICENSEE_PEER=wv-dmv-licensee-peer0
+      - LICENSEE_PEER_PORT=8551
+    networks:
+      - licensing
+    ports:
+      - "7551:7551"
+      - "7552:7552"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/west_virginia_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.wv.gov/peers/peer0.dmv.wv.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.wv.gov/users/Admin@dmv.wv.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/wv-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/wv-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.wv.gov/peers/peer0.licensee.dmv.wv.gov/tls/ca.crt:/etc/hyperledger/fabric/licensee/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  wv-dmv-licensee-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: wv-dmv-licensee-peer0
+    depends_on:
+      - wv-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=wv-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=wv-dmv-licensee-peer0
+      - PEER_PORT=8551
+      - PEER_MSP=WestVirginiaDmvLicenseeMSP
+      - STATE_LICENSE_COLLECTION=WestVirginia_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=WestVirginiaMSP
+      - STATE_DMV_MSP_ID=WestVirginiaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=WestVirginiaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "8551:8551"
+      - "8552:8552"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/west_virginia_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.wv.gov/peers/peer0.licensee.dmv.wv.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/licensee.dmv.wv.gov/users/Admin@licensee.dmv.wv.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/wv-dmv-licensee-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/wv-dmv-licensee-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-fl-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-fl-peer0
+    depends_on:
+      - fl-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=fl-orderer-1
+      - ORDERER_PORT=7350
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-fl-peer0
+      - PEER_PORT=2351
+      - PEER_MSP=InsurerCoMSP
+      - STATE_LICENSE_COLLECTION=Florida_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=FloridaMSP
+      - STATE_DMV_MSP_ID=FloridaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=FloridaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "2351:2351"
+      - "2352:2352"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/florida_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.florida.gov/orderers/fl-orderer-1.orderer.florida.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-fl-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-fl-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-sd-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-sd-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-sd-peer0
+      - PEER_PORT=2751
+      - PEER_MSP=InsurerCoMSP
+      - STATE_LICENSE_COLLECTION=SouthDakota_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=SouthDakotaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "2751:2751"
+      - "2752:2752"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/south_dakota_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-sd-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-sd-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-wv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-wv-peer0
+    depends_on:
+      - wv-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=licensing-use-case_licensing
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=wv-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-wv-peer0
+      - PEER_PORT=2851
+      - PEER_MSP=InsurerCoMSP
+      - STATE_LICENSE_COLLECTION=WestVirginia_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=WestVirginiaMSP
+      - STATE_DMV_MSP_ID=WestVirginiaDmvMSP
+      - STATE_DMV_LICENSEE_MSP_ID=WestVirginiaDmvLicenseeMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - licensing
+    ports:
+      - "2851:2851"
+      - "2852:2852"
+    volumes:
+      - ../code/licensing/Licensing/build/install:/chaincode/licensing
+      - ../code/licensing/Licensing/west_virginia_collections_config.json:/chaincode/licensing/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.wv.gov/orderers/wv-orderer-1.orderer.wv.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-wv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-wv-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover

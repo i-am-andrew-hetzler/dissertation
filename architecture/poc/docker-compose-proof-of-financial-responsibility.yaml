@@ -1,0 +1,477 @@
+networks:
+  proof:
+
+name: proof-use-case
+services:
+  al-orderer-1:
+    container_name: al-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7650:7650"
+      - "12443:12443"
+    volumes:
+      - ./state/hosts/al-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/al-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/users/Admin@orderer.alabama.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  al-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: al-dmv-peer0
+    depends_on:
+      - al-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=al-orderer-1
+      - ORDERER_PORT=7650
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=al-dmv-peer0
+      - PEER_PORT=7651
+      - PEER_MSP=AlabamaDmvMSP
+      - STATE_PROOF_COLLECTION=Alabama_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=AlabamaMSP
+      - STATE_DMV_MSP_ID=AlabamaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=AlabamaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-al-peer0
+      - INSURER_CO_PEER_PORT=2151
+      - INSURED_PEER=al-dmv-insured-peer0
+      - INSURED_PEER_PORT=8651
+    networks:
+      - proof
+    ports:
+      - "7651:7651"
+      - "7652:7652"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/alabama_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.alabama.gov/peers/peer0.dmv.alabama.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.alabama.gov/users/Admin@dmv.alabama.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/al-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/al-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.alabama.gov/peers/peer0.insured.dmv.alabama.gov/tls/ca.crt:/etc/hyperledger/fabric/insured/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  al-dmv-insured-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: al-dmv-insured-peer0
+    depends_on:
+      - al-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=al-orderer-1
+      - ORDERER_PORT=7650
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=al-dmv-insured-peer0
+      - PEER_PORT=8651
+      - PEER_MSP=AlabamaDmvInsuredMSP
+      - STATE_PROOF_COLLECTION=Alabama_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=AlabamaMSP
+      - STATE_DMV_MSP_ID=AlabamaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=AlabamaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "8651:8651"
+      - "8652:8652"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/alabama_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.alabama.gov/peers/peer0.insured.dmv.alabama.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.alabama.gov/users/Admin@insured.dmv.alabama.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/al-dmv-insured-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/al-dmv-insured-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-al-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-al-peer0
+    depends_on:
+      - al-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=al-orderer-1
+      - ORDERER_PORT=7650
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-al-peer0
+      - PEER_PORT=2151
+      - PEER_MSP=InsurerCoMSP
+      - STATE_PROOF_COLLECTION=Alabama_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=AlabamaMSP
+      - STATE_DMV_MSP_ID=AlabamaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=AlabamaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "2151:2151"
+      - "2152:2152"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/alabama_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.alabama.gov/orderers/al-orderer-1.orderer.alabama.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-al-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-al-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  ga-orderer-1:
+    container_name: ga-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7550:7550"
+      - "13443:13443"
+    volumes:
+      - ./state/hosts/ga-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/ga-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/users/Admin@orderer.georgia.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  ga-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: ga-dmv-peer0
+    depends_on:
+      - ga-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=ga-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=ga-dmv-peer0
+      - PEER_PORT=7551
+      - PEER_MSP=GeorgiaDmvMSP
+      - STATE_PROOF_COLLECTION=Georgia_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=GeorgiaMSP
+      - STATE_DMV_MSP_ID=GeorgiaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=GeorgiaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-ga-peer0
+      - INSURER_CO_PEER_PORT=2451
+      - INSURED_PEER=ga-dmv-insured-peer0
+      - INSURED_PEER_PORT=8551
+    networks:
+      - proof
+    ports:
+      - "7551:7551"
+      - "7552:7552"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/georgia_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.georgia.gov/peers/peer0.dmv.georgia.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.georgia.gov/users/Admin@dmv.georgia.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/ga-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/ga-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.georgia.gov/peers/peer0.insured.dmv.georgia.gov/tls/ca.crt:/etc/hyperledger/fabric/insured/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  ga-dmv-insured-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: ga-dmv-insured-peer0
+    depends_on:
+      - ga-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=ga-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=ga-dmv-insured-peer0
+      - PEER_PORT=8551
+      - PEER_MSP=GeorgiaDmvInsuredMSP
+      - STATE_PROOF_COLLECTION=Georgia_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=GeorgiaMSP
+      - STATE_DMV_MSP_ID=GeorgiaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=GeorgiaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "8551:8551"
+      - "8552:8552"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/georgia_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.georgia.gov/peers/peer0.insured.dmv.georgia.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.georgia.gov/users/Admin@insured.dmv.georgia.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/ga-dmv-insured-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/ga-dmv-insured-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-ga-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-ga-peer0
+    depends_on:
+      - ga-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=ga-orderer-1
+      - ORDERER_PORT=7550
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-ga-peer0
+      - PEER_PORT=2451
+      - PEER_MSP=InsurerCoMSP
+      - STATE_PROOF_COLLECTION=Georgia_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=GeorgiaMSP
+      - STATE_DMV_MSP_ID=GeorgiaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=GeorgiaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "2451:2451"
+      - "2452:2452"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/georgia_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-ga-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-ga-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  nd-orderer-1:
+    container_name: nd-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - proof
+    ports:
+      - "7850:7850"
+      - "14443:14443"
+    volumes:
+      - ./state/hosts/nd-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/nd-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/users/Admin@orderer.nd.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+  nd-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: nd-dmv-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=nd-dmv-peer0
+      - PEER_PORT=7851
+      - PEER_MSP=NorthDakotaDmvMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-nd-peer0
+      - INSURER_CO_PEER_PORT=2551
+      - INSURED_PEER=nd-dmv-insured-peer0
+      - INSURED_PEER_PORT=8851
+    networks:
+      - proof
+    ports:
+      - "7851:7851"
+      - "7852:7852"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.nd.gov/peers/peer0.dmv.nd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.nd.gov/users/Admin@dmv.nd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/nd-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/nd-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/peers/peer0.insured.dmv.nd.gov/tls/ca.crt:/etc/hyperledger/fabric/insured/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  nd-dmv-insured-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: nd-dmv-insured-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=nd-dmv-insured-peer0
+      - PEER_PORT=8851
+      - PEER_MSP=NorthDakotaDmvInsuredMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "8851:8851"
+      - "8852:8852"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/peers/peer0.insured.dmv.nd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/users/Admin@insured.dmv.nd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/nd-dmv-insured-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/nd-dmv-insured-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-nd-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-nd-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-nd-peer0
+      - PEER_PORT=2551
+      - PEER_MSP=InsurerCoMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "2551:2551"
+      - "2552:2552"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-nd-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-nd-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover

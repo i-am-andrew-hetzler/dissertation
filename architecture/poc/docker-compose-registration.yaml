@@ -1,0 +1,477 @@
+networks:
+  registration:
+
+name: registration-use-case
+services:
+  az-orderer-1:
+    container_name: az-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - registration
+    ports:
+      - "7950:7950"
+      - "16443:16443"
+    volumes:
+      - ./state/hosts/az-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/az-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/users/Admin@orderer.az.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  az-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: az-dmv-peer0
+    depends_on:
+      - az-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=az-orderer-1
+      - ORDERER_PORT=7950
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=az-dmv-peer0
+      - PEER_PORT=7951
+      - PEER_MSP=ArizonaDmvMSP
+      - STATE_REGISTRATION_COLLECTION=Arizona_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=ArizonaMSP
+      - STATE_DMV_MSP_ID=ArizonaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=ArizonaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-az-peer0
+      - INSURER_CO_PEER_PORT=2251
+      - REGISTRANT_PEER=az-dmv-registrant-peer0
+      - REGISTRANT_PEER_PORT=8951
+    networks:
+      - registration
+    ports:
+      - "7951:7951"
+      - "7952:7952"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/arizona_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.az.gov/peers/peer0.dmv.az.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.az.gov/users/Admin@dmv.az.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/az-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/az-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.az.gov/peers/peer0.registrant.dmv.az.gov/tls/ca.crt:/etc/hyperledger/fabric/registrant/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  az-dmv-registrant-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: az-dmv-registrant-peer0
+    depends_on:
+      - az-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=az-orderer-1
+      - ORDERER_PORT=7950
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=az-dmv-registrant-peer0
+      - PEER_PORT=8951
+      - PEER_MSP=ArizonaDmvRegistrantMSP
+      - STATE_LICENSE_COLLECTION=Arizona_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=ArizonaMSP
+      - STATE_DMV_MSP_ID=ArizonaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=ArizonaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "8951:8951"
+      - "8952:8952"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/arizona_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.az.gov/peers/peer0.registrant.dmv.az.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.az.gov/users/Admin@registrant.dmv.az.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/az-dmv-registrant-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/az-dmv-registrant-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-az-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-az-peer0
+    depends_on:
+      - az-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=az-orderer-1
+      - ORDERER_PORT=7950
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-az-peer0
+      - PEER_PORT=2251
+      - PEER_MSP=InsurerCoMSP
+      - STATE_REGISTRATION_COLLECTION=Arizona_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=ArizonaMSP
+      - STATE_DMV_MSP_ID=ArizonaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=ArizonaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "2251:2251"
+      - "2252:2252"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/arizona_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.az.gov/orderers/az-orderer-1.orderer.az.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-az-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-az-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+  pa-orderer-1:
+    container_name: pa-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - registration
+    ports:
+      - "8050:8050"
+      - "36443:36443"
+    volumes:
+      - ./state/hosts/pa-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/pa-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/users/Admin@orderer.pa.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  pa-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: pa-dmv-peer0
+    depends_on:
+      - pa-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=pa-orderer-1
+      - ORDERER_PORT=8050
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=pa-dmv-peer0
+      - PEER_PORT=8051
+      - PEER_MSP=PennsylvaniaDmvMSP
+      - STATE_REGISTRATION_COLLECTION=Pennsylvania_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=PennsylvaniaMSP
+      - STATE_DMV_MSP_ID=PennsylvaniaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=PennsylvaniaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-pa-peer0
+      - INSURER_CO_PEER_PORT=2651
+      - REGISTRANT_PEER=pa-dmv-registrant-peer0
+      - REGISTRANT_PEER_PORT=9051
+    networks:
+      - registration
+    ports:
+      - "8051:8051"
+      - "8052:8052"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/pennsylvania_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.pa.gov/peers/peer0.dmv.pa.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.pa.gov/users/Admin@dmv.pa.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/pa-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/pa-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.pa.gov/peers/peer0.registrant.dmv.pa.gov/tls/ca.crt:/etc/hyperledger/fabric/registrant/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  pa-dmv-registrant-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: pa-dmv-registrant-peer0
+    depends_on:
+      - pa-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=pa-orderer-1
+      - ORDERER_PORT=8050
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=pa-dmv-registrant-peer0
+      - PEER_PORT=9051
+      - PEER_MSP=PennsylvaniaDmvRegistrantMSP
+      - STATE_LICENSE_COLLECTION=Pennsylvania_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=PennsylvaniaMSP
+      - STATE_DMV_MSP_ID=PennsylvaniaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=PennsylvaniaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "9051:9051"
+      - "9052:9052"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/pennsylvania_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.pa.gov/peers/peer0.registrant.dmv.pa.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.pa.gov/users/Admin@registrant.dmv.pa.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/pa-dmv-registrant-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/pa-dmv-registrant-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-pa-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-pa-peer0
+    depends_on:
+      - pa-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=pa-orderer-1
+      - ORDERER_PORT=8050
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-pa-peer0
+      - PEER_PORT=2671
+      - PEER_MSP=InsurerCoMSP
+      - STATE_REGISTRATION_COLLECTION=Pennsylvania_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=PennsylvaniaMSP
+      - STATE_DMV_MSP_ID=PennsylvaniaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=PennsylvaniaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "2671:2671"
+      - "2652:2652"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/pennsylvania_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.pa.gov/orderers/pa-orderer-1.orderer.pa.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-pa-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-pa-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  sd-orderer-1:
+    container_name: sd-orderer-1
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+    image: hyperledger/fabric-orderer:3.1.1
+    networks:
+      - registration
+    ports:
+      - "7450:7450"
+      - "10443:10443"
+    volumes:
+      - ./state/hosts/sd-orderer-1/etc:/etc/hyperledger/fabric
+      - ./state/hosts/sd-orderer-1/var:/var/hyperledger
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/users/Admin@orderer.sd.gov/tls:/var/hyperledger/orderer/admin
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/msp:/var/hyperledger/orderer/msp
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/var/hyperledger/orderer/tls
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+
+  sd-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: sd-dmv-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=sd-dmv-peer0
+      - PEER_PORT=7451
+      - PEER_MSP=SouthDakotaDmvMSP
+      - STATE_REGISTRATION_COLLECTION=SouthDakota_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=SouthDakotaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-sd-peer0
+      - INSURER_CO_PEER_PORT=2751
+      - REGISTRANT_PEER=sd-dmv-registrant-peer0
+      - REGISTRANT_PEER_PORT=8451
+    networks:
+      - registration
+    ports:
+      - "7451:7451"
+      - "7452:7452"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/south_dakota_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.sd.gov/peers/peer0.dmv.sd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.sd.gov/users/Admin@dmv.sd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/sd-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/sd-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.sd.gov/peers/peer0.registrant.dmv.sd.gov/tls/ca.crt:/etc/hyperledger/fabric/registrant/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  sd-dmv-registrant-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: sd-dmv-registrant-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=sd-dmv-registrant-peer0
+      - PEER_PORT=8451
+      - PEER_MSP=SouthDakotaDmvRegistrantMSP
+      - STATE_LICENSE_COLLECTION=SouthDakota_LICENSE_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=SouthDakotaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "8451:8451"
+      - "8452:8452"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/south_dakota_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.sd.gov/peers/peer0.registrant.dmv.sd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/registrant.dmv.sd.gov/users/Admin@registrant.dmv.sd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/sd-dmv-registrant-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/sd-dmv-registrant-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-sd-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-sd-peer0
+    depends_on:
+      - sd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=registration-use-case_registration
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=sd-orderer-1
+      - ORDERER_PORT=7450
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-sd-peer0
+      - PEER_PORT=2751
+      - PEER_MSP=InsurerCoMSP
+      - STATE_REGISTRATION_COLLECTION=SouthDakota_REGISTRATION_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=SouthDakotaMSP
+      - STATE_DMV_MSP_ID=SouthDakotaDmvMSP
+      - STATE_DMV_REGISTRANT_MSP_ID=SouthDakotaDmvRegistrantMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - registration
+    ports:
+      - "2751:2751"
+      - "2752:2752"
+    volumes:
+      - ../code/registration/Registration/build/install:/chaincode/registration
+      - ../code/registration/Registration/south_dakota_collections_config.json:/chaincode/registration/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.sd.gov/orderers/sd-orderer-1.orderer.sd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-sd-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-sd-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover

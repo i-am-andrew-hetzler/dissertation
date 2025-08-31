@@ -520,7 +520,7 @@ public class RegistrationChaincode {
         context.getStub().putPrivateData(
                 STATE_REGISTRATION_COLLECTION,
                 registration.getRegistration().getNumber().toUpperCase(),
-                objectMapper.writeValueAsString(registration)
+                objectMapper.writeValueAsBytes(registration)
         );
     }
 
