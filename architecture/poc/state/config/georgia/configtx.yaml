@@ -37,7 +37,7 @@ Organizations:
         Type: Signature
         Rule: "OR('GeorgiaOrdererMSP.admin')"
     OrdererEndpoints:
-      - ga-orderer-1:7750
+      - ga-orderer-1:7550
   - &GeorgiaDmv
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
@@ -298,7 +298,7 @@ Profiles:
       ConsenterMapping:
         - ID: 1
           Host: ga-orderer-1
-          Port: 7750
+          Port: 7550
           MSPID: GeorgiaOrdererMSP
           Identity: ../../cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/msp/signcerts/ga-orderer-1.orderer.georgia.gov-cert.pem
           ClientTLSCert: ../../cryptography/certs/ordererOrganizations/orderer.georgia.gov/orderers/ga-orderer-1.orderer.georgia.gov/tls/server.crt

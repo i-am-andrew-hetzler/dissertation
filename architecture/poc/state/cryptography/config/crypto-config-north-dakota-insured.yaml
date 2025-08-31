@@ -9,10 +9,10 @@
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  #
+  # DMV
   # ---------------------------------------------------------------------------
-  - Name: NorthDakotaDmv
-    Domain: dmv.nd.gov
+  - Name: NorthDakotaDMVInsured
+    Domain: insured.dmv.nd.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - nd-dmv-peer0
-        - peer0.dmv.nd.gov
+        - nd-dmv-insured-peer0
+        - peer0.insured.dmv.nd.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

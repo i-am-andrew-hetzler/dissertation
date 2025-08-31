@@ -316,7 +316,7 @@ function joinLicensingOrderersToChannel() {
 
 function joinProofOfFinancialResponsibilityOrderersToChannel() {
   joinOrdererToChannel al-orderer-1 proof 7653
-  joinOrdererToChannel ga-orderer-1 proof 7753
+  joinOrdererToChannel ga-orderer-1 proof 7553
   joinOrdererToChannel nd-orderer-1 proof 7853
 }
 
@@ -365,9 +365,9 @@ function joinProofOfFinancialResponsibilityPeersToChannel() {
 #  joinPeerToChannel al-dmv-peer0 proof al-orderer-1:7650
 #  joinPeerToChannel al-dmv-insured-peer0 proof al-orderer-1:7650
 #  joinPeerToChannel insurer-co-al-peer0 proof al-orderer-1:7650
-  joinPeerToChannel ga-dmv-peer0 proof ga-orderer-1:7750
-  joinPeerToChannel ga-dmv-insured-peer0 proof ga-orderer-1:7750
-  joinPeerToChannel insurer-co-ga-peer0 proof ga-orderer-1:7750
+  joinPeerToChannel ga-dmv-peer0 proof ga-orderer-1:7550
+  joinPeerToChannel ga-dmv-insured-peer0 proof ga-orderer-1:7550
+  joinPeerToChannel insurer-co-ga-peer0 proof ga-orderer-1:7550
 }
 
 function joinRegistrationPeersToChannel() {
@@ -545,6 +545,19 @@ function installProofOfFinancialResponsibilityChaincode() {
 #  approveChaincode al-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
 #
 #  commitChaincode al-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-al-peer0:2151"
+
+  deployChaincode ga-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode ga-dmv-peer0 "proof-1.0.0"
+  deployChaincode insurer-co-ga-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode insurer-co-ga-peer0 "proof-1.0.0"
+  deployChaincode ga-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode ga-dmv-insured-peer0 "proof-1.0.0"
+
+  approveChaincode ga-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode insurer-co-ga-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode ga-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
+
+  commitChaincode ga-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-ga-peer0:2451"
 }
 
 function installRegistrationChaincode() {

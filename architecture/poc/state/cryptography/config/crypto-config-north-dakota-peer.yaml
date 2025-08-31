@@ -11,8 +11,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   #
   # ---------------------------------------------------------------------------
-  - Name: NorthDakotaGov
-    Domain: nd.gov
+  - Name: NorthDakotaDmv
+    Domain: dmv.nd.gov
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,8 +50,8 @@ PeerOrgs:
       Count: 1
       SANS:
         - localhost
-        - nd-peer0
-        - peer0.nd.gov
+        - nd-dmv-peer0
+        - peer0.dmv.nd.gov
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

@@ -10,5 +10,17 @@
     "endorsementPolicy": {
       "signaturePolicy":"OR('AlabamaDmvMSP.member')"
     }
+  },
+  {
+    "name": "INSURERCOMSP_LICENSE_COLLECTION",
+    "policy": "OR('InsurerCoMSP.member')",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 2,
+    "blockToLive": 0,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": true,
+    "endorsementPolicy": {
+      "signaturePolicy": "OR('InsurerCoMSP.member')"
+    }
   }
 ]
