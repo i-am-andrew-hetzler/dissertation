@@ -338,3 +338,140 @@ services:
       - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/var/hyperledger/orderer/tls
       # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
       - ./bin/linux/arm/osnadmin:/usr/local/bin/osnadmin
+  nd-dmv-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: nd-dmv-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=nd-dmv-peer0
+      - PEER_PORT=7851
+      - PEER_MSP=NorthDakotaDmvMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+      - INSURER_CO_PEER=insurer-co-nd-peer0
+      - INSURER_CO_PEER_PORT=2551
+      - INSURED_PEER=nd-dmv-insured-peer0
+      - INSURED_PEER_PORT=8851
+    networks:
+      - proof
+    ports:
+      - "7851:7851"
+      - "7852:7852"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/dmv.nd.gov/peers/peer0.dmv.nd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/dmv.nd.gov/users/Admin@dmv.nd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/nd-dmv-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/nd-dmv-peer0/hyperledger:/var/hyperledger/production
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com/tls/ca.crt:/etc/hyperledger/fabric/insurer-co/tls/ca.crt
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/peers/peer0.insured.dmv.nd.gov/tls/ca.crt:/etc/hyperledger/fabric/insured/tls/ca.crt
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  nd-dmv-insured-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: nd-dmv-insured-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=nd-dmv-insured-peer0
+      - PEER_PORT=8851
+      - PEER_MSP=NorthDakotaDmvInsuredMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "8851:8851"
+      - "8852:8852"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/peers/peer0.insured.dmv.nd.gov:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insured.dmv.nd.gov/users/Admin@insured.dmv.nd.gov:/etc/hyperledger/fabric/admin
+      - ./state/hosts/nd-dmv-insured-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/nd-dmv-insured-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover
+
+  insurer-co-nd-peer0:
+    build:
+      context: .
+      dockerfile: Peer_Dockerfile
+    container_name: insurer-co-nd-peer0
+    depends_on:
+      - nd-orderer-1
+    environment:
+      - ADMIN_MSP=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/admin/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=proof-use-case_proof
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - ORDERER_ADDRESS=nd-orderer-1
+      - ORDERER_PORT=7850
+      - PEER_MSP=/etc/hyperledger/fabric/msp
+      - PEER_ADDRESS=insurer-co-nd-peer0
+      - PEER_PORT=2551
+      - PEER_MSP=InsurerCoMSP
+      - STATE_PROOF_COLLECTION=NorthDakota_PROOF_COLLECTION
+      - STATE_AGENCIES_MSP_IDS=NorthDakotaMSP
+      - STATE_DMV_MSP_ID=NorthDakotaDmvMSP
+      - STATE_DMV_INSURED_MSP_ID=NorthDakotaDmvInsuredMSP
+      - THIRD_PARTY_MSP_IDS=InsurerCoMSP
+    networks:
+      - proof
+    ports:
+      - "2551:2551"
+      - "2552:2552"
+    volumes:
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/build/install:/chaincode/proof
+      - ../code/proof_of_financial_responsibility/ProofOfFinancialResponsibility/north_dakota_collections_config.json:/chaincode/proof/config/collections_config.json
+      - ./state/cryptography/certs/ordererOrganizations/orderer.nd.gov/orderers/nd-orderer-1.orderer.nd.gov/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/peers/peer0.insurer-co.com:/etc/hyperledger/fabric
+      - ./state/cryptography/certs/peerOrganizations/insurer-co.com/users/Admin@insurer-co.com:/etc/hyperledger/fabric/admin
+      - ./state/hosts/insurer-co-nd-peer0/etc/core.yaml:/etc/hyperledger/fabric/core.yaml
+      - ./state/hosts/insurer-co-nd-peer0/hyperledger:/var/hyperledger/production
+      - ./scripts:/scripts
+      # Docker socket -- on Mac you MUST enable the default builder
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      # ATTENTION! YOU MUST CHANGE THE BIN PATH TO EITHER THE X64 OR ARM DIRECTORY BASED ON YOUR COMPUTER'S ARCHITECTURE
+      - ./bin/linux/arm/configtxlator:/usr/local/bin/configtxlator
+      - ./bin/linux/arm/discover:/usr/local/bin/discover

@@ -12,7 +12,7 @@ peer:
 
     # The peer id provides a name for this peer instance and is used when
     # naming docker resources.
-    id: ga-dmv-insured-peer0
+    id: nd-dmv-peer0
 
     # The networkId allows for logical separation of networks and is used when
     # naming docker resources.
@@ -20,12 +20,12 @@ peer:
 
     # The Address at local network interface this Peer will listen on.
     # By default, it will listen on all network interfaces
-    listenAddress: ga-dmv-insured-peer0:8551
+    listenAddress: nd-dmv-peer0:7851
 
     # The endpoint this peer uses to listen for inbound chaincode connections.
     # If this is commented-out, the listen address is selected to be
     # the peer's address (see below) with port 7052
-    chaincodeListenAddress: 0.0.0.0:8552
+    chaincodeListenAddress: 0.0.0.0:7852
 
     # The endpoint the chaincode for this peer uses to connect to the peer.
     # If this is not specified, the chaincodeListenAddress address is selected.
@@ -39,7 +39,7 @@ peer:
     # in the same organization. For peers in other organization, see
     # gossip.externalEndpoint for more info.
     # When used as CLI config, this means the peer's endpoint to interact with
-    address: ga-dmv-insured-peer0:8551
+    address: nd-dmv-peer0:7851
 
     # Whether the Peer should programmatically determine its address
     # This case is useful for docker containers.
@@ -101,7 +101,7 @@ peer:
         # Important: The endpoints here have to be endpoints of peers in the same
         # organization, because the peer would refuse connecting to these endpoints
         # unless they are in the same organization as the peer.
-        bootstrap: ga-dmv-insured-peer0:8551
+        bootstrap: nd-dmv-peer0:7851
 
         # NOTE: orgLeader and useLeaderElection parameters are mutual exclusive.
         # Setting both to true would result in the termination of the peer
@@ -182,7 +182,7 @@ peer:
         msgExpirationFactor: 20
         # This is an endpoint that is published to peers outside of the organization.
         # If this isn't set, the peer will not be known to other organizations and will not be exposed via service discovery.
-        externalEndpoint: ga-dmv-insured-peer0:8551
+        externalEndpoint: nd-dmv-peer0:7851
         # Leader election service configuration
         election:
             # Longest time peer waits for stable membership during leader election startup (unit: second)
@@ -361,7 +361,7 @@ peer:
     # to match the name of one of the MSPs in each of the channel
     # that this peer is a member of. Otherwise this peer's messages
     # will not be identified as valid by other nodes.
-    localMspId: GeorgiaDmvInsuredMSP
+    localMspId: NorthDakotaDmvMSP
 
     # CLI common client config options
     client:
@@ -751,7 +751,7 @@ ledger:
 ###############################################################################
 operations:
     # host and port for the operations server
-    listenAddress: ga-dmv-insured-peer0:19443
+    listenAddress: nd-dmv-peer0:25443
 
     # TLS configuration for the operations endpoint
     tls:
