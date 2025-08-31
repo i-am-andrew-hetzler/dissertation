@@ -362,12 +362,12 @@ function joinLicensingPeersToChannel() {
 }
 
 function joinProofOfFinancialResponsibilityPeersToChannel() {
-#  joinPeerToChannel al-dmv-peer0 proof al-orderer-1:7650
-#  joinPeerToChannel al-dmv-insured-peer0 proof al-orderer-1:7650
-#  joinPeerToChannel insurer-co-al-peer0 proof al-orderer-1:7650
-#  joinPeerToChannel ga-dmv-peer0 proof ga-orderer-1:7550
-#  joinPeerToChannel ga-dmv-insured-peer0 proof ga-orderer-1:7550
-#  joinPeerToChannel insurer-co-ga-peer0 proof ga-orderer-1:7550
+  joinPeerToChannel al-dmv-peer0 proof al-orderer-1:7650
+  joinPeerToChannel al-dmv-insured-peer0 proof al-orderer-1:7650
+  joinPeerToChannel insurer-co-al-peer0 proof al-orderer-1:7650
+  joinPeerToChannel ga-dmv-peer0 proof ga-orderer-1:7550
+  joinPeerToChannel ga-dmv-insured-peer0 proof ga-orderer-1:7550
+  joinPeerToChannel insurer-co-ga-peer0 proof ga-orderer-1:7550
   joinPeerToChannel nd-dmv-peer0 proof nd-orderer-1:7850
   joinPeerToChannel insurer-co-nd-peer0 proof nd-orderer-1:7850
   joinPeerToChannel nd-dmv-insured-peer0 proof nd-orderer-1:7850
@@ -418,12 +418,12 @@ function updateLicensingAnchorPeers() {
 }
 
 function updateProofOfFinancialResponsibilityAnchorPeers() {
-#  updateAnchorPeers "Alabama DMV" al-dmv-peer0 proof
-#  updateAnchorPeers "Alabama DMV Insured" al-dmv-insured-peer0 proof
-#  updateAnchorPeers "Insurer Co" insurer-co-al-peer0 proof
-#  updateAnchorPeers "Georgia DMV" ga-dmv-peer0 proof
-#  updateAnchorPeers "Georgia DMV Insured" ga-dmv-insured-peer0 proof
-#  updateAnchorPeers "Insurer Co" insurer-co-ga-peer0 proof
+  updateAnchorPeers "Alabama DMV" al-dmv-peer0 proof
+  updateAnchorPeers "Alabama DMV Insured" al-dmv-insured-peer0 proof
+  updateAnchorPeers "Insurer Co" insurer-co-al-peer0 proof
+  updateAnchorPeers "Georgia DMV" ga-dmv-peer0 proof
+  updateAnchorPeers "Georgia DMV Insured" ga-dmv-insured-peer0 proof
+  updateAnchorPeers "Insurer Co" insurer-co-ga-peer0 proof
   updateAnchorPeers "North Dakota DMV" nd-dmv-peer0 proof
   updateAnchorPeers "Insurer Co" insurer-co-nd-peer0 proof
   updateAnchorPeers "North Dakota DMV Insured" nd-dmv-insured-peer0 proof
@@ -538,31 +538,31 @@ function installLicensingChaincode() {
 }
 
 function installProofOfFinancialResponsibilityChaincode() {
-#  deployChaincode al-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode al-dmv-peer0 "proof-1.0.0"
-#  deployChaincode insurer-co-al-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode insurer-co-al-peer0 "proof-1.0.0"
-#  deployChaincode al-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode al-dmv-insured-peer0 "proof-1.0.0"
-#
-#  approveChaincode al-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
-#  approveChaincode insurer-co-al-peer0 approveProofOfFinancialResponsibilityChaincode
-#  approveChaincode al-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
-#
-#  commitChaincode al-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-al-peer0:2151"
+  deployChaincode al-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode al-dmv-peer0 "proof-1.0.0"
+  deployChaincode insurer-co-al-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode insurer-co-al-peer0 "proof-1.0.0"
+  deployChaincode al-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode al-dmv-insured-peer0 "proof-1.0.0"
 
-#  deployChaincode ga-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode ga-dmv-peer0 "proof-1.0.0"
-#  deployChaincode insurer-co-ga-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode insurer-co-ga-peer0 "proof-1.0.0"
-#  deployChaincode ga-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
-#  installChaincode ga-dmv-insured-peer0 "proof-1.0.0"
-#
-#  approveChaincode ga-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
-#  approveChaincode insurer-co-ga-peer0 approveProofOfFinancialResponsibilityChaincode
-#  approveChaincode ga-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
-#
-#  commitChaincode ga-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-ga-peer0:2451"
+  approveChaincode al-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode insurer-co-al-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode al-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
+
+  commitChaincode al-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-al-peer0:2151"
+
+  deployChaincode ga-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode ga-dmv-peer0 "proof-1.0.0"
+  deployChaincode insurer-co-ga-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode insurer-co-ga-peer0 "proof-1.0.0"
+  deployChaincode ga-dmv-insured-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
+  installChaincode ga-dmv-insured-peer0 "proof-1.0.0"
+
+  approveChaincode ga-dmv-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode insurer-co-ga-peer0 approveProofOfFinancialResponsibilityChaincode
+  approveChaincode ga-dmv-insured-peer0 approveProofOfFinancialResponsibilityChaincode
+
+  commitChaincode ga-dmv-peer0 commitProofOfFinancialResponsibilityChaincode "insurer-co-ga-peer0:2451"
 
   deployChaincode nd-dmv-peer0 "proof-1.0.0" /chaincode/proof/ProofOfFinancialResponsibility
   installChaincode nd-dmv-peer0 "proof-1.0.0"
