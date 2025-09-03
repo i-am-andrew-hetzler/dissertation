@@ -1,0 +1,48 @@
+test:
+  workers:
+    number: 2
+  rounds:
+    - label: "Certify Motor Vehicle and Check Vehicle Certification - 2 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 1
+      workload:
+        module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
+        arguments:
+          contractId: fmvss-certification-chaincode
+          filePath: federal/hosts/caliper/fmvss/data/fmvss
+    - label: "Certify Motor Vehicle and Check Vehicle Certification - 4 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 2
+      workload:
+        module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
+        arguments:
+          contractId: fmvss-certification-chaincode
+          filePath: federal/hosts/caliper/fmvss/data/fmvss
+    - label: "Certify Motor Vehicle and Check Vehicle Certification - 6 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 3
+      workload:
+        module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
+        arguments:
+          contractId: fmvss-certification-chaincode
+          filePath: federal/hosts/caliper/fmvss/data/fmvss
+    - label: "Certify Motor Vehicle and Check Vehicle Certification - 8 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 4
+      workload:
+        module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
+        arguments:
+          contractId: fmvss-certification-chaincode
+          filePath: federal/hosts/caliper/fmvss/data/fmvss

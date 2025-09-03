@@ -35,7 +35,7 @@ public class FmvssCertification {
             @JsonProperty("importedVehicle") ImportedVehicle importedVehicle,
             @JsonProperty("motorVehicle") MotorVehicle motorVehicle,
             @JsonProperty("multistageVehicle") MultistageVehicle multistageVehicle,
-            @JsonProperty("replcaVehicle") ReplicaVehicle replicaVehicle,
+            @JsonProperty("replicaVehicle") ReplicaVehicle replicaVehicle,
             @JsonProperty("schemaVersion") String schemaVersion
     ) {
         this.alteredVehicle = alteredVehicle;
