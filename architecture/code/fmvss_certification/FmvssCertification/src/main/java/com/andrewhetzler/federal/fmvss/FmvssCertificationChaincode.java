@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.CERTIFICATION_DOES_NOT_EXIST;
-import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.DESERIALIZATION_ERROR;
-import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.INVALID_REQUEST;
+import static com.andrewhetzler.federal.fmvss.FmvssCertificationError.*;
 
 /**
  * Author:       Andrew Hetzler
@@ -51,11 +49,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public FmvssCertification viewCertification(
+    public String viewCertification(
             final Context context,
             final String vin
     ) throws
-      IOException {
+            IOException {
         final FmvssCertification certification = getCertification(
                 context,
                 vin
@@ -71,15 +69,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
             );
         }
 
-        if (certification.getAlteredVehicle() == null) {
-
-        }
-
-        return certification;
+        return objectMapper.writeValueAsString(certification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyAlteredVehicle(
+    public String certifyAlteredVehicle(
             final Context context,
             final String vin,
             final String conformityStatement,
@@ -88,33 +82,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String type,
             final String schemaVersion
     ) throws
-      IOException {
-        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
-                serializedGawr,
-                "gross axle weight ratings",
-                GrossAxleWeightRating.class
-        );
-        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
-                serializedGvwr,
-                "gross vehicle weight ratings",
-                GrossVehicleWeightRating.class
-        );
-
-        final FmvssCertification certification = getCertification(
-                context,
-                vin
-        );
-
-        if (certification == null || !hasAtleastOneCertificationExists(certification)) {
-            throw new ChaincodeException(
-                    String.format(
-                            "No prior certification found for vehicle %s.",
-                            vin
-                    ),
-                    CERTIFICATION_DOES_NOT_EXIST.toString()
-            );
-        }
-
+            IOException {
         if (!hasConformityStatement(conformityStatement)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -128,6 +96,17 @@ public class FmvssCertificationChaincode implements ContractInterface {
                     INVALID_REQUEST.toString()
             );
         }
+
+        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
+                serializedGawr,
+                "gross axle weight ratings",
+                GrossAxleWeightRating.class
+        );
+        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
+                serializedGvwr,
+                "gross vehicle weight ratings",
+                GrossVehicleWeightRating.class
+        );
 
         if (grossAxleWeightRatings != null && !grossAxleWeightRatings.isEmpty() && !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
             throw new ChaincodeException(
@@ -150,6 +129,20 @@ public class FmvssCertificationChaincode implements ContractInterface {
             );
         }
 
+        final FmvssCertification certification = getCertification(
+                context,
+                vin
+        );
+        if (certification == null || !hasAtleastOneCertificationExists(certification)) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No prior certification found for vehicle %s.",
+                            vin
+                    ),
+                    CERTIFICATION_DOES_NOT_EXIST.toString()
+            );
+        }
+
         final FmvssCertification alteredCertification = new FmvssCertification(
                 new AlteredVehicle(
                         conformityStatement,
@@ -169,11 +162,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(alteredCertification)
         );
 
-        return alteredCertification;
+        return objectMapper.writeValueAsString(alteredCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyImportedVehicle(
+    public String certifyImportedVehicle(
             final Context context,
             final String vin,
             final String conformityStatement,
@@ -182,7 +175,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String vinCompliance,
             final String schemaVersion
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         if (isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -244,11 +237,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(importedCertification)
         );
 
-        return importedCertification;
+        return objectMapper.writeValueAsString(importedCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyMotorVehicle(
+    public String certifyMotorVehicle(
             final Context context,
             final String vin,
             final String conformityStatement,
@@ -262,7 +255,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String type,
             final String schemaVersion
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         final List<String> documentationTables = deserializeList(
                 serializedDocumentationTables,
                 "documentation tables",
@@ -365,11 +358,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(motorVehicleCertification)
         );
 
-        return motorVehicleCertification;
+        return objectMapper.writeValueAsString(motorVehicleCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyIncompleteVehicle(
+    public String certifyIncompleteVehicle(
             final Context context,
             final String vin,
             final String serializedGawr,
@@ -379,18 +372,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String manufacturerName,
             final String schemaVersion
     ) throws
-      IOException {
-        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
-                serializedGawr,
-                "gross axle weight ratings",
-                GrossAxleWeightRating.class
-        );
-        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
-                serializedGvwr,
-                "gross vehicle weight ratings",
-                GrossVehicleWeightRating.class
-        );
-
+            IOException {
         if (isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -405,14 +387,32 @@ public class FmvssCertificationChaincode implements ContractInterface {
             );
         }
 
-        if (isNullOrBlank(serializedGawr) || grossAxleWeightRatings.isEmpty() || !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
+        if (isNullOrBlank(serializedGawr) || isNullOrBlank(serializedGvwr)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
             );
         }
 
-        if (isNullOrBlank(serializedGvwr) || grossVehicleWeightRatings.isEmpty() || !isValidGrossVehicleWeightRatings(grossVehicleWeightRatings)) {
+        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
+                serializedGawr,
+                "gross axle weight ratings",
+                GrossAxleWeightRating.class
+        );
+        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
+                serializedGvwr,
+                "gross vehicle weight ratings",
+                GrossVehicleWeightRating.class
+        );
+
+        if (grossAxleWeightRatings.isEmpty() || !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        if (grossVehicleWeightRatings.isEmpty() || !isValidGrossVehicleWeightRatings(grossVehicleWeightRatings)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
@@ -441,6 +441,16 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 vin
         );
 
+        if (certification != null && certification.getIncompleteVehicle() != null) {
+            throw new ChaincodeException(
+                    String.format(
+                            "No prior certification found for vehicle %s.",
+                            vin
+                    ),
+                    CERTIFICATION_ALREADY_EXISTS.toString()
+            );
+        }
+
         FmvssCertification incompleteVehicleCertification = new FmvssCertification(
                 null,
                 null,
@@ -468,11 +478,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(incompleteVehicleCertification)
         );
 
-        return incompleteVehicleCertification;
+        return objectMapper.writeValueAsString(incompleteVehicleCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyIntermediateVehicle(
+    public String certifyIntermediateVehicle(
             final Context context,
             final String vin,
             final String serializedGawr,
@@ -482,18 +492,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String manufacturerName,
             final String schemaVersion
     ) throws
-      IOException {
-        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
-                serializedGawr,
-                "gross axle weight ratings",
-                GrossAxleWeightRating.class
-        );
-        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
-                serializedGvwr,
-                "gross vehicle weight ratings",
-                GrossVehicleWeightRating.class
-        );
-
+            IOException {
         if (isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -524,6 +523,17 @@ public class FmvssCertificationChaincode implements ContractInterface {
                     INVALID_REQUEST.toString()
             );
         }
+
+        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
+                serializedGawr,
+                "gross axle weight ratings",
+                GrossAxleWeightRating.class
+        );
+        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
+                serializedGvwr,
+                "gross vehicle weight ratings",
+                GrossVehicleWeightRating.class
+        );
 
         final FmvssCertification certification = getCertification(
                 context,
@@ -572,11 +582,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(intermediateVehicleCertification)
         );
 
-        return intermediateVehicleCertification;
+        return objectMapper.writeValueAsString(intermediateVehicleCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyFinalVehicle(
+    public String certifyFinalVehicle(
             final Context context,
             final String vin,
             final String conformityStatement,
@@ -588,18 +598,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String type,
             final String schemaVersion
     ) throws
-      IOException {
-        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
-                serializedGawr,
-                "gross axle weight ratings",
-                GrossAxleWeightRating.class
-        );
-        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
-                serializedGvwr,
-                "gross vehicle weight ratings",
-                GrossVehicleWeightRating.class
-        );
-
+            IOException {
         if (isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -621,14 +620,32 @@ public class FmvssCertificationChaincode implements ContractInterface {
             );
         }
 
-        if (isNullOrBlank(serializedGawr) || grossAxleWeightRatings.isEmpty() || !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
+        if (isNullOrBlank(serializedGawr) || isNullOrBlank(serializedGvwr)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
             );
         }
 
-        if (isNullOrBlank(serializedGvwr) || grossVehicleWeightRatings.isEmpty() || !isValidGrossVehicleWeightRatings(grossVehicleWeightRatings)) {
+        final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
+                serializedGawr,
+                "gross axle weight ratings",
+                GrossAxleWeightRating.class
+        );
+        final List<GrossVehicleWeightRating> grossVehicleWeightRatings = deserializeList(
+                serializedGvwr,
+                "gross vehicle weight ratings",
+                GrossVehicleWeightRating.class
+        );
+
+        if (grossAxleWeightRatings.isEmpty() || !isValidGrossAxleWeightRatings(grossAxleWeightRatings)) {
+            throw new ChaincodeException(
+                    "Invalid request.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
+        if (grossVehicleWeightRatings.isEmpty() || !isValidGrossVehicleWeightRatings(grossVehicleWeightRatings)) {
             throw new ChaincodeException(
                     "Invalid request.",
                     INVALID_REQUEST.toString()
@@ -703,11 +720,11 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(finalVehicleCertification)
         );
 
-        return finalVehicleCertification;
+        return objectMapper.writeValueAsString(finalVehicleCertification);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FmvssCertification certifyReplicaVehicle(
+    public String certifyReplicaVehicle(
             final Context context,
             final String vin,
             final String exemptionStatement,
@@ -719,7 +736,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
             final String replicaStatement,
             final String schemaVersion
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         final List<GrossAxleWeightRating> grossAxleWeightRatings = deserializeList(
                 serializedGawr,
                 "gross axle weight ratings",
@@ -816,17 +833,17 @@ public class FmvssCertificationChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(replicaCertification)
         );
 
-        return replicaCertification;
+        return objectMapper.writeValueAsString(replicaCertification);
     }
 
     private FmvssCertification getCertification(
             final Context context,
             String vin
     ) throws
-      IOException {
+            IOException {
         final byte[] certification = context.getStub().getState(vin.toUpperCase());
 
-        if (certification != null) {
+        if (certification != null && certification.length > 0) {
             return deserialize(certification);
         }
 
@@ -834,7 +851,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
     }
 
     private FmvssCertification deserialize(final byte[] certification) throws
-                                                                       IOException {
+            IOException {
         return objectMapper.readValue(
                 certification,
                 FmvssCertification.class
@@ -854,8 +871,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
                             clazz
                     )
             ) : new ArrayList<>();
-        }
-        catch (JsonMappingException e) {
+        } catch (JsonMappingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to map the %s.",
@@ -863,8 +879,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
                     ),
                     DESERIALIZATION_ERROR.toString()
             );
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to deserialize %s.",
@@ -951,8 +966,7 @@ public class FmvssCertificationChaincode implements ContractInterface {
         try {
             Integer.parseInt(value);
             return true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
