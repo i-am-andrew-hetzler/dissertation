@@ -1,0 +1,92 @@
+test:
+  workers:
+    number: 4
+  rounds:
+#    - label: "Record Initial State and Vehicle State Validity - 36 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 36
+#      workload:
+#        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-validity-test.js
+#        arguments:
+#          contractId: vehicle-state-chaincode
+#          filePath: federal/hosts/caliper/vehicle/data/vehicle
+#    - label: "Record Initial State and Vehicle State Validity - 72 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 72
+#      workload:
+#        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-validity-test.js
+#        arguments:
+#          contractId: vehicle-state-chaincode
+#          filePath: federal/hosts/caliper/vehicle/data/vehicle
+#    - label: "Record Initial State and Vehicle State Validity - 108 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 108
+#      workload:
+#        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-validity-test.js
+#        arguments:
+#          contractId: vehicle-state-chaincode
+#          filePath: federal/hosts/caliper/vehicle/data/vehicle
+#    - label: "Record Initial State and Vehicle State Validity - 144 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 144
+#      workload:
+#        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-validity-test.js
+#        arguments:
+#          contractId: vehicle-state-chaincode
+#          filePath: federal/hosts/caliper/vehicle/data/vehicle
+    - label: "Record Initial State, Update State, and Override State - 36 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 36
+      workload:
+        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-write-test.js
+        arguments:
+          contractId: vehicle-state-chaincode
+          filePath: federal/hosts/caliper/vehicle/data/vehicle
+    - label: "Record Initial State, Update State, and Override State - 72 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 72
+      workload:
+        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-write-test.js
+        arguments:
+          contractId: vehicle-state-chaincode
+          filePath: federal/hosts/caliper/vehicle/data/vehicle
+    - label: "Record Initial State, Update State, and Override State - 108 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 108
+      workload:
+        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-write-test.js
+        arguments:
+          contractId: vehicle-state-chaincode
+          filePath: federal/hosts/caliper/vehicle/data/vehicle
+    - label: "Record Initial State, Update State, and Override State - 144 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 144
+      workload:
+        module: federal/hosts/caliper/vehicle/benchmarks/vehicle-write-test.js
+        arguments:
+          contractId: vehicle-state-chaincode
+          filePath: federal/hosts/caliper/vehicle/data/vehicle

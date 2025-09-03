@@ -43,13 +43,38 @@ prompted to allow the _cryptogen_ and _configtxgen_ binary.
 ## Running the Performance Tests
 1. Make sure the instance(s) are running for the test.
 2. Update the connection.yaml file for the test you want to run so that the pem certificate matches the user you are masquerading as. Note, it will be the /tls/ca.crt of the user.
-3. Invoke the Docker Compose up command for the test. For example
+3. Invoke the Docker Compose up command for the test.
+### Firmware
 ```shell
-docker compose -f docker-compose-perf-firmware.yaml up --build -d
-
 npx caliper launch manager \
     --caliper-bind-sut fabric:fabric-gateway \
     --caliper-workspace . \
     --caliper-benchconfig federal/hosts/caliper/firmware/benchmarks/config.yaml \
     --caliper-networkconfig federal/hosts/caliper/firmware/networks/network.yaml
+```
+### FMVSS
+```shell
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/fmvss/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/fmvss/networks/network.yaml
+```
+
+### Recall Notifications
+```shell
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/recall/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/networks/network.yaml
+```
+
+### Vehicle State
+```shell
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/vehicle/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/vehicle/networks/network.yaml
 ```

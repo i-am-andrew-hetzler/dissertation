@@ -7,7 +7,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 9
+          tps: 36
       workload:
         module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
         arguments:
@@ -18,7 +18,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 18
+          tps: 72
       workload:
         module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
         arguments:
@@ -29,7 +29,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 27
+          tps: 108
       workload:
         module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
         arguments:
@@ -40,7 +40,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 36
+          tps: 144
       workload:
         module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
         arguments:
