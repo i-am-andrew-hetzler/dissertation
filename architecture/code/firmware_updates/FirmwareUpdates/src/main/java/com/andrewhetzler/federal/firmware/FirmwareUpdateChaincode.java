@@ -13,6 +13,7 @@ import com.andrewhetzler.federal.firmware.model.validations.YearIsNotNullOrEmpty
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.Context;
+import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.andrewhetzler.federal.firmware.FirmwareUpdateError.INVALID_REQUEST;
 import static com.andrewhetzler.federal.firmware.FirmwareUpdateError.UPDATE_DOES_NOT_EXIT;
 
 /**
@@ -42,7 +44,7 @@ import static com.andrewhetzler.federal.firmware.FirmwareUpdateError.UPDATE_DOES
                         name = "Andrew Hetzler",
                         url = "www.andrewhetzler.com")))
 @Default
-public class FirmwareUpdateChaincode {
+public class FirmwareUpdateChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final List<Validation> validations = new ArrayList<>();
 
@@ -59,17 +61,17 @@ public class FirmwareUpdateChaincode {
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public FirmwareUpdate checkForUpdate(
+    public String checkForUpdate(
             final Context context,
             final String make,
             final String model,
             final String year
     ) throws
-      IOException {
+            IOException {
         final byte[] firmwareUpdateTransaction = context.getStub().getState(String.format(
                 "%s-%s-%s",
-                make.toLowerCase(),
-                model.toLowerCase(),
+                make.toUpperCase(),
+                model.toUpperCase(),
                 year
         ));
 
@@ -85,25 +87,40 @@ public class FirmwareUpdateChaincode {
             );
         }
 
-        return objectMapper.readValue(
-                firmwareUpdateTransaction,
-                FirmwareUpdate.class
-        );
+        return new String(firmwareUpdateTransaction);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public FirmwareUpdate createFirmwareUpdate(
+    public String createFirmwareUpdate(
             final Context context,
             final String hash,
             final String make,
-            final Map<String, String> metadata,
+            final String serializedMetadata,
             final String model,
             final String url,
             final String version,
             final String year,
             final String schemaVersion
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
+        final Map<String, String> metadata;
+
+        try {
+            if (serializedMetadata != null && !serializedMetadata.isBlank()) {
+                metadata = objectMapper.readValue(
+                        serializedMetadata,
+                        Map.class
+                );
+            } else {
+                metadata = null;
+            }
+        } catch (IOException e) {
+            throw new ChaincodeException(
+                    "Unable to deserialie metadata.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
         final FirmwareUpdate firmwareUpdate = new FirmwareUpdate(
                 new Firmware(
                         hash,
@@ -121,14 +138,14 @@ public class FirmwareUpdateChaincode {
 
         context.getStub().putState(
                 String.format(
-                        "Update does not exist for %s %s %s",
-                        make,
-                        model,
+                        "%s-%s-%s",
+                        make.toUpperCase(),
+                        model.toUpperCase(),
                         year
                 ),
                 objectMapper.writeValueAsBytes(firmwareUpdate)
         );
 
-        return firmwareUpdate;
+        return objectMapper.writeValueAsString(firmwareUpdate);
     }
 }

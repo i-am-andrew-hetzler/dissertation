@@ -1,0 +1,48 @@
+test:
+  workers:
+    number: 4
+  rounds:
+    - label: "Create Firmware and Check For Firmware Update - 36 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 9
+      workload:
+        module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
+        arguments:
+          contractId: firmware-updates-chaincode
+          filePath: federal/hosts/caliper/firmware/data/firmware
+    - label: "Create Firmware and Check For Firmware Update - 72 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 18
+      workload:
+        module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
+        arguments:
+          contractId: firmware-updates-chaincode
+          filePath: federal/hosts/caliper/firmware/data/firmware
+    - label: "Create Firmware and Check For Firmware Update - 108 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 27
+      workload:
+        module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
+        arguments:
+          contractId: firmware-updates-chaincode
+          filePath: federal/hosts/caliper/firmware/data/firmware
+    - label: "Create Firmware and Check For Firmware Update - 144 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 36
+      workload:
+        module: federal/hosts/caliper/firmware/benchmarks/firmware-test.js
+        arguments:
+          contractId: firmware-updates-chaincode
+          filePath: federal/hosts/caliper/firmware/data/firmware

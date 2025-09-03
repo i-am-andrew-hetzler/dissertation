@@ -83,3 +83,8 @@ architecture/poc/state/hosts/insurer-co-nd-peer0/hyperledger
 architecture/poc/state/hosts/insurer-co-pa-peer0/hyperledger
 architecture/poc/state/hosts/insurer-co-sd-peer0/hyperledger
 architecture/poc/state/hosts/insurer-co-wv-peer0/hyperledger
+
+architecture/poc/node_modules
+architecture/poc/package-lock.json
+architecture/poc/package.json
+architecture/poc/report.html

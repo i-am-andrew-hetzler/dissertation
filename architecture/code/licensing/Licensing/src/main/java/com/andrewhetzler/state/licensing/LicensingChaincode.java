@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
+import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
@@ -48,7 +49,7 @@ import static com.andrewhetzler.state.licensing.LicenseChaincodeError.UNAUTHORIZ
                         name = "Andrew Hetzler",
                         url = "www.andrewhetzler.com")))
 @Default
-public class LicensingChaincode {
+public class LicensingChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String STATE_LICENSE_COLLECTION = System.getenv().getOrDefault(
             "STATE_LICENSE_COLLECTION",

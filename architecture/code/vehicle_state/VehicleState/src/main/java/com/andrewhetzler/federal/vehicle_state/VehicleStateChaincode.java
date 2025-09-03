@@ -3,6 +3,7 @@ package com.andrewhetzler.federal.vehicle_state;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
+import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
@@ -36,7 +37,7 @@ import static com.andrewhetzler.federal.vehicle_state.VehicleStateError.UNAUTHOR
                         name = "Andrew Hetzler",
                         url = "www.andrewhetzler.com")))
 @Default
-public class VehicleStateChaincode {
+public class VehicleStateChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String COLLECTION = System.getenv().getOrDefault(
             "vehicle_state_collection",

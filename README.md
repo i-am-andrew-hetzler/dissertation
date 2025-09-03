@@ -39,3 +39,17 @@ notes were kept for each expert exchange.
 You can do that by double-clicking the binary, open _System Preferences > Privacy & Security_ and scroll down to where
 the binary is blocked. Click allow, run the binary again, click allow and enter your password. You should no longer get
 prompted to allow the _cryptogen_ and _configtxgen_ binary.
+
+## Running the Performance Tests
+1. Make sure the instance(s) are running for the test.
+2. Update the connection.yaml file for the test you want to run so that the pem certificate matches the user you are masquerading as. Note, it will be the /tls/ca.crt of the user.
+3. Invoke the Docker Compose up command for the test. For example
+```shell
+docker compose -f docker-compose-perf-firmware.yaml up --build -d
+
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/firmware/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/firmware/networks/network.yaml
+```

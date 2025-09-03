@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
@@ -74,20 +74,20 @@ class FirmwareUpdateChaincodeTest {
 
     @Test
     void checkForUpdatesShouldReturnAnUpdateBecauseFirmwareExists() throws
-                                                                    IOException {
+            IOException {
         final byte[] expected = objectMapper.writeValueAsBytes(firmwareUpdate);
 
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
-        when(mockedChaincodeStub.getState("maserati-mc20-2025")).thenReturn(expected);
+        when(mockedChaincodeStub.getState("MASERATI-MC20-2025")).thenReturn(expected);
 
-        final FirmwareUpdate result = subject.checkForUpdate(
+        final String result = subject.checkForUpdate(
                 mockedContext,
                 "Maserati",
                 "MC20",
                 "2025"
         );
 
-        assertThat(result).isEqualTo(firmwareUpdate);
+        assertThat(result).isEqualTo(objectMapper.writeValueAsString(firmwareUpdate));
     }
 
     @Test
@@ -114,10 +114,10 @@ class FirmwareUpdateChaincodeTest {
 
     @Test
     void createFirmwareShouldSave() throws
-                                    JsonProcessingException {
+            JsonProcessingException {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
 
-        final FirmwareUpdate result = subject.createFirmwareUpdate(
+        final String result = subject.createFirmwareUpdate(
                 mockedContext,
                 firmwareUpdate.getHash(),
                 firmwareUpdate.getMake(),
@@ -129,8 +129,15 @@ class FirmwareUpdateChaincodeTest {
                 "1"
         );
 
+        verify(
+                mockedChaincodeStub,
+                times(1)
+        ).putState(
+                "MASERATI-MC20-2025",
+                objectMapper.writeValueAsBytes(firmwareUpdate)
+        );
         assertEquals(
-                firmwareUpdate,
+                objectMapper.writeValueAsString(firmwareUpdate),
                 result
         );
     }
