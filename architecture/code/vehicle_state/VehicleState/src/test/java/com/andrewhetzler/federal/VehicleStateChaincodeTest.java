@@ -47,7 +47,7 @@ class VehicleStateChaincodeTest {
                     "test"
             )
     );
-    private static final String TEST_COLLECTION = "test_vehicle_state_collection";
+    private static final String TEST_COLLECTION = "purdue-motor-company-vehicles";
     private static final String RECORD_INITIAL_STATE_MSPS = "PurdueFinalAssemblerMSP";
     private static final String UPDATE_STATE_MSP = "PurdueDealerTechnicianMSP";
     private static final String OVERRIDE_STATE_MSP = "PurdueDealerTechnicianMSP";

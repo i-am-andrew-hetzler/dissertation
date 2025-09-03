@@ -40,21 +40,21 @@ import static com.andrewhetzler.federal.vehicle_state.VehicleStateError.UNAUTHOR
 public class VehicleStateChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String COLLECTION = System.getenv().getOrDefault(
-            "vehicle_state_collection",
-            "test_vehicle_state_collection"
+            "VEHICLE_STATE_COLLECTION",
+            "purdue-motor-company-vehicles"
     );
     public static final String VEHICLE_STATE_PROPERTIES = "vehicle_state_properties";
     private static final String AUTHORIZED_RECORD_INITIAL_STATE_MSP_IDS = System.getenv().getOrDefault(
-            "vehicle_state_authorized_record_initial_state_msp_ids",
-            "PurdueFinalAssemblerMSP"
+            "VEHICLE_STATE_AUTHORIZED_RECORD_INITIAL_STATE_MSP_IDS",
+            "PurdueFinalAssemblerMSP;PurdueMotorCompanyMSP"
     );
     public static final String AUTHORIZED_UPDATE_STATE_MSP_IDS = System.getenv().getOrDefault(
-            "vehicle_state_authorized_update_state_msp_ids",
-            "PurdueDealerTechnicianMSP;PurdueVehicleOwnerMSP"
+            "VEHICLE_STATE_AUTHORIZED_UPDATE_STATE_MSP_IDS",
+            "PurdueDealerTechnicianMSP;PurdueVehicleOwnerMSP;PurdueMotorCompanyMSP"
     );
     public static final String AUTHORIZED_OVERRIDE_STATE_MSP_IDS = System.getenv().getOrDefault(
-            "vehicle_state_authorized_override_state_msp_ids",
-            "PurdueDealerTechnicianMSP"
+            "VEHICLE_STATE_AUTHORIZED_OVERRIDE_STATE_MSP_IDS",
+            "PurdueDealerTechnicianMSP;PurdueMotorCompanyMSP"
     );
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
@@ -121,10 +121,20 @@ public class VehicleStateChaincode implements ContractInterface {
             );
         }
 
-        final VehicleState request = objectMapper.readValue(
-                transientMap.get(VEHICLE_STATE_PROPERTIES),
-                VehicleState.class
-        );
+        final VehicleState request;
+
+        try {
+            request = objectMapper.readValue(
+                    transientMap.get(VEHICLE_STATE_PROPERTIES),
+                    VehicleState.class
+            );
+        } catch (Exception e) {
+            throw new ChaincodeException(
+                    "Unable to deserialize the vehicle_state_properties.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
         final VehicleState state = getState(
                 context,
                 request.getVehicleIdentificationNumber()
@@ -182,10 +192,21 @@ public class VehicleStateChaincode implements ContractInterface {
             );
         }
 
-        final VehicleState request = objectMapper.readValue(
-                transientMap.get(VEHICLE_STATE_PROPERTIES),
-                VehicleState.class
-        );
+        final VehicleState request;
+        final String calculatedHash = new String(transientMap.get("calculated_hash"));
+
+        try {
+            request = objectMapper.readValue(
+                    transientMap.get(VEHICLE_STATE_PROPERTIES),
+                    VehicleState.class
+            );
+        } catch (Exception e) {
+            throw new ChaincodeException(
+                    "Unable to deserialize the vehicle_state_properties.",
+                    INVALID_REQUEST.toString()
+            );
+        }
+
         final VehicleState state = getState(
                 context,
                 request.getVehicleIdentificationNumber()
@@ -201,7 +222,10 @@ public class VehicleStateChaincode implements ContractInterface {
             );
         }
 
-        if (!new String(transientMap.get("calculated_hash")).equalsIgnoreCase(state.getVehicleHash())) {
+//        if (!new String(transientMap.get("calculated_hash")).equalsIgnoreCase(state.getVehicleHash())) {
+        if (!state.getVehicleHash().equals(calculatedHash)) {
+            System.out.println(String.format("Calculated hash: %s versus expected hash: %s", calculatedHash, state.getVehicleHash()));
+
             throw new ChaincodeException(
                     String.format(
                             "The calculated state does not match the expected state for vehicle %s.",
@@ -285,7 +309,7 @@ public class VehicleStateChaincode implements ContractInterface {
                 vin.toUpperCase()
         );
 
-        if (state != null) {
+        if (state != null && state.length > 0) {
             return objectMapper.readValue(
                     state,
                     VehicleState.class
@@ -323,6 +347,10 @@ public class VehicleStateChaincode implements ContractInterface {
             final
             ClientIdentity requestorIdentity
     ) {
-        return Arrays.stream(authorizedMspIds.split(";")).toList().contains(requestorIdentity.getMSPID());
+        System.out.println(String.format("Authorized MSPs: %s", authorizedMspIds));
+        System.out.println(String.format("Requestor MSP: %s:  ", requestorIdentity.getMSPID()));
+
+
+        return Arrays.stream(authorizedMspIds.split(";")).anyMatch(msp -> msp.equals(requestorIdentity.getMSPID()));
     }
 }

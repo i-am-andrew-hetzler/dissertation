@@ -7,7 +7,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 1
+          tps: 2
       workload:
         module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
         arguments:
@@ -18,7 +18,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 2
+          tps: 4
       workload:
         module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
         arguments:
@@ -29,7 +29,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 3
+          tps: 6
       workload:
         module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
         arguments:
@@ -40,7 +40,7 @@ test:
       rateControl:
         type: fixed-rate
         opts:
-          tps: 4
+          tps: 8
       workload:
         module: federal/hosts/caliper/fmvss/benchmarks/fmvss-test.js
         arguments:
