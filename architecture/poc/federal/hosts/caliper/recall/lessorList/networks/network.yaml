@@ -1,0 +1,22 @@
+name: Caliper test
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: recall
+    contracts:
+      - id: recall-notifications-chaincode
+organizations:
+  - mspid: BessLeasingCompanyMSP
+    identities:
+      certificates:
+        - name: 'User1@bess-leasing-company.com'
+          clientPrivateKey:
+            path: 'federal/cryptography/certs/peerOrganizations/bess-leasing-company.com/users/User1@bess-leasing-company.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: 'federal/cryptography/certs/peerOrganizations/bess-leasing-company.com/users/User1@bess-leasing-company.com/msp/signcerts/User1@bess-leasing-company.com-cert.pem'
+    connectionProfile:
+      path: 'federal/hosts/caliper/recall/lessorList/networks/connection.yaml'
+      discover: true

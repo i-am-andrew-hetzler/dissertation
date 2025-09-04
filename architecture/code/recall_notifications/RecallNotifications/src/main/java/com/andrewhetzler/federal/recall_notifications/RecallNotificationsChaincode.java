@@ -55,13 +55,13 @@ public class RecallNotificationsChaincode implements ContractInterface {
     2. A specific recall (the one that owners can report remedy status updates)
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public VehicleRecalls getRecallListForVehicle(
+    public String getRecallListForVehicle(
             final Context context,
             final String make,
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         if (isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -86,18 +86,18 @@ public class RecallNotificationsChaincode implements ContractInterface {
             );
         }
 
-        return recallsForVehicle;
+        return objectMapper.writeValueAsString(recallsForVehicle);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public VehicleRecalls saveRecallListForVehicle(
+    public String saveRecallListForVehicle(
             final Context context,
             final String campaignNumber,
             final String make,
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         if (isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(campaignNumber) || isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -131,18 +131,18 @@ public class RecallNotificationsChaincode implements ContractInterface {
             );
         }
 
-        return recallsForVehicle;
+        return objectMapper.writeValueAsString(recallsForVehicle);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public PublicRecall getVehicleRecall(
+    public String getVehicleRecall(
             final Context context,
             final String campaignNumber,
             final String make,
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         if (isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(campaignNumber) || isNullOrBlank(vin)) {
             throw new ChaincodeException(
                     "Invalid request.",
@@ -169,11 +169,11 @@ public class RecallNotificationsChaincode implements ContractInterface {
             );
         }
 
-        return recall;
+        return objectMapper.writeValueAsString(recall);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public PublicRecall saveVehicleRecall(
+    public String saveVehicleRecall(
             final Context context,
             final String campaignNumber,
             final String date,
@@ -185,7 +185,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         if (isNullOrBlank(campaignNumber) || isNullOrBlank(date) || isNullOrBlank(description) ||
                 isNullOrBlank(remedyProgramDescription) || isNullOrBlank(remedyStatus) || isNullOrBlank(schemaVersion) ||
                 isNullOrBlank(make) || isNullOrBlank(model) || isNullOrBlank(vin) || !isNumber(schemaVersion)) {
@@ -223,16 +223,16 @@ public class RecallNotificationsChaincode implements ContractInterface {
                 vin
         );
 
-        return recall;
+        return objectMapper.writeValueAsString(recall);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public ImpactedOwnerList viewImpactedOwnersForRecall(
+    public String viewImpactedOwnersForRecall(
             final Context context,
             final String campaignNumber,
             final String collection
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(
                 context.getClientIdentity(),
                 collection
@@ -266,11 +266,11 @@ public class RecallNotificationsChaincode implements ContractInterface {
             );
         }
 
-        return impactedOwnersList;
+        return objectMapper.writeValueAsString(impactedOwnersList);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public ImpactedOwnerList saveImpactedOwnersForRecall(
+    public String saveImpactedOwnersForRecall(
             final Context context,
             final String vin,
             final String name,
@@ -284,7 +284,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String schemaVersion,
             final String collection
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(
                 context.getClientIdentity(),
                 collection
@@ -340,8 +340,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
                             )
                     )
             );
-        }
-        else {
+        } else {
             newList = new ImpactedOwnerList(
                     impactedOwnersList != null ? impactedOwnersList.getVehicles() : new ArrayList<>(),
                     schemaVersion
@@ -375,16 +374,16 @@ public class RecallNotificationsChaincode implements ContractInterface {
                 newList
         );
 
-        return newList;
+        return objectMapper.writeValueAsString(newList);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public LessorsList viewLessorsListForRecall(
+    public String viewLessorsListForRecall(
             final Context context,
             final String campaignNumber,
             final String collection
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(
                 context.getClientIdentity(),
                 collection
@@ -418,11 +417,11 @@ public class RecallNotificationsChaincode implements ContractInterface {
             );
         }
 
-        return lessorsList;
+        return objectMapper.writeValueAsString(lessorsList);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public LessorsList saveLessorsListForRecall(
+    public String saveLessorsListForRecall(
             final Context context,
             final String vin,
             final String name,
@@ -439,7 +438,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String schemaVersion,
             final String collection
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(
                 context.getClientIdentity(),
                 collection
@@ -498,8 +497,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
                             year
                     )
             );
-        }
-        else {
+        } else {
             newList = new LessorsList(
                     lessorsList != null ? lessorsList.getVehicles() : new ArrayList<>(),
                     schemaVersion
@@ -536,7 +534,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
                 newList
         );
 
-        return newList;
+        return objectMapper.writeValueAsString(newList);
     }
 
     private boolean isNullOrBlank(final String value) {
@@ -547,8 +545,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
         try {
             Integer.parseInt(value);
             return true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
@@ -559,7 +556,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         final byte[] recalls = context.getStub().getState(
                 String.format(
                         "%s-%s-%s",
@@ -569,7 +566,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
                 )
         );
 
-        return recalls != null ? objectMapper.readValue(
+        return (recalls != null && recalls.length > 0) ? objectMapper.readValue(
                 recalls,
                 VehicleRecalls.class
         ) : null;
@@ -582,7 +579,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String vin,
             final VehicleRecalls recalls
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putState(
                 String.format(
                         "%s-%s-%s",
@@ -601,7 +598,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String model,
             final String vin
     ) throws
-      IOException {
+            IOException {
         final byte[] recall = context.getStub().getState(
                 String.format(
                         "%s-%s-%s-%s",
@@ -612,7 +609,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
                 )
         );
 
-        return recall != null ? objectMapper.readValue(
+        return (recall != null && recall.length > 0) ? objectMapper.readValue(
                 recall,
                 PublicRecall.class
         ) : null;
@@ -622,7 +619,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final Context context,
             final PublicRecall recall
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putState(
                 String.format(
                         "%s-%s-%s-%s",
@@ -647,13 +644,13 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String campaignNumber,
             final String collection
     ) throws
-      IOException {
+            IOException {
         final byte[] list = context.getStub().getPrivateData(
                 collection.toUpperCase(),
                 campaignNumber.toUpperCase()
         );
 
-        if (list != null) {
+        if (list != null && list.length > 0) {
             return objectMapper.readValue(
                     list,
                     ImpactedOwnerList.class
@@ -669,7 +666,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String collection,
             final ImpactedOwnerList impactedOwnersList
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putPrivateData(
                 collection.toUpperCase(),
                 campaignNumber.toUpperCase(),
@@ -682,13 +679,13 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String campaignNumber,
             final String collection
     ) throws
-      IOException {
+            IOException {
         final byte[] list = context.getStub().getPrivateData(
                 collection.toUpperCase(),
                 campaignNumber.toUpperCase()
         );
 
-        if (list != null) {
+        if (list != null && list.length > 0) {
             return objectMapper.readValue(
                     list,
                     LessorsList.class
@@ -704,7 +701,7 @@ public class RecallNotificationsChaincode implements ContractInterface {
             final String collection,
             final LessorsList lessorsList
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putPrivateData(
                 collection.toUpperCase(),
                 campaignNumber.toUpperCase(),
