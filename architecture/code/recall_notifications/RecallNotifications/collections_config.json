@@ -1,6 +1,6 @@
 [
   {
-    "name": "purdue-motor-company-owners-list",
+    "name": "PURDUEMOTORCOMPANYMSP",
     "policy": "OR('PurdueMotorCompanyMSP.member', 'NHTSAMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,
@@ -12,7 +12,7 @@
     }
   },
   {
-    "name": "bess-leasing-company-lessee-list",
+    "name": "BESSLEASINGCOMPANYMSP",
     "policy": "OR('BessLeasingCompanyMSP.member', 'NHTSAMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,

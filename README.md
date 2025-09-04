@@ -68,6 +68,18 @@ npx caliper launch manager \
     --caliper-workspace . \
     --caliper-benchconfig federal/hosts/caliper/recall/public/benchmarks/config.yaml \
     --caliper-networkconfig federal/hosts/caliper/recall/public/networks/network.yaml
+    
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/recall/impactedOwner/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/impactedOwner/networks/network.yaml
+    
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/recall/lessorList/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/lessorList/networks/network.yaml
 ```
 
 ### Vehicle State
