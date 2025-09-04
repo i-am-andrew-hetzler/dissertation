@@ -66,8 +66,20 @@ npx caliper launch manager \
 npx caliper launch manager \
     --caliper-bind-sut fabric:fabric-gateway \
     --caliper-workspace . \
-    --caliper-benchconfig federal/hosts/caliper/recall/benchmarks/config.yaml \
-    --caliper-networkconfig federal/hosts/caliper/recall/networks/network.yaml
+    --caliper-benchconfig federal/hosts/caliper/recall/public/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/public/networks/network.yaml
+    
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/recall/impactedOwner/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/impactedOwner/networks/network.yaml
+    
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig federal/hosts/caliper/recall/lessorList/benchmarks/config.yaml \
+    --caliper-networkconfig federal/hosts/caliper/recall/lessorList/networks/network.yaml
 ```
 
 ### Vehicle State
@@ -77,4 +89,19 @@ npx caliper launch manager \
     --caliper-workspace . \
     --caliper-benchconfig federal/hosts/caliper/vehicle/benchmarks/config.yaml \
     --caliper-networkconfig federal/hosts/caliper/vehicle/networks/network.yaml
+```
+
+### Proof of Financial Responsibility
+```shell
+
+```
+
+### Licensing
+```shell
+
+```
+
+### Registration
+```shell
+
 ```

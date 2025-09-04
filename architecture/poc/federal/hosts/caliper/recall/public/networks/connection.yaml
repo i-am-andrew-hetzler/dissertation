@@ -1,0 +1,66 @@
+---
+name: federal
+version: 1.0.0
+client:
+  organization: PurdueMotorCompany
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  PurdueMotorCompany:
+    mspid: PurdueMotorCompanyMSP
+    peers:
+      - purdue-motor-company-peer0
+    certificateAuthorities:
+      - tlsca.purdue-motor-company.com
+peers:
+  purdue-motor-company-peer0:
+    url: grpcs://localhost:7151
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICeTCCAh+gAwIBAgIQabnXucT4jEYhoThVc0m78zAKBggqhkjOPQQDAjCBhjEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xITAfBgNVBAoTGHB1cmR1ZS1tb3Rvci1jb21wYW55LmNvbTEnMCUG
+        A1UEAxMedGxzY2EucHVyZHVlLW1vdG9yLWNvbXBhbnkuY29tMB4XDTI1MDkwNDIw
+        MjEwMFoXDTM1MDkwMjIwMjEwMFowgYYxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+        YWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMSEwHwYDVQQKExhwdXJk
+        dWUtbW90b3ItY29tcGFueS5jb20xJzAlBgNVBAMTHnRsc2NhLnB1cmR1ZS1tb3Rv
+        ci1jb21wYW55LmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKxqeLjgGh53
+        szzfPBl5kAo1cMYNaobKSJnDfGexGX11IuH6F1ZsTYlH5DHRthC7psviqe8QmIP/
+        ozE41d6kvIijbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggrBgEFBQcD
+        AgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQg5HbceFYjP1jY
+        8Cqi8l0Fkf7Ehqa+OAKxzMD8k1LWR2gwCgYIKoZIzj0EAwIDSAAwRQIhAP4SG6NO
+        XOiC+gBs09bZPpVum56cXUZHv98noE8ooZPPAiAWRAih1OjikTnRTxezuagOyh7c
+        yZ6dTv1v4dkPLspvww==
+        -----END CERTIFICATE-----
+
+grpcOptions:
+  ssl-target-name-override: purdue-motor-company-peer0
+  hostnameOverride: purdue-motor-company-peer0
+certificateAuthorities:
+  tlsca.purdue-motor-company.com:
+    url: https://localhost:7054
+    caName: tlsca.purdue-motor-company.com
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICeTCCAh+gAwIBAgIQabnXucT4jEYhoThVc0m78zAKBggqhkjOPQQDAjCBhjEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xITAfBgNVBAoTGHB1cmR1ZS1tb3Rvci1jb21wYW55LmNvbTEnMCUG
+        A1UEAxMedGxzY2EucHVyZHVlLW1vdG9yLWNvbXBhbnkuY29tMB4XDTI1MDkwNDIw
+        MjEwMFoXDTM1MDkwMjIwMjEwMFowgYYxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+        YWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMSEwHwYDVQQKExhwdXJk
+        dWUtbW90b3ItY29tcGFueS5jb20xJzAlBgNVBAMTHnRsc2NhLnB1cmR1ZS1tb3Rv
+        ci1jb21wYW55LmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKxqeLjgGh53
+        szzfPBl5kAo1cMYNaobKSJnDfGexGX11IuH6F1ZsTYlH5DHRthC7psviqe8QmIP/
+        ozE41d6kvIijbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggrBgEFBQcD
+        AgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQg5HbceFYjP1jY
+        8Cqi8l0Fkf7Ehqa+OAKxzMD8k1LWR2gwCgYIKoZIzj0EAwIDSAAwRQIhAP4SG6NO
+        XOiC+gBs09bZPpVum56cXUZHv98noE8ooZPPAiAWRAih1OjikTnRTxezuagOyh7c
+        yZ6dTv1v4dkPLspvww==
+        -----END CERTIFICATE-----
+
+httpOptions:
+  verify: false

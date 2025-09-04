@@ -180,7 +180,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void getRecallsForVehicleShouldReturnRecallList() throws
-                                                      IOException {
+            IOException {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(
                 objectMapper.writeValueAsBytes(
@@ -193,7 +193,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final VehicleRecalls result = subject.getRecallListForVehicle(
+        final String result = subject.getRecallListForVehicle(
                 mockedContext,
                 "Purdue Motor Company",
                 "Boilermaker",
@@ -205,12 +205,12 @@ class RecallNotificationsChaincodeTest {
                 times(1)
         ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123");
         assertEquals(
-                new VehicleRecalls(
+                objectMapper.writeValueAsString(new VehicleRecalls(
                         List.of(
                                 "recall1",
                                 "recall2"
                         )
-                ),
+                )),
                 result
         );
     }
@@ -361,7 +361,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveRecallListForVehicleShouldSaveWhenFirstRecall() throws
-                                                             IOException {
+            IOException {
         final VehicleRecalls expected = new VehicleRecalls(
                 List.of("recall ABC")
         );
@@ -369,7 +369,7 @@ class RecallNotificationsChaincodeTest {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(null);
 
-        final VehicleRecalls result = subject.saveRecallListForVehicle(
+        final String result = subject.saveRecallListForVehicle(
                 mockedContext,
                 "recall ABC",
                 "Purdue Motor Company",
@@ -389,14 +389,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void saveRecallListForVehicleShouldSaveWhenThereAreMultipleRecalls() throws
-                                                                         IOException {
+            IOException {
         final VehicleRecalls expected = new VehicleRecalls(
                 List.of(
                         "recall ABC",
@@ -411,7 +411,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final VehicleRecalls result = subject.saveRecallListForVehicle(
+        final String result = subject.saveRecallListForVehicle(
                 mockedContext,
                 "recall DEF",
                 "Purdue Motor Company",
@@ -431,7 +431,7 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
         assertEquals(
@@ -446,7 +446,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveRecallListForVehicleShouldNotSaveWhenRecallAlreadyExists() throws
-                                                                        IOException {
+            IOException {
         final VehicleRecalls expected = new VehicleRecalls(
                 List.of("recall ABC")
         );
@@ -458,7 +458,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final VehicleRecalls result = subject.saveRecallListForVehicle(
+        final String result = subject.saveRecallListForVehicle(
                 mockedContext,
                 "recall ABC",
                 "Purdue Motor Company",
@@ -478,7 +478,7 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
         assertEquals(
@@ -658,7 +658,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void getVehicleRecallShouldReturnRecall() throws
-                                              IOException {
+            IOException {
         final PublicRecall expected = new PublicRecall(
                 new Recall(
                         "recall ABC",
@@ -680,7 +680,7 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
 
-        final PublicRecall result = subject.getVehicleRecall(
+        final String result = subject.getVehicleRecall(
                 mockedContext,
                 "recall ABC",
                 "Purdue Motor Company",
@@ -693,7 +693,7 @@ class RecallNotificationsChaincodeTest {
                 times(1)
         ).getState("PURDUE MOTOR COMPANY-BOILERMAKER-123-RECALL ABC");
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1137,7 +1137,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveVehicleRecallShouldSaveRecall() throws
-                                             IOException {
+            IOException {
         final PublicRecall expected = new PublicRecall(
                 new Recall(
                         "recall ABC",
@@ -1157,7 +1157,7 @@ class RecallNotificationsChaincodeTest {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedChaincodeStub.getState("PURDUE MOTOR COMPANY-BOILERMAKER-123")).thenReturn(null);
 
-        final PublicRecall result = subject.saveVehicleRecall(
+        final String result = subject.saveVehicleRecall(
                 mockedContext,
                 "recall ABC",
                 "October 17, 2025",
@@ -1191,7 +1191,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1317,7 +1317,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void viewImpactedOwnersForRecallShouldReturnListForNHTSA() throws
-                                                               IOException {
+            IOException {
         final ImpactedOwnerList expected = new ImpactedOwnerList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
@@ -1351,21 +1351,21 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
 
-        final ImpactedOwnerList result = subject.viewImpactedOwnersForRecall(
+        final String result = subject.viewImpactedOwnersForRecall(
                 mockedContext,
                 "recall ABC",
                 PURDUE_MOCO_MSP_ID
         );
 
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void viewImpactedOwnersForRecallShouldReturnListBecauseCollectionMatchesMSP() throws
-                                                                                  IOException {
+            IOException {
         final ImpactedOwnerList expected = new ImpactedOwnerList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
@@ -1399,14 +1399,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
 
-        final ImpactedOwnerList result = subject.viewImpactedOwnersForRecall(
+        final String result = subject.viewImpactedOwnersForRecall(
                 mockedContext,
                 "recall ABC",
                 PURDUE_MOCO_MSP_ID
         );
 
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -2029,7 +2029,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveImpactedOwnersForRecallShouldSaveNewVehicleEntry() throws
-                                                                IOException {
+            IOException {
         final ImpactedOwnerList expected = new ImpactedOwnerList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
@@ -2061,7 +2061,7 @@ class RecallNotificationsChaincodeTest {
                 "RECALL ABC"
         )).thenReturn(null);
 
-        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+        final String result = subject.saveImpactedOwnersForRecall(
                 mockedContext,
                 "1FV",
                 "Unfortunate Dude",
@@ -2085,14 +2085,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void saveImpactedOwnersForRecallShouldSaveForSecondVehicleEntry() throws
-                                                                      IOException {
+            IOException {
         final ImpactedOwnerList expected = new ImpactedOwnerList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
@@ -2166,7 +2166,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+        final String result = subject.saveImpactedOwnersForRecall(
                 mockedContext,
                 "2FV",
                 "Jane Doe",
@@ -2190,14 +2190,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void saveImpactedOwnersForRecallShouldUpdateFirstVehicleEntry() throws
-                                                                    IOException {
+            IOException {
         final ImpactedOwnerList expected = new ImpactedOwnerList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.impacted_owner_list.Vehicle(
@@ -2254,7 +2254,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final ImpactedOwnerList result = subject.saveImpactedOwnersForRecall(
+        final String result = subject.saveImpactedOwnersForRecall(
                 mockedContext,
                 "1FV",
                 "Unfortunate Dude",
@@ -2278,7 +2278,7 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -2404,7 +2404,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void viewLessorsListForRecallShouldReturnListForNHTSA() throws
-                                                            IOException {
+            IOException {
         final LessorsList expected = new LessorsList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
@@ -2441,21 +2441,21 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
 
-        final LessorsList result = subject.viewLessorsListForRecall(
+        final String result = subject.viewLessorsListForRecall(
                 mockedContext,
                 "recall ABC",
                 LESSOR_MSP_ID
         );
 
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void viewLessorsListForRecallShouldReturnListBecauseCollectionMatchesMSP() throws
-                                                                               IOException {
+            IOException {
         final LessorsList expected = new LessorsList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
@@ -2492,14 +2492,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
 
-        final LessorsList result = subject.viewLessorsListForRecall(
+        final String result = subject.viewLessorsListForRecall(
                 mockedContext,
                 "recall ABC",
                 LESSOR_MSP_ID
         );
 
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -3374,7 +3374,7 @@ class RecallNotificationsChaincodeTest {
 
     @Test
     void saveLessorsListForRecallShouldSaveNewVehicleEntry() throws
-                                                             IOException {
+            IOException {
         final LessorsList expected = new LessorsList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
@@ -3409,7 +3409,7 @@ class RecallNotificationsChaincodeTest {
                 "RECALL ABC"
         )).thenReturn(null);
 
-        final LessorsList result = subject.saveLessorsListForRecall(
+        final String result = subject.saveLessorsListForRecall(
                 mockedContext,
                 "1FV",
                 "Unfortunate Dude",
@@ -3436,14 +3436,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void saveLessorsListForRecallShouldSaveForSecondVehicleEntry() throws
-                                                                   IOException {
+            IOException {
         final LessorsList expected = new LessorsList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
@@ -3526,7 +3526,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final LessorsList result = subject.saveLessorsListForRecall(
+        final String result = subject.saveLessorsListForRecall(
                 mockedContext,
                 "2FV",
                 "Jane Doe",
@@ -3553,14 +3553,14 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
 
     @Test
     void saveLessorsListForRecallShouldUpdateFirstVehicleEntry() throws
-                                                                 IOException {
+            IOException {
         final LessorsList expected = new LessorsList(
                 List.of(
                         new com.andrewhetzler.federal.recall_notifications.model.lessor_list.Vehicle(
@@ -3623,7 +3623,7 @@ class RecallNotificationsChaincodeTest {
                 )
         );
 
-        final LessorsList result = subject.saveLessorsListForRecall(
+        final String result = subject.saveLessorsListForRecall(
                 mockedContext,
                 "1FV",
                 "Unfortunate Dude",
@@ -3650,7 +3650,7 @@ class RecallNotificationsChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }

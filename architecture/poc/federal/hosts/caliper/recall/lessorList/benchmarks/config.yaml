@@ -1,0 +1,48 @@
+test:
+  workers:
+    number: 4
+  rounds:
+    - label: "Create and View Lessor List - 5 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 5
+      workload:
+        module: federal/hosts/caliper/recall/lessorList/benchmarks/lessor-list-test.js
+        arguments:
+          contractId: recall-notifications-chaincode
+          filePath: federal/hosts/caliper/recall/lessorList/data/lessor
+    - label: "Create and View Lessor List - 10 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10
+      workload:
+        module: federal/hosts/caliper/recall/lessorList/benchmarks/lessor-list-test.js
+        arguments:
+          contractId: recall-notifications-chaincode
+          filePath: federal/hosts/caliper/recall/lessorList/data/lessor
+    - label: "Create and View Lessor List - 15 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 15
+      workload:
+        module: federal/hosts/caliper/recall/lessorList/benchmarks/lessor-list-test.js
+        arguments:
+          contractId: recall-notifications-chaincode
+          filePath: federal/hosts/caliper/recall/lessorList/data/lessor
+    - label: "Create and View Lessor List - 20 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 20
+      workload:
+        module: federal/hosts/caliper/recall/lessorList/benchmarks/lessor-list-test.js
+        arguments:
+          contractId: recall-notifications-chaincode
+          filePath: federal/hosts/caliper/recall/lessorList/data/lessor

@@ -1,0 +1,22 @@
+name: Caliper test
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: recall
+    contracts:
+      - id: recall-notifications-chaincode
+organizations:
+  - mspid: PurdueMotorCompanyMSP
+    identities:
+      certificates:
+        - name: 'User1@purdue-motor-company.com'
+          clientPrivateKey:
+            path: 'federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/users/User1@purdue-motor-company.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: 'federal/cryptography/certs/peerOrganizations/purdue-motor-company.com/users/User1@purdue-motor-company.com/msp/signcerts/User1@purdue-motor-company.com-cert.pem'
+    connectionProfile:
+      path: 'federal/hosts/caliper/recall/impactedOwner/networks/connection.yaml'
+      discover: true

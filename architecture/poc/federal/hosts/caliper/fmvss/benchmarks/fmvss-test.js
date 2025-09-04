@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const { WorkloadModuleBase } = require('@hyperledger/caliper-core');
 
-class CreateFirmwareUpdatesWorkloadModule extends WorkloadModuleBase {
+class FmvssWorkloadModule extends WorkloadModuleBase {
     constructor() {
         super();
 
@@ -86,7 +86,7 @@ class CreateFirmwareUpdatesWorkloadModule extends WorkloadModuleBase {
 }
 
 function createWorkloadModule() {
-    return new CreateFirmwareUpdatesWorkloadModule();
+    return new FmvssWorkloadModule();
 }
 
 const characters = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
