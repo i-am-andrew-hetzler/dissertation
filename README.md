@@ -98,7 +98,11 @@ npx caliper launch manager \
 
 ### Licensing
 ```shell
-
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig state/hosts/caliper/licensing/state/benchmarks/config.yaml \
+    --caliper-networkconfig state/hosts/caliper/licensing/state/networks/network.yaml
 ```
 
 ### Registration

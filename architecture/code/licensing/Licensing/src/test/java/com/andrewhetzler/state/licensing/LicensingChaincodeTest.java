@@ -44,11 +44,11 @@ class LicensingChaincodeTest {
     @Mock
     private ClientIdentity mockedClientIdentity;
     private LicensingChaincode subject = new LicensingChaincode();
-    private static final String AUTHORIZED_STATE_MSP_ID = "TestStateMSP";
-    private static final String AUTHORIZED_ISSUEE_MSP_ID = "TestStateDmvLicenseeMSP";
-    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
-    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
-    private static final String STATE_COLLECTION = "TestStateLicenseCollection";
+    private static final String AUTHORIZED_STATE_MSP_ID = "FloridaDmvMSP";
+    private static final String AUTHORIZED_ISSUEE_MSP_ID = "SouthDakotaDmvLicenseeMSP";
+    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "WestVirginiaDmvMSP";
+    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "InsurerCoMSP";
+    private static final String STATE_COLLECTION = "LICENSE_COLLECTION";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -209,7 +209,7 @@ class LicensingChaincodeTest {
                 )
         );
 
-        final LicenseSchema result = subject.viewLicense(
+        final String result = subject.viewLicense(
                 mockedContext,
                 "IN-123"
         );
@@ -222,7 +222,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -317,7 +317,7 @@ class LicensingChaincodeTest {
                 )
         );
 
-        final LicenseSchema result = subject.viewLicense(
+        final String result = subject.viewLicense(
                 mockedContext,
                 "IN-123"
         );
@@ -330,7 +330,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -505,7 +505,7 @@ class LicensingChaincodeTest {
                 )
         );
 
-        final LicenseSchema result = subject.viewLicense(
+        final String result = subject.viewLicense(
                 mockedContext,
                 "IN-123"
         );
@@ -518,7 +518,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -597,7 +597,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         )).thenReturn(persistedLicense);
 
-        final LicenseSchema result = subject.viewLicense(
+        final String result = subject.viewLicense(
                 mockedContext,
                 "IN-123"
         );
@@ -621,7 +621,7 @@ class LicensingChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -747,7 +747,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
-        final LicenseSchema result = subject.viewLicenseIn3rdPartyCollection(
+        final String result = subject.viewLicenseIn3rdPartyCollection(
                 mockedContext,
                 "IN-123"
         );
@@ -763,7 +763,7 @@ class LicensingChaincodeTest {
                 "IN-123"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1473,7 +1473,7 @@ class LicensingChaincodeTest {
         when(mockedContext.getStub()).thenReturn(mockedChaincodeStub);
         when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_DMV_MSP_IPD);
 
-        final LicenseSchema result = subject.issueLicense(
+        final String result = subject.issueLicense(
                 mockedContext,
                 objectMapper.writeValueAsString(List.of("A")),
                 "IN-123",
@@ -1545,7 +1545,7 @@ class LicensingChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1688,7 +1688,7 @@ class LicensingChaincodeTest {
     @Test
     void cancelLicenseShouldThrowExceptionBecauseRequestorIsUnauthorized() {
         when(mockedContext.getClientIdentity()).thenReturn(mockedClientIdentity);
-        when(mockedClientIdentity.getMSPID()).thenReturn(AUTHORIZED_STATE_MSP_ID);
+        when(mockedClientIdentity.getMSPID()).thenReturn("TestMSP");
 
         final Exception exception = assertThrows(
                 ChaincodeException.class,

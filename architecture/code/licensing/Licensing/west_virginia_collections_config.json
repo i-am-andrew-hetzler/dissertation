@@ -1,6 +1,6 @@
 [
   {
-    "name": "WestVirginia_LICENSE_COLLECTION",
+    "name": "LICENSE_COLLECTION",
     "policy": "OR('WestVirginiaDmvMSP.member', 'InsurerCoMSP.member', 'WestVirginiaDmvLicenseeMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,

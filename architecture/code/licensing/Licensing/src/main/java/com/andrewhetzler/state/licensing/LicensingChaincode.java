@@ -53,31 +53,31 @@ public class LicensingChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String STATE_LICENSE_COLLECTION = System.getenv().getOrDefault(
             "STATE_LICENSE_COLLECTION",
-            "TestStateLicenseCollection"
+            "LICENSE_COLLECTION"
     );
-    private static final List<String> STATE_AGENCIES_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String STATE_AGENCIES_MSP_IDS = System.getenv().getOrDefault(
             "STATE_AGENCIES_MSP_IDS",
-            "TestStateMSP"
-    ).split(";"));
+            "FloridaDmvMSP;SouthDakotaDmvMSP;WestVirginiaDmvMSP"
+    );
     private static final String STATE_DMV_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_MSP_ID",
-            "TestStateDmvMSP"
+            "FloridaDmvMSP;SouthDakotaDmvMSP;WestVirginiaDmvMSP"
     );
     private static final String STATE_DMV_LICENSEE_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_LICENSEE_MSP_ID",
-            "TestStateDmvLicenseeMSP"
+            "FloridaDmvMSP;FloridaDmvLicenseeMSP;SouthDakotaDmvMSP;SouthDakotaDmvLicenseeMSP;WestVirginiaDmvMSP;WestVirginiaDmvLicenseeMSP"
     );
-    private static final List<String> THIRD_PARTY_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String THIRD_PARTY_MSP_IDS = System.getenv().getOrDefault(
             "THIRD_PARTY_MSP_IDS",
-            "TestInsuranceCoMSP"
-    ).split(";"));
+            "InsurerCoMSP"
+    );
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public LicenseSchema viewLicense(
+    public String viewLicense(
             final Context context,
             final String licenseNumber
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -107,10 +107,12 @@ public class LicensingChaincode implements ContractInterface {
             );
         }
 
+        final LicenseSchema license;
+
         if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
             final List<Address> addresses = convertPersistedAddressesToAddresses(persistedLicense.getLicenseeAddresses());
 
-            return new LicenseSchema(
+            license = new LicenseSchema(
                     new License(
                             persistedLicense.getLicenseClasses(),
                             persistedLicense.getLicenseNumber()
@@ -131,8 +133,7 @@ public class LicensingChaincode implements ContractInterface {
                     persistedLicense.getOther(),
                     persistedLicense.getSchemaVersion()
             );
-        }
-        else if (isMspIdALicensee(context.getClientIdentity())) {
+        } else if (isMspIdALicensee(context.getClientIdentity())) {
             if (!context.getClientIdentity().getId().equals(persistedLicense.getLicenseeUniqueId())) {
                 throw new ChaincodeException(
                         "Unauthorized request.",
@@ -142,7 +143,7 @@ public class LicensingChaincode implements ContractInterface {
 
             final List<Address> addresses = convertPersistedAddressesToAddresses(persistedLicense.getLicenseeAddresses());
 
-            return new LicenseSchema(
+            license = new LicenseSchema(
                     new License(
                             persistedLicense.getLicenseClasses(),
                             persistedLicense.getLicenseNumber()
@@ -163,10 +164,9 @@ public class LicensingChaincode implements ContractInterface {
                     persistedLicense.getOther(),
                     persistedLicense.getSchemaVersion()
             );
-        }
-        else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+        } else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             final List<Address> addresses = convertPersistedAddressesToAddresses(persistedLicense.getLicenseeAddresses());
-            final LicenseSchema license = new LicenseSchema(
+            license = new LicenseSchema(
                     new License(
                             persistedLicense.getLicenseClasses(),
                             persistedLicense.getLicenseNumber()
@@ -192,10 +192,7 @@ public class LicensingChaincode implements ContractInterface {
                     context,
                     license
             );
-
-            return license;
-        }
-        else {
+        } else {
             /*
             This should not happen
              */
@@ -204,14 +201,16 @@ public class LicensingChaincode implements ContractInterface {
                     UNAUTHORIZED_REQUEST.toString()
             );
         }
+
+        return objectMapper.writeValueAsString(license);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public LicenseSchema viewLicenseIn3rdPartyCollection(
+    public String viewLicenseIn3rdPartyCollection(
             final Context context,
             final String licenseNumber
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -234,7 +233,7 @@ public class LicensingChaincode implements ContractInterface {
                 licenseNumber.toUpperCase()
         );
 
-        if (license == null) {
+        if (license == null || license.length == 0) {
             throw new ChaincodeException(
                     String.format(
                             "No license exists for license number %s.",
@@ -244,14 +243,11 @@ public class LicensingChaincode implements ContractInterface {
             );
         }
 
-        return objectMapper.readValue(
-                license,
-                LicenseSchema.class
-        );
+        return new String(license);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public LicenseSchema issueLicense(
+    public String issueLicense(
             final Context context,
             final String serializedClasses,
             final String licenseNumber,
@@ -269,7 +265,7 @@ public class LicensingChaincode implements ContractInterface {
             final String licenseeId
 
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         if (!isMspIdTheStateDmv(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -302,16 +298,15 @@ public class LicensingChaincode implements ContractInterface {
         final Map<String, String> other;
 
         try {
-            licenseeDescription = objectMapper.readValue(
+            licenseeDescription = (serializedLicenseeDescription != null && !serializedLicenseeDescription.isBlank()) ? objectMapper.readValue(
                     serializedLicenseeDescription,
                     Map.class
-            );
-            other = objectMapper.readValue(
+            ) : null;
+            other = (serializedOther != null && !serializedLicenseeDescription.isBlank()) ? objectMapper.readValue(
                     serializedOther,
                     Map.class
-            );
-        }
-        catch (Exception e) {
+            ) : null;
+        } catch (Exception e) {
             throw new ChaincodeException(
                     "Unable to deserialize licenseeDescription or other.",
                     DESERIALIZATION_ERROR.toString()
@@ -347,7 +342,7 @@ public class LicensingChaincode implements ContractInterface {
                 objectMapper.writeValueAsBytes(persistedLicense)
         );
 
-        return new LicenseSchema(
+        return objectMapper.writeValueAsString(new LicenseSchema(
                 new License(
                         classes,
                         licenseNumber
@@ -367,7 +362,7 @@ public class LicensingChaincode implements ContractInterface {
                 ),
                 other,
                 schemaVersion
-        );
+        ));
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -375,7 +370,7 @@ public class LicensingChaincode implements ContractInterface {
             final Context context,
             final String licenseNumber
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdTheStateDmv(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -416,7 +411,11 @@ public class LicensingChaincode implements ContractInterface {
             final Context context,
             final String licenseNumber
     ) throws
-      IOException {
+            IOException {
+        System.out.println("**********************************");
+        System.out.println(String.format("clientID: %s", context.getClientIdentity().getId()));
+        System.out.println("**********************************");
+
         if (!isMspIdALicensee(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -460,19 +459,21 @@ public class LicensingChaincode implements ContractInterface {
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
-        return STATE_AGENCIES_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_AGENCIES_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdTheStateDmv(final ClientIdentity clientIdentity) {
-        return STATE_DMV_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_DMV_MSP_ID.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdALicensee(final ClientIdentity clientIdentity) {
-        return STATE_DMV_LICENSEE_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+        System.out.println(String.format("Authorized: %s   clientID: %s", STATE_DMV_LICENSEE_MSP_ID, clientIdentity.getMSPID()));
+
+        return Arrays.stream(STATE_DMV_LICENSEE_MSP_ID.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdInThirdPartyMspIds(final ClientIdentity clientIdentity) {
-        return THIRD_PARTY_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(THIRD_PARTY_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isAuthorized(final ClientIdentity clientIdentity) {
@@ -490,8 +491,7 @@ public class LicensingChaincode implements ContractInterface {
         try {
             Integer.parseInt(value);
             return true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
@@ -500,13 +500,13 @@ public class LicensingChaincode implements ContractInterface {
             final Context context,
             final String licenseNumber
     ) throws
-      IOException {
+            IOException {
         final byte[] persistedLicense = context.getStub().getPrivateData(
                 STATE_LICENSE_COLLECTION,
                 licenseNumber.toUpperCase()
         );
 
-        return persistedLicense != null ? objectMapper.readValue(
+        return (persistedLicense != null && persistedLicense.length > 0) ? objectMapper.readValue(
                 persistedLicense,
                 PersistedLicenseSchema.class
         ) : null;
@@ -526,7 +526,7 @@ public class LicensingChaincode implements ContractInterface {
             final Context context,
             final LicenseSchema license
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putPrivateData(
                 String.format(
                         "%s_LICENSE_COLLECTION",
@@ -550,8 +550,7 @@ public class LicensingChaincode implements ContractInterface {
                             clazz
                     )
             ) : new ArrayList<>();
-        }
-        catch (JsonMappingException e) {
+        } catch (JsonMappingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to map the %s.",
@@ -559,8 +558,7 @@ public class LicensingChaincode implements ContractInterface {
                     ),
                     DESERIALIZATION_ERROR.toString()
             );
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to deserialize %s.",

@@ -1,6 +1,6 @@
 [
   {
-    "name": "Florida_LICENSE_COLLECTION",
+    "name": "LICENSE_COLLECTION",
     "policy": "OR('FloridaDmvMSP.member', 'InsurerCoMSP.member', 'FloridaDmvLicenseeMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,
