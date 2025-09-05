@@ -1,0 +1,22 @@
+name: Caliper test
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: registration
+    contracts:
+      - id: registration-chaincode
+organizations:
+  - mspid: SouthDakotaDmvMSP
+    identities:
+      certificates:
+        - name: 'User1@dmv.sd.gov'
+          clientPrivateKey:
+            path: 'state/cryptography/certs/peerOrganizations/dmv.sd.gov/users/User1@dmv.sd.gov/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: 'state/cryptography/certs/peerOrganizations/dmv.sd.gov/users/User1@dmv.sd.gov/msp/signcerts/User1@dmv.sd.gov-cert.pem'
+    connectionProfile:
+      path: 'state/hosts/caliper/registration/state/networks/connection.yaml'
+      discover: true

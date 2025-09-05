@@ -1,6 +1,6 @@
 [
   {
-    "name": "Arizona_REGISTRATION_COLLECTION",
+    "name": "REGISTRATION_COLLECTION",
     "policy": "OR('ArizonaDmvMSP.member', 'InsurerCoMSP.member', 'ArizonaDmvRegistrantMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,

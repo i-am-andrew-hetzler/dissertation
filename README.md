@@ -107,5 +107,9 @@ npx caliper launch manager \
 
 ### Registration
 ```shell
-
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig state/hosts/caliper/registration/state/benchmarks/config.yaml \
+    --caliper-networkconfig state/hosts/caliper/registration/state/networks/network.yaml
 ```

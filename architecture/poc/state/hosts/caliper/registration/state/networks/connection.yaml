@@ -1,0 +1,64 @@
+---
+name: licensing
+version: 1.0.0
+client:
+  organization: SouthDakotaDmv
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  PurdueMotorCompany:
+    mspid: SouthDakotaDmvMSP
+    peers:
+      - sd-dmv-peer0
+    certificateAuthorities:
+      - tlsca.dmv.sd.gov
+peers:
+  sd-dmv-peer0:
+    url: grpcs://localhost:7451
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICPjCCAeWgAwIBAgIQRstsFup5J1+sOqQcYINdZjAKBggqhkjOPQQDAjBqMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzETMBEGA1UEChMKZG12LnNkLmdvdjEZMBcGA1UEAxMQdGxzY2EuZG12
+        LnNkLmdvdjAeFw0yNTA5MDUxOTM0MDBaFw0zNTA5MDMxOTM0MDBaMGoxCzAJBgNV
+        BAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+        c2NvMRMwEQYDVQQKEwpkbXYuc2QuZ292MRkwFwYDVQQDExB0bHNjYS5kbXYuc2Qu
+        Z292MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWIxQfxd7czLtz4tC3yBT4g4R
+        QuyFvPBOIIoQYwm0jl3NTK017MMOkEh9LCe7ssX5MtNFu15rmC2wvuQ16dJq66Nt
+        MGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+        ATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCDssFt6HNhI7oEHqfW9IGskrmaO
+        jiwDZ1QgUwLoHDwaRjAKBggqhkjOPQQDAgNHADBEAiAL9DQHQQXt759S7qU9S8HT
+        0IUs59vmvI80iOo87YLPlQIgWCPLXi+KdVL9wH7Gze26OkQqF5vOZbOLXHO+jsGQ
+        SCs=
+        -----END CERTIFICATE-----
+
+grpcOptions:
+  ssl-target-name-override: sd-dmv-peer0
+  hostnameOverride: sd-dmv-peer0
+certificateAuthorities:
+  tlsca.dmv.sd.gov:
+    url: https://localhost:7054
+    caName: tlsca.dmv.sd.gov
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICPjCCAeWgAwIBAgIQRstsFup5J1+sOqQcYINdZjAKBggqhkjOPQQDAjBqMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzETMBEGA1UEChMKZG12LnNkLmdvdjEZMBcGA1UEAxMQdGxzY2EuZG12
+        LnNkLmdvdjAeFw0yNTA5MDUxOTM0MDBaFw0zNTA5MDMxOTM0MDBaMGoxCzAJBgNV
+        BAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+        c2NvMRMwEQYDVQQKEwpkbXYuc2QuZ292MRkwFwYDVQQDExB0bHNjYS5kbXYuc2Qu
+        Z292MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWIxQfxd7czLtz4tC3yBT4g4R
+        QuyFvPBOIIoQYwm0jl3NTK017MMOkEh9LCe7ssX5MtNFu15rmC2wvuQ16dJq66Nt
+        MGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+        ATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCDssFt6HNhI7oEHqfW9IGskrmaO
+        jiwDZ1QgUwLoHDwaRjAKBggqhkjOPQQDAgNHADBEAiAL9DQHQQXt759S7qU9S8HT
+        0IUs59vmvI80iOo87YLPlQIgWCPLXi+KdVL9wH7Gze26OkQqF5vOZbOLXHO+jsGQ
+        SCs=
+        -----END CERTIFICATE-----
+
+httpOptions:
+  verify: false

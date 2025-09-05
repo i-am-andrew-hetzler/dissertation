@@ -53,31 +53,31 @@ public class RegistrationChaincode implements ContractInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String STATE_REGISTRATION_COLLECTION = System.getenv().getOrDefault(
             "STATE_REGISTRATION_COLLECTION",
-            "TestStateRegistrationCollection"
+            "REGISTRATION_COLLECTION"
     );
-    private static final List<String> STATE_AGENCIES_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String STATE_AGENCIES_MSP_IDS = System.getenv().getOrDefault(
             "STATE_AGENCIES_MSP_IDS",
-            "TestStateMSP"
-    ).split(";"));
+            "ArizonaDmvMSP;PennsylvaniaDmvMSP;SouthDakotaDmvMSP"
+    );
     private static final String STATE_DMV_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_MSP_ID",
-            "TestStateDmvMSP"
+            "ArizonaDmvMSP;PennsylvaniaDmvMSP;SouthDakotaDmvMSP"
     );
     private static final String STATE_DMV_REGISTRANT_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_REGISTRANT_MSP_ID",
-            "TestStateDmvRegistrantMSP"
+            "ArizonaDmvRegistrantMSP;PennsylvaniaDmvRegistrantMSP;SouthDakotaDmvRegistrantMSP"
     );
-    private static final List<String> THIRD_PARTY_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String THIRD_PARTY_MSP_IDS = System.getenv().getOrDefault(
             "THIRD_PARTY_MSP_IDS",
-            "TestInsuranceCoMSP"
-    ).split(";"));
+            "InsurerCoMSP"
+    );
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public RegistrationSchema viewRegistration(
+    public String viewRegistration(
             final Context context,
             final String registrationNumber
     ) throws
-      IOException {
+            IOException {
         if (!isAuthorized(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -107,10 +107,11 @@ public class RegistrationChaincode implements ContractInterface {
             );
         }
 
+        final RegistrationSchema registration;
+
         if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
-            return createRegistrationFromPersistedRegistration(persistedRegistration);
-        }
-        else if (isMspIdARegistrant(context.getClientIdentity())) {
+            registration = createRegistrationFromPersistedRegistration(persistedRegistration);
+        } else if (isMspIdARegistrant(context.getClientIdentity())) {
             if (!isRequestorTheRegistrant(
                     context.getClientIdentity(),
                     persistedRegistration.getRegistrants()
@@ -121,19 +122,15 @@ public class RegistrationChaincode implements ContractInterface {
                 );
             }
 
-            return createRegistrationFromPersistedRegistration(persistedRegistration);
-        }
-        else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
-            final RegistrationSchema registration = createRegistrationFromPersistedRegistration(persistedRegistration);
+            registration = createRegistrationFromPersistedRegistration(persistedRegistration);
+        } else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
+            registration = createRegistrationFromPersistedRegistration(persistedRegistration);
 
             saveRegistrationDataTo3rdPartyCollection(
                     context,
                     registration
             );
-
-            return registration;
-        }
-        else {
+        } else {
             /*
             This should not happen
              */
@@ -142,14 +139,16 @@ public class RegistrationChaincode implements ContractInterface {
                     UNAUTHORIZED_REQUEST.toString()
             );
         }
+
+        return objectMapper.writeValueAsString(registration);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public RegistrationSchema viewRegistrationIn3rdPartyCollection(
+    public String viewRegistrationIn3rdPartyCollection(
             final Context context,
             final String registrationNumber
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -172,7 +171,7 @@ public class RegistrationChaincode implements ContractInterface {
                 registrationNumber.toUpperCase()
         );
 
-        if (registration == null) {
+        if (registration == null || registration.length == 0) {
             throw new ChaincodeException(
                     String.format(
                             "No registration exists for registration number %s.",
@@ -182,14 +181,11 @@ public class RegistrationChaincode implements ContractInterface {
             );
         }
 
-        return objectMapper.readValue(
-                registration,
-                RegistrationSchema.class
-        );
+        return new String(registration);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public RegistrationSchema issueRegistration(
+    public String issueRegistration(
             final Context context,
             final String serializedOther,
             final String serializedAddresses,
@@ -199,7 +195,7 @@ public class RegistrationChaincode implements ContractInterface {
             final String serializedVehicleDescription,
             final String schemaVersion
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdTheStateDmv(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -294,7 +290,7 @@ public class RegistrationChaincode implements ContractInterface {
                 registration
         );
 
-        return new RegistrationSchema(
+        return objectMapper.writeValueAsString(new RegistrationSchema(
                 registration.getOther(),
                 convertPersistedRegistrant(registration.getRegistrants()),
                 new Registration(
@@ -302,7 +298,7 @@ public class RegistrationChaincode implements ContractInterface {
                         registration.getRegistration().getVehicleDescription()
                 ),
                 registration.getSchemaVersion()
-        );
+        ));
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -310,7 +306,7 @@ public class RegistrationChaincode implements ContractInterface {
             final Context context,
             final String registrationNumber
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdTheStateDmv(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -347,11 +343,11 @@ public class RegistrationChaincode implements ContractInterface {
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public RegistrationSchema cancelRegistration(
+    public String cancelRegistration(
             final Context context,
             final String registrationNumber
     ) throws
-      IOException {
+            IOException {
         if (!isMspIdARegistrant(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -412,7 +408,7 @@ public class RegistrationChaincode implements ContractInterface {
                 updatedRegisration
         );
 
-        return new RegistrationSchema(
+        return objectMapper.writeValueAsString(new RegistrationSchema(
                 updatedRegisration.getOther(),
                 convertPersistedRegistrant(updatedRegisration.getRegistrants()),
                 new Registration(
@@ -420,23 +416,23 @@ public class RegistrationChaincode implements ContractInterface {
                         updatedRegisration.getRegistration().getVehicleDescription()
                 ),
                 updatedRegisration.getSchemaVersion()
-        );
+        ));
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
-        return STATE_AGENCIES_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_AGENCIES_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdTheStateDmv(final ClientIdentity clientIdentity) {
-        return STATE_DMV_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_DMV_MSP_ID.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdARegistrant(final ClientIdentity clientIdentity) {
-        return STATE_DMV_REGISTRANT_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_DMV_REGISTRANT_MSP_ID.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdInThirdPartyMspIds(final ClientIdentity clientIdentity) {
-        return THIRD_PARTY_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(THIRD_PARTY_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isAuthorized(final ClientIdentity clientIdentity) {
@@ -454,13 +450,13 @@ public class RegistrationChaincode implements ContractInterface {
             final Context context,
             final String registrationNumber
     ) throws
-      IOException {
+            IOException {
         final byte[] persistedRegistration = context.getStub().getPrivateData(
                 STATE_REGISTRATION_COLLECTION,
                 registrationNumber.toUpperCase()
         );
 
-        return persistedRegistration != null ? objectMapper.readValue(
+        return (persistedRegistration != null && persistedRegistration.length > 0) ? objectMapper.readValue(
                 persistedRegistration,
                 PersistedRegistrationSchema.class
         ) : null;
@@ -502,7 +498,7 @@ public class RegistrationChaincode implements ContractInterface {
             final Context context,
             final RegistrationSchema registration
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putPrivateData(
                 String.format(
                         "%s_REGISTRATION_COLLECTION",
@@ -517,7 +513,7 @@ public class RegistrationChaincode implements ContractInterface {
             final Context context,
             final PersistedRegistrationSchema registration
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         context.getStub().putPrivateData(
                 STATE_REGISTRATION_COLLECTION,
                 registration.getRegistration().getNumber().toUpperCase(),
@@ -529,8 +525,7 @@ public class RegistrationChaincode implements ContractInterface {
         try {
             Integer.parseInt(value);
             return true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
@@ -548,8 +543,7 @@ public class RegistrationChaincode implements ContractInterface {
                             clazz
                     )
             ) : new ArrayList<>();
-        }
-        catch (JsonMappingException e) {
+        } catch (JsonMappingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to map the %s.",
@@ -557,8 +551,7 @@ public class RegistrationChaincode implements ContractInterface {
                     ),
                     DESERIALIZATION_ERROR.toString()
             );
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ChaincodeException(
                     String.format(
                             "Unable to deserialize %s.",
@@ -573,7 +566,7 @@ public class RegistrationChaincode implements ContractInterface {
             final String serializedMap,
             final String attribute
     ) throws
-      JsonProcessingException {
+            JsonProcessingException {
         try {
             return objectMapper.readValue(
                     serializedMap,
