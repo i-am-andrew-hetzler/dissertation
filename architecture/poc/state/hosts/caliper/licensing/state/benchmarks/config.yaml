@@ -3,7 +3,7 @@ test:
     number: 4
   rounds:
     - label: "Issue and View License - 4 TPS"
-      txNumber: 10000
+      txNumber: 1200
       rateControl:
         type: fixed-rate
         opts:
@@ -14,7 +14,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 8 TPS"
-      txNumber: 10000
+      txNumber: 4800
       rateControl:
         type: fixed-rate
         opts:
@@ -25,7 +25,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 12 TPS"
-      txNumber: 10000
+      txNumber: 10800
       rateControl:
         type: fixed-rate
         opts:
@@ -36,7 +36,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 16 TPS"
-      txNumber: 10000
+      txNumber: 19200
       rateControl:
         type: fixed-rate
         opts:
@@ -48,7 +48,7 @@ test:
           filePath: state/hosts/caliper/licensing/state/data/licensing
 
     - label: "Issue and Revoke License - 4 TPS"
-      txNumber: 10000
+      txNumber: 1200
       rateControl:
         type: fixed-rate
         opts:
@@ -59,7 +59,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 8 TPS"
-      txNumber: 10000
+      txNumber: 4800
       rateControl:
         type: fixed-rate
         opts:
@@ -70,7 +70,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 12 TPS"
-      txNumber: 10000
+      txNumber: 10800
       rateControl:
         type: fixed-rate
         opts:
@@ -81,7 +81,7 @@ test:
           contractId: licensing-chaincode
           filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 16 TPS"
-      txNumber: 10000
+      txNumber: 19200
       rateControl:
         type: fixed-rate
         opts:

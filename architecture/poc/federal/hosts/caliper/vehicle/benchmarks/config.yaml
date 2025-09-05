@@ -3,7 +3,7 @@ test:
     number: 4
   rounds:
     - label: "Record Initial State and Vehicle State Validity - 36 TPS"
-      txNumber: 10000
+      txNumber: 10800
       rateControl:
         type: fixed-rate
         opts:
@@ -14,7 +14,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State and Vehicle State Validity - 72 TPS"
-      txNumber: 10000
+      txNumber: 43200
       rateControl:
         type: fixed-rate
         opts:
@@ -25,7 +25,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State and Vehicle State Validity - 108 TPS"
-      txNumber: 10000
+      txNumber: 97200
       rateControl:
         type: fixed-rate
         opts:
@@ -36,7 +36,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State and Vehicle State Validity - 144 TPS"
-      txNumber: 10000
+      txNumber: 172800
       rateControl:
         type: fixed-rate
         opts:
@@ -46,8 +46,9 @@ test:
         arguments:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
+
     - label: "Record Initial State, Update State, and Override State - 36 TPS"
-      txNumber: 10000
+      txNumber: 10800
       rateControl:
         type: fixed-rate
         opts:
@@ -58,7 +59,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State, Update State, and Override State - 72 TPS"
-      txNumber: 10000
+      txNumber: 43200
       rateControl:
         type: fixed-rate
         opts:
@@ -69,7 +70,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State, Update State, and Override State - 108 TPS"
-      txNumber: 10000
+      txNumber: 97200
       rateControl:
         type: fixed-rate
         opts:
@@ -80,7 +81,7 @@ test:
           contractId: vehicle-state-chaincode
           filePath: federal/hosts/caliper/vehicle/data/vehicle
     - label: "Record Initial State, Update State, and Override State - 144 TPS"
-      txNumber: 10000
+      txNumber: 172800
       rateControl:
         type: fixed-rate
         opts:

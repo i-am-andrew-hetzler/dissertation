@@ -2,98 +2,98 @@ test:
   workers:
     number: 4
   rounds:
-#    - label: "Save, View, Revoke Certificate of Deposit - 6 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 6
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, Revoke Certificate of Deposit - 12 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 12
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, Revoke Certificate of Deposit - 18 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 18
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, Revoke Certificate of Deposit - 24 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 24
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, Revoke Certificate of Deposit - 6 TPS"
+      txNumber: 1800
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 6
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, Revoke Certificate of Deposit - 12 TPS"
+      txNumber: 7200
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 12
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, Revoke Certificate of Deposit - 18 TPS"
+      txNumber: 16200
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 18
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, Revoke Certificate of Deposit - 24 TPS"
+      txNumber: 28800
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 24
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-cd-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
 
-#    - label: "Save, View, and Revoke Insurance - 6 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 6
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, and Revoke Insurance - 12 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 12
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, and Revoke Insurance - 18 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 18
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
-#    - label: "Save, View, and Revoke Insurance - 24 TPS"
-#      txNumber: 10000
-#      rateControl:
-#        type: fixed-rate
-#        opts:
-#          tps: 24
-#      workload:
-#        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
-#        arguments:
-#          contractId: proof-chaincode
-#          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, and Revoke Insurance - 6 TPS"
+      txNumber: 1800
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 6
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, and Revoke Insurance - 12 TPS"
+      txNumber: 7200
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 12
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, and Revoke Insurance - 18 TPS"
+      txNumber: 16200
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 18
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
+    - label: "Save, View, and Revoke Insurance - 24 TPS"
+      txNumber: 28800
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 24
+      workload:
+        module: state/hosts/caliper/proof/state/benchmarks/save-and-view-insurance-test.js
+        arguments:
+          contractId: proof-chaincode
+          filePath: state/hosts/caliper/proof/state/data/proof
 
     - label: "Save, View, and Revoke Self-Insurance - 6 TPS"
-      txNumber: 10000
+      txNumber: 1800
       rateControl:
         type: fixed-rate
         opts:
@@ -104,7 +104,7 @@ test:
           contractId: proof-chaincode
           filePath: state/hosts/caliper/proof/state/data/proof
     - label: "Save, View, and Revoke Self-Insurance - 12 TPS"
-      txNumber: 10000
+      txNumber: 7200
       rateControl:
         type: fixed-rate
         opts:
@@ -115,7 +115,7 @@ test:
           contractId: proof-chaincode
           filePath: state/hosts/caliper/proof/state/data/proof
     - label: "Save, View, and Revoke Self-Insurance - 18 TPS"
-      txNumber: 10000
+      txNumber: 16200
       rateControl:
         type: fixed-rate
         opts:
@@ -126,7 +126,7 @@ test:
           contractId: proof-chaincode
           filePath: state/hosts/caliper/proof/state/data/proof
     - label: "Save, View, and Revoke Self-Insurance - 24 TPS"
-      txNumber: 10000
+      txNumber: 28800
       rateControl:
         type: fixed-rate
         opts:
