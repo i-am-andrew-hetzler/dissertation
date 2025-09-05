@@ -3,7 +3,7 @@ test:
     number: 4
   rounds:
     - label: "Issue and View Registration - 6 TPS"
-      txNumber: 10000
+      txNumber: 1800
       rateControl:
         type: fixed-rate
         opts:
@@ -14,7 +14,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and View Registration - 12 TPS"
-      txNumber: 10000
+      txNumber: 7200
       rateControl:
         type: fixed-rate
         opts:
@@ -25,7 +25,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and View Registration - 18 TPS"
-      txNumber: 10000
+      txNumber: 16200
       rateControl:
         type: fixed-rate
         opts:
@@ -36,7 +36,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and View Registration - 24 TPS"
-      txNumber: 10000
+      txNumber: 28800
       rateControl:
         type: fixed-rate
         opts:
@@ -48,7 +48,7 @@ test:
           filePath: state/hosts/caliper/registration/state/data/registration
 
     - label: "Issue and Revoke Registration - 6 TPS"
-      txNumber: 10000
+      txNumber: 1800
       rateControl:
         type: fixed-rate
         opts:
@@ -59,7 +59,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and Revoke Registration - 12 TPS"
-      txNumber: 10000
+      txNumber: 7200
       rateControl:
         type: fixed-rate
         opts:
@@ -70,7 +70,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and Revoke Registration - 18 TPS"
-      txNumber: 10000
+      txNumber: 16200
       rateControl:
         type: fixed-rate
         opts:
@@ -81,7 +81,7 @@ test:
           contractId: registration-chaincode
           filePath: state/hosts/caliper/registration/state/data/registration
     - label: "Issue and Revoke Registration - 24 TPS"
-      txNumber: 10000
+      txNumber: 28800
       rateControl:
         type: fixed-rate
         opts:

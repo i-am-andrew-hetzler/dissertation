@@ -3,7 +3,7 @@ test:
     number: 4
   rounds:
     - label: "Create and View Lessor List - 5 TPS"
-      txNumber: 10000
+      txNumber: 1500
       rateControl:
         type: fixed-rate
         opts:
@@ -14,7 +14,7 @@ test:
           contractId: recall-notifications-chaincode
           filePath: federal/hosts/caliper/recall/lessorList/data/lessor
     - label: "Create and View Lessor List - 10 TPS"
-      txNumber: 10000
+      txNumber: 6000
       rateControl:
         type: fixed-rate
         opts:
@@ -25,7 +25,7 @@ test:
           contractId: recall-notifications-chaincode
           filePath: federal/hosts/caliper/recall/lessorList/data/lessor
     - label: "Create and View Lessor List - 15 TPS"
-      txNumber: 10000
+      txNumber: 13500
       rateControl:
         type: fixed-rate
         opts:
@@ -36,7 +36,7 @@ test:
           contractId: recall-notifications-chaincode
           filePath: federal/hosts/caliper/recall/lessorList/data/lessor
     - label: "Create and View Lessor List - 20 TPS"
-      txNumber: 10000
+      txNumber: 24000
       rateControl:
         type: fixed-rate
         opts:
