@@ -47,11 +47,11 @@ class ProofOfFinancialResponsibilityChaincodeTest {
     private ClientIdentity mockedClientIdentity;
     private ProofOfFinancialResponsibilityChaincode subject;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String AUTHORIZED_STATE_MSP_ID = "TestStateMSP";
-    private static final String AUTHORIZED_INSURED_MSP_ID = "TestStateDmvInsuredMSP";
-    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
-    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
-    private static final String STATE_COLLECTION = "TestStateProofCollection";
+    private static final String AUTHORIZED_STATE_MSP_ID = "AlabamaDmvMSP";
+    private static final String AUTHORIZED_INSURED_MSP_ID = "AlabamaDmvInsuredMSP";
+    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "AlabamaDmvMSP";
+    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "InsurerCoMSP";
+    private static final String STATE_COLLECTION = "PROOF_COLLECTION";
     private static final String REGISTRATION_NUMBER = "OH-123";
 
     @BeforeEach
@@ -173,7 +173,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
-        final Proof result = subject.viewProof(
+        final String result = subject.viewProof(
                 mockedContext,
                 REGISTRATION_NUMBER
         );
@@ -186,7 +186,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -226,7 +226,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
-        final Proof result = subject.viewProof(
+        final String result = subject.viewProof(
                 mockedContext,
                 REGISTRATION_NUMBER
         );
@@ -250,7 +250,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -370,7 +370,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
-        final Proof result = subject.viewProofIn3rdPartyCollection(
+        final String result = subject.viewProofIn3rdPartyCollection(
                 mockedContext,
                 REGISTRATION_NUMBER
         );
@@ -386,7 +386,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -644,7 +644,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(null);
 
-        final Proof result = subject.saveCertificateOfDeposit(
+        final String result = subject.saveCertificateOfDeposit(
                 mockedContext,
                 "10000",
                 "Maya the Husky",
@@ -680,7 +680,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -725,7 +725,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
 
-        final Proof result = subject.saveCertificateOfDeposit(
+        final String result = subject.saveCertificateOfDeposit(
                 mockedContext,
                 "10000",
                 "Maya the Husky",
@@ -765,7 +765,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -984,7 +984,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(null);
 
-        final Proof result = subject.saveInsurance(
+        final String result = subject.saveInsurance(
                 mockedContext,
                 objectMapper.writeValueAsString(vehicleDescription),
                 objectMapper.writeValueAsString(List.of(new Insured("Maya the Husky"))),
@@ -1031,7 +1031,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1096,7 +1096,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 ))
         );
 
-        final Proof result = subject.saveInsurance(
+        final String result = subject.saveInsurance(
                 mockedContext,
                 objectMapper.writeValueAsString(vehicleDescription),
                 objectMapper.writeValueAsString(List.of(new Insured("Maya the Husky"))),
@@ -1143,7 +1143,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1342,7 +1342,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 REGISTRATION_NUMBER.toUpperCase()
         )).thenReturn(null);
 
-        final Proof result = subject.saveSelfInsurance(
+        final String result = subject.saveSelfInsurance(
                 mockedContext,
                 "10000",
                 "Lazy Cat Insurer",
@@ -1375,7 +1375,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1418,7 +1418,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
 
-        final Proof result = subject.saveSelfInsurance(
+        final String result = subject.saveSelfInsurance(
                 mockedContext,
                 "10000",
                 "Lazy Cat Insurer",
@@ -1451,7 +1451,7 @@ class ProofOfFinancialResponsibilityChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }

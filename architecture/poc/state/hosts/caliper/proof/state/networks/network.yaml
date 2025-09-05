@@ -1,0 +1,22 @@
+name: Caliper test
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: proof
+    contracts:
+      - id: proof-chaincode
+organizations:
+  - mspid: AlabamaDmvMSP
+    identities:
+      certificates:
+        - name: 'User1@dmv.alabama.gov'
+          clientPrivateKey:
+            path: 'state/cryptography/certs/peerOrganizations/dmv.alabama.gov/users/User1@dmv.alabama.gov/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: 'state/cryptography/certs/peerOrganizations/dmv.alabama.gov/users/User1@dmv.alabama.gov/msp/signcerts/User1@dmv.alabama.gov-cert.pem'
+    connectionProfile:
+      path: 'state/hosts/caliper/proof/state/networks/connection.yaml'
+      discover: true

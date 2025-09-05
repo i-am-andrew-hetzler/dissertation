@@ -43,7 +43,7 @@ import static com.andrewhetzler.state.pofr.ProofOfFinancialResponsibilityChainco
  * Date Created: 8/19/25
  **/
 @Contract(
-        name = "pofr",
+        name = "proof",
         info = @Info(
                 title = "Proof of Financial Responsibility",
                 description = "The chaincode that powers the proof of financial responsibility use case.",
@@ -57,30 +57,30 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String STATE_PROOF_COLLECTION = System.getenv().getOrDefault(
             "STATE_PROOF_COLLECTION",
-            "TestStateProofCollection"
+            "PROOF_COLLECTION"
     );
-    private static final List<String> STATE_AGENCIES_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String STATE_AGENCIES_MSP_IDS = System.getenv().getOrDefault(
             "STATE_AGENCIES_MSP_IDS",
-            "TestStateMSP"
-    ).split(";"));
+            "AlabamaDmvMSP;GeorgiaDmvMSP;NorthDakotaDmvMSP"
+    );
     private static final String STATE_DMV_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_MSP_ID",
-            "TestStateDmvMSP"
+            "AlabamaDmvMSP;GeorgiaDmvMSP;NorthDakotaDmvMSP"
     );
     private static final String STATE_DMV_INSURED_MSP_ID = System.getenv().getOrDefault(
             "STATE_DMV_INSURED_MSP_ID",
-            "TestStateDmvInsuredMSP"
+            "AlabamaDmvInsuredMSP;GeorgiaDmvInsuredMSP;NorthDakotaDmvInsuredMSP;AlabamaDmvMSP;GeorgiaDmvMSP;NorthDakotaDmvMSP"
     );
-    private static final List<String> THIRD_PARTY_MSP_IDS = Arrays.asList(System.getenv().getOrDefault(
+    private static final String THIRD_PARTY_MSP_IDS = System.getenv().getOrDefault(
             "THIRD_PARTY_MSP_IDS",
-            "TestInsuranceCoMSP"
-    ).split(";"));
+            "InsurerCoMSP"
+    );
 
     /*
     State agencies and 3rd parties would call this method. Individuals would call the specific method (e.g., insurance)
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public Proof viewProof(
+    public String viewProof(
             final Context context,
             final String registrationNumber
     ) throws
@@ -117,8 +117,10 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
             );
         }
 
+        final Proof proof;
+
         if (isMspIdInStateAgencies(context.getClientIdentity()) || isMspIdTheStateDmv(context.getClientIdentity())) {
-            return createProofFromPersistedProof(existingProof);
+            proof = createProofFromPersistedProof(existingProof);
         }
         else if (isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             saveProofDataTo3rdPartyCollection(
@@ -127,7 +129,7 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                     registrationNumber
             );
 
-            return createProofFromPersistedProof(existingProof);
+            proof = createProofFromPersistedProof(existingProof);
         }
         else {
             /*
@@ -138,14 +140,15 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                     UNAUTHORIZED_REQUEST.toString()
             );
         }
+
+        return objectMapper.writeValueAsString(proof);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public Proof viewProofIn3rdPartyCollection(
+    public String viewProofIn3rdPartyCollection(
             final Context context,
             final String registrationNumber
-    ) throws
-      IOException {
+    ) {
         if (!isMspIdInThirdPartyMspIds(context.getClientIdentity())) {
             throw new ChaincodeException(
                     "Unauthorized request.",
@@ -168,7 +171,7 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                 registrationNumber.toUpperCase()
         );
 
-        if (existingProof == null) {
+        if (existingProof == null || existingProof.length == 0) {
             throw new ChaincodeException(
                     String.format(
                             "No proof of financial responsibility exists for registration number %s.",
@@ -178,14 +181,11 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
             );
         }
 
-        return objectMapper.readValue(
-                existingProof,
-                Proof.class
-        );
+        return new String(existingProof);
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Proof saveCertificateOfDeposit(
+    public String saveCertificateOfDeposit(
             final Context context,
             final String amount,
             final String name,
@@ -249,11 +249,11 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                 registrationNumber
         );
 
-        return createProofFromPersistedProof(proof);
+        return objectMapper.writeValueAsString(createProofFromPersistedProof(proof));
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Proof saveInsurance(
+    public String saveInsurance(
             final Context context,
             final String serializedVehicleDescription,
             final String serializedInsured,
@@ -352,11 +352,11 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                 registrationNumber
         );
 
-        return createProofFromPersistedProof(proof);
+        return objectMapper.writeValueAsString(createProofFromPersistedProof(proof));
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Proof saveSelfInsurance(
+    public String saveSelfInsurance(
             final Context context,
             final String amount,
             final String businessName,
@@ -437,12 +437,7 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                 registrationNumber
         );
 
-        return createProofFromPersistedProof(proof);
-    }
-
-    @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Proof saveSelfInsurance() {
-        return null;
+        return objectMapper.writeValueAsString(createProofFromPersistedProof(proof));
     }
 
     @Transaction(intent = Transaction.TYPE.SUBMIT)
@@ -587,15 +582,15 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
     }
 
     private boolean isMspIdInStateAgencies(final ClientIdentity clientIdentity) {
-        return STATE_AGENCIES_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_AGENCIES_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdTheStateDmv(final ClientIdentity clientIdentity) {
-        return STATE_DMV_MSP_ID.equalsIgnoreCase(clientIdentity.getMSPID());
+        return Arrays.stream(STATE_DMV_MSP_ID.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isMspIdInThirdPartyMspIds(final ClientIdentity clientIdentity) {
-        return THIRD_PARTY_MSP_IDS.contains(clientIdentity.getMSPID());
+        return Arrays.stream(THIRD_PARTY_MSP_IDS.split(";")).anyMatch(msp -> msp.equals(clientIdentity.getMSPID()));
     }
 
     private boolean isNullOrBlank(final String value) {
@@ -622,7 +617,7 @@ public class ProofOfFinancialResponsibilityChaincode implements ContractInterfac
                 registrationNumber.toUpperCase()
         );
 
-        return proof != null ? objectMapper.readValue(
+        return (proof != null && proof.length > 0) ? objectMapper.readValue(
                 proof,
                 PersistedProof.class
         ) : null;

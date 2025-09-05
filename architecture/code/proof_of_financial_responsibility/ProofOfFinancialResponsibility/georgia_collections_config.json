@@ -1,6 +1,6 @@
 [
   {
-    "name": "Georgia_PROOF_COLLECTION",
+    "name": "PROOF_COLLECTION",
     "policy": "OR('GeorgiaDmvMSP.member', 'InsurerCoMSP.member', 'GeorgiaDmvInsuredMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,
