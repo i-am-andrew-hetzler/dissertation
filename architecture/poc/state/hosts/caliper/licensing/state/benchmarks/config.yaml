@@ -12,7 +12,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/issue-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 8 TPS"
       txNumber: 10000
       rateControl:
@@ -23,7 +23,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/issue-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 12 TPS"
       txNumber: 10000
       rateControl:
@@ -34,7 +34,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/issue-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and View License - 16 TPS"
       txNumber: 10000
       rateControl:
@@ -45,7 +45,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/issue-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
 
     - label: "Issue and Revoke License - 4 TPS"
       txNumber: 10000
@@ -57,7 +57,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/revoke-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 8 TPS"
       txNumber: 10000
       rateControl:
@@ -68,7 +68,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/revoke-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 12 TPS"
       txNumber: 10000
       rateControl:
@@ -79,7 +79,7 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/revoke-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing
     - label: "Issue and Revoke License - 16 TPS"
       txNumber: 10000
       rateControl:
@@ -90,4 +90,4 @@ test:
         module: state/hosts/caliper/licensing/state/benchmarks/revoke-license-test.js
         arguments:
           contractId: licensing-chaincode
-          filePath: state/hosts/caliper/licensing/state/data/vehicle
+          filePath: state/hosts/caliper/licensing/state/data/licensing

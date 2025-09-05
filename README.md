@@ -93,7 +93,11 @@ npx caliper launch manager \
 
 ### Proof of Financial Responsibility
 ```shell
-
+npx caliper launch manager \
+    --caliper-bind-sut fabric:fabric-gateway \
+    --caliper-workspace . \
+    --caliper-benchconfig state/hosts/caliper/proof/state/benchmarks/config.yaml \
+    --caliper-networkconfig state/hosts/caliper/proof/state/networks/network.yaml
 ```
 
 ### Licensing

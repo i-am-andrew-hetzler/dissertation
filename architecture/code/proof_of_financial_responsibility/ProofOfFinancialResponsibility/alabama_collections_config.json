@@ -1,6 +1,6 @@
 [
   {
-    "name": "Alabama_PROOF_COLLECTION",
+    "name": "PROOF_COLLECTION",
     "policy": "OR('AlabamaDmvMSP.member', 'InsurerCoMSP.member', 'AlabamaDmvInsuredMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,
