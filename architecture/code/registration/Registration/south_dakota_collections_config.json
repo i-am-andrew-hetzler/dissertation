@@ -1,6 +1,6 @@
 [
   {
-    "name": "SouthDakota_REGISTRATION_COLLECTION",
+    "name": "REGISTRATION_COLLECTION",
     "policy": "OR('SouthDakotaDmvMSP.member', 'InsurerCoMSP.member', 'SouthDakotaDmvRegistrantMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,

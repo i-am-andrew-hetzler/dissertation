@@ -1,0 +1,93 @@
+test:
+  workers:
+    number: 4
+  rounds:
+#    - label: "Issue and View Registration - 6 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 6
+#      workload:
+#        module: state/hosts/caliper/registration/state/benchmarks/issue-registration-test.js
+#        arguments:
+#          contractId: registration-chaincode
+#          filePath: state/hosts/caliper/registration/state/data/vehicle
+#    - label: "Issue and View Registration - 12 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 12
+#      workload:
+#        module: state/hosts/caliper/registration/state/benchmarks/issue-registration-test.js
+#        arguments:
+#          contractId: registration-chaincode
+#          filePath: state/hosts/caliper/registration/state/data/vehicle
+#    - label: "Issue and View Registration - 18 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 18
+#      workload:
+#        module: state/hosts/caliper/registration/state/benchmarks/issue-registration-test.js
+#        arguments:
+#          contractId: registration-chaincode
+#          filePath: state/hosts/caliper/registration/state/data/vehicle
+#    - label: "Issue and View Registration - 24 TPS"
+#      txNumber: 10000
+#      rateControl:
+#        type: fixed-rate
+#        opts:
+#          tps: 24
+#      workload:
+#        module: state/hosts/caliper/registration/state/benchmarks/issue-registration-test.js
+#        arguments:
+#          contractId: registration-chaincode
+#          filePath: state/hosts/caliper/registration/state/data/vehicle
+
+    - label: "Issue and Revoke Registration - 6 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 6
+      workload:
+        module: state/hosts/caliper/registration/state/benchmarks/revoke-registration-test.js
+        arguments:
+          contractId: registration-chaincode
+          filePath: state/hosts/caliper/registration/state/data/vehicle
+    - label: "Issue and Revoke Registration - 12 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 12
+      workload:
+        module: state/hosts/caliper/registration/state/benchmarks/revoke-registration-test.js
+        arguments:
+          contractId: registration-chaincode
+          filePath: state/hosts/caliper/registration/state/data/vehicle
+    - label: "Issue and Revoke Registration - 18 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 18
+      workload:
+        module: state/hosts/caliper/registration/state/benchmarks/revoke-registration-test.js
+        arguments:
+          contractId: registration-chaincode
+          filePath: state/hosts/caliper/registration/state/data/vehicle
+    - label: "Issue and Revoke Registration - 24 TPS"
+      txNumber: 10000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 24
+      workload:
+        module: state/hosts/caliper/registration/state/benchmarks/revoke-registration-test.js
+        arguments:
+          contractId: registration-chaincode
+          filePath: state/hosts/caliper/registration/state/data/vehicle

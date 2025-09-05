@@ -44,11 +44,11 @@ class RegistrationChaincodeTest {
     private ClientIdentity mockedClientIdentity;
     private RegistrationChaincode subject;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String AUTHORIZED_STATE_MSP_ID = "TestStateMSP";
-    private static final String AUTHORIZED_REGISTRANT_MSP_ID = "TestStateDmvRegistrantMSP";
-    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "TestStateDmvMSP";
-    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "TestInsuranceCoMSP";
-    private static final String STATE_COLLECTION = "TestStateRegistrationCollection";
+    private static final String AUTHORIZED_STATE_MSP_ID = "ArizonaDmvMSP";
+    private static final String AUTHORIZED_REGISTRANT_MSP_ID = "ArizonaDmvRegistrantMSP";
+    private static final String AUTHORIZED_STATE_DMV_MSP_IPD = "ArizonaDmvMSP";
+    private static final String AUTHORIZED_3RD_PARTY_MSP_ID = "InsurerCoMSP";
+    private static final String STATE_COLLECTION = "REGISTRATION_COLLECTION";
 
     @BeforeEach
     void setUp() {
@@ -215,7 +215,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        final RegistrationSchema result = subject.viewRegistration(
+        final String result = subject.viewRegistration(
                 mockedContext,
                 "OH-HETZLER"
         );
@@ -228,7 +228,7 @@ class RegistrationChaincodeTest {
                 "OH-HETZLER"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -385,7 +385,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        final RegistrationSchema result = subject.viewRegistration(
+        final String result = subject.viewRegistration(
                 mockedContext,
                 "OH-HETZLER"
         );
@@ -398,7 +398,7 @@ class RegistrationChaincodeTest {
                 "OH-HETZLER"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -484,7 +484,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        final RegistrationSchema result = subject.viewRegistration(
+        final String result = subject.viewRegistration(
                 mockedContext,
                 "OH-HETZLER"
         );
@@ -508,7 +508,7 @@ class RegistrationChaincodeTest {
                 objectMapper.writeValueAsBytes(expected)
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -650,7 +650,7 @@ class RegistrationChaincodeTest {
                 "OH-HETZLER"
         )).thenReturn(objectMapper.writeValueAsBytes(expected));
 
-        final RegistrationSchema result = subject.viewRegistrationIn3rdPartyCollection(
+        final String result = subject.viewRegistrationIn3rdPartyCollection(
                 mockedContext,
                 "OH-HETZLER"
         );
@@ -663,7 +663,7 @@ class RegistrationChaincodeTest {
                 "OH-HETZLER"
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -909,7 +909,7 @@ class RegistrationChaincodeTest {
                 "OH-HETZLER"
         )).thenReturn(null);
 
-        final RegistrationSchema result = subject.issueRegistration(
+        final String result = subject.issueRegistration(
                 mockedContext,
                 objectMapper.writeValueAsString(other),
                 objectMapper.writeValueAsString(addresses),
@@ -953,7 +953,7 @@ class RegistrationChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1037,7 +1037,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        final RegistrationSchema result = subject.issueRegistration(
+        final String result = subject.issueRegistration(
                 mockedContext,
                 objectMapper.writeValueAsString(other),
                 objectMapper.writeValueAsString(addresses),
@@ -1094,7 +1094,7 @@ class RegistrationChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1174,7 +1174,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        final RegistrationSchema result = subject.issueRegistration(
+        final String result = subject.issueRegistration(
                 mockedContext,
                 objectMapper.writeValueAsString(other),
                 objectMapper.writeValueAsString(addresses),
@@ -1218,7 +1218,7 @@ class RegistrationChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1629,7 +1629,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        RegistrationSchema result = subject.cancelRegistration(
+        String result = subject.cancelRegistration(
                 mockedContext,
                 "OH-HETZLER"
         );
@@ -1686,7 +1686,7 @@ class RegistrationChaincodeTest {
                 )
         );
         assertEquals(
-                expected,
+                objectMapper.writeValueAsString(expected),
                 result
         );
     }
@@ -1741,7 +1741,7 @@ class RegistrationChaincodeTest {
                 )
         );
 
-        RegistrationSchema result = subject.cancelRegistration(
+        String result = subject.cancelRegistration(
                 mockedContext,
                 "OH-HETZLER"
         );

@@ -1,6 +1,6 @@
 [
   {
-    "name": "Pennsylvania_REGISTRATION_COLLECTION",
+    "name": "REGISTRATION_COLLECTION",
     "policy": "OR('PennsylvaniaDmvMSP.member', 'InsurerCoMSP.member', 'PennsylvaniaDmvRegistrantMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 2,
