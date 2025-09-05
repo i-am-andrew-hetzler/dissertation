@@ -1,0 +1,64 @@
+---
+name: licensing
+version: 1.0.0
+client:
+  organization: SouthDakotaDmv
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  PurdueMotorCompany:
+    mspid: SouthDakotaDmvMSP
+    peers:
+      - sd-dmv-licensee-peer0
+    certificateAuthorities:
+      - tlsca.dmv.sd.gov
+peers:
+  sd-dmv-licensee-peer0:
+    url: grpcs://localhost:7451
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICPzCCAeWgAwIBAgIQfuoee4hvlW7G/SfjyHAHnzAKBggqhkjOPQQDAjBqMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzETMBEGA1UEChMKZG12LnNkLmdvdjEZMBcGA1UEAxMQdGxzY2EuZG12
+        LnNkLmdvdjAeFw0yNTA5MDUwMDI3MDBaFw0zNTA5MDMwMDI3MDBaMGoxCzAJBgNV
+        BAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+        c2NvMRMwEQYDVQQKEwpkbXYuc2QuZ292MRkwFwYDVQQDExB0bHNjYS5kbXYuc2Qu
+        Z292MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELWSsJn0Qa5Mi2r8Jv3zeqVk2
+        kfPHWR/cHCTpeYuURctoZVqGpg3d4ydAB/r9qx/A/K2zV217vYGu1LTrhndXkKNt
+        MGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+        ATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCBJTSnH/zptW2Z/TDBwBP/+UNl2
+        KAT9SOE5b8w63kUaLjAKBggqhkjOPQQDAgNIADBFAiBwNvfWnzLCOa4P0vcjatle
+        68casSQjLwccmKBybauUEQIhAKtzFJjpQX7KmxD2gKJIqDFcgLl08QlR+fBXd6Av
+        pS66
+        -----END CERTIFICATE-----
+
+grpcOptions:
+  ssl-target-name-override: sd-dmv-licensee-peer0
+  hostnameOverride: sd-dmv-licensee-peer0
+certificateAuthorities:
+  tlsca.dmv.sd.gov:
+    url: https://localhost:7054
+    caName: tlsca.dmv.sd.gov
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICPzCCAeWgAwIBAgIQfuoee4hvlW7G/SfjyHAHnzAKBggqhkjOPQQDAjBqMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzETMBEGA1UEChMKZG12LnNkLmdvdjEZMBcGA1UEAxMQdGxzY2EuZG12
+        LnNkLmdvdjAeFw0yNTA5MDUwMDI3MDBaFw0zNTA5MDMwMDI3MDBaMGoxCzAJBgNV
+        BAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+        c2NvMRMwEQYDVQQKEwpkbXYuc2QuZ292MRkwFwYDVQQDExB0bHNjYS5kbXYuc2Qu
+        Z292MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELWSsJn0Qa5Mi2r8Jv3zeqVk2
+        kfPHWR/cHCTpeYuURctoZVqGpg3d4ydAB/r9qx/A/K2zV217vYGu1LTrhndXkKNt
+        MGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+        ATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCBJTSnH/zptW2Z/TDBwBP/+UNl2
+        KAT9SOE5b8w63kUaLjAKBggqhkjOPQQDAgNIADBFAiBwNvfWnzLCOa4P0vcjatle
+        68casSQjLwccmKBybauUEQIhAKtzFJjpQX7KmxD2gKJIqDFcgLl08QlR+fBXd6Av
+        pS66
+        -----END CERTIFICATE-----
+
+httpOptions:
+  verify: false
