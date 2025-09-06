@@ -40,6 +40,46 @@ You can do that by double-clicking the binary, open _System Preferences > Privac
 the binary is blocked. Click allow, run the binary again, click allow and enter your password. You should no longer get
 prompted to allow the _cryptogen_ and _configtxgen_ binary.
 
+### Federal
+```shell
+# to start the network
+./poc.sh -s federal
+# to quit the network
+./poc.sh -q federal
+# to delete volumes and certificates
+./poc.sh -d federal
+```
+
+### Licensing
+```shell
+# to start the network
+./poc.sh -s licensing
+# to quit the network
+./poc.sh -q licensing
+# to delete volumes and certificates
+./poc.sh -d licensing
+```
+
+### Proof of Financial Responsibility
+```shell
+# to start the network
+./poc.sh -s pofr
+# to quit the network
+./poc.sh -q pofr
+# to delete volumes and certificates
+./poc.sh -d pofr
+```
+
+### Registration
+```shell
+# to start the network
+./poc.sh -s registration
+# to quit the network
+./poc.sh -q registration
+# to delete volumes and certificates
+./poc.sh -d registration
+```
+
 ## Running the Performance Tests
 1. Make sure the instance(s) are running for the test.
 2. Update the connection.yaml file for the test you want to run so that the pem certificate matches the user you are masquerading as. Note, it will be the /tls/ca.crt of the user.
